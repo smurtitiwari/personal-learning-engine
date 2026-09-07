@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Learning Engine</title>
+<meta name="color-scheme" content="light dark" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css?v=3" />
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="app">
+
+  <aside class="rail">
+    <a class="brand" href="#learning"><span class="brand-mark">Le</span><span class="brand-word">Learning<br>Engine</span></a>
+
+    <button class="add-btn" data-add><b>+</b> <span class="add-text">Add learning</span></button>
+
+    <nav class="nav" aria-label="Primary">
+      <a href="#learning" data-view="learning"><span class="nav-ico">▤</span> <span class="nav-label">Learning</span></a>
+      <a href="#discover" data-view="discover"><span class="nav-ico">✷</span> <span class="nav-label">Discover</span></a>
+      <a href="#goals" data-view="goals"><span class="nav-ico">◎</span> <span class="nav-label">Goals</span></a>
+    </nav>
+
+    <button class="ask-btn" data-ask><span class="ai-tag">AI</span> <span class="ask-text">Ask AI</span></button>
+
+    <div class="rail-foot">
+      <button class="theme-toggle" aria-label="Switch theme">◐</button>
+      <button class="account"><span class="avatar">AS</span><b>Ayush</b></button>
+      <button class="settings-btn" aria-label="Profile and settings">⚙</button>
+    </div>
+  </aside>
+
+  <main id="main" tabindex="-1">
+
+    <!-- ============ LEARNING ============ -->
+    <section class="view" data-panel="learning">
+      <header class="view-head">
+        <div>
+          <h1>Learning</h1>
+          <p class="lede">Everything you've saved, watched and read — an archive that gets clearer as it grows.</p>
+        </div>
+      </header>
+
+      <div class="learn-controls">
+        <div class="search">
+          <span aria-hidden="true">⌕</span>
+          <input id="search" type="search" placeholder="Search your learning" aria-label="Search your learning" />
+        </div>
+        <div class="chips" data-filter-set="type" role="group" aria-label="Filter by source">
+          <button class="chip on" data-type="all">All</button>
+          <button class="chip" data-type="youtube">Video</button>
+          <button class="chip" data-type="article">Article</button>
+          <button class="chip" data-type="substack">Newsletter</button>
+          <button class="chip" data-type="pdf">PDF</button>
+        </div>
+        <div class="chips subtle" data-filter-set="topic" role="group" aria-label="Filter by topic">
+          <button class="chip on" data-topic="all">All topics</button>
+          <button class="chip" data-topic="AI UX">AI UX</button>
+          <button class="chip" data-topic="AI agents">AI agents</button>
+          <button class="chip" data-topic="AI evaluation">AI evaluation</button>
+          <button class="chip" data-topic="AI prototyping">AI prototyping</button>
+          <button class="chip" data-topic="Product design">Product design</button>
+        </div>
+      </div>
+
+      <div class="ask-inline" data-ask-context>
+        <span class="ai-tag">AI</span>
+        <p>Ask about what's in your collection — the patterns, the gaps, how it has shifted.</p>
+        <div class="ask-chips">
+          <button data-ask-q="What have I been learning recently?">Recent learning</button>
+          <button data-ask-q="What are my recurring topics?">Recurring topics</button>
+          <button data-ask-q="What areas have I not explored much?">Gaps</button>
+          <button data-ask-q="How has my learning changed?">How it's changed</button>
+        </div>
+      </div>
+
+      <ol class="archive" id="resourceGrid"></ol>
+      <p class="empty-note" id="emptyNote" hidden>Nothing in the archive matches those filters.</p>
+    </section>
+
+    <!-- ============ DISCOVER ============ -->
+    <section class="view" data-panel="discover" hidden>
+      <header class="view-head">
+        <div>
+          <h1>Discover</h1>
+          <p class="lede">A short, considered list of what could be worth learning next — not a feed.</p>
+        </div>
+      </header>
+
+      <section class="block explore-next">
+        <p class="kicker">What to explore next</p>
+        <h2>AI evaluation</h2>
+        <div class="why">
+          <span class="ai-tag">AI</span>
+          <p>You've saved four pieces on <strong>AI UX</strong> and four on <strong>AI agents</strong>, but only two touch evaluation — the part that decides whether an AI feature is good enough to ship.</p>
+        </div>
+        <div class="rec-grid" data-recs="evaluation"></div>
+        <button class="linkish" data-ask-q="Why are you recommending AI evaluation?" data-ask>Ask AI to expand this</button>
+      </section>
+
+      <section class="block">
+        <p class="kicker">Areas worth opening up</p>
+        <ul class="area-list">
+          <li>
+            <b>AI prototyping</b>
+            <span>Connects the AI UX thinking you keep saving to the tools that let you build with it.</span>
+          </li>
+          <li>
+            <b>AI product strategy</b>
+            <span>Several saved pieces raise strategy questions and leave them open.</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="block">
+        <p class="kicker">Emerging in your field <span class="ember-dot" aria-hidden="true"></span></p>
+        <p class="block-lede">Two threads are gaining weight in AI product circles, and both connect to what you already save.</p>
+        <div class="rec-grid" data-recs="emerging"></div>
+      </section>
+    </section>
+
+    <!-- ============ GOALS ============ -->
+    <section class="view" data-panel="goals" hidden>
+      <header class="view-head">
+        <div>
+          <h1>Goals</h1>
+          <p class="lede">A direction you're intentionally pursuing — held loosely, revised often.</p>
+        </div>
+        <button class="btn-outline" data-create-goal>Create a goal</button>
+      </header>
+
+      <section class="goal-suggestion" id="goalSuggestion">
+        <p class="kicker"><span class="ai-tag">AI</span> A pattern in your learning</p>
+        <p class="suggestion-lead">You keep returning to</p>
+        <div class="pattern-topics"><span>AI UX</span><span>AI agents</span><span>Product design</span></div>
+        <h2>AI-native product design</h2>
+        <p class="why-line">A direction that ties those threads together. AI is only pointing it out — you decide whether to pursue it.</p>
+        <div class="btn-row">
+          <button class="btn-primary" data-accept-suggestion>Make this a goal</button>
+          <button class="btn-ghost" data-dismiss-suggestion>Not now</button>
+        </div>
+      </section>
+
+      <div class="goals-list" id="goalsList">
+        <p class="goals-empty" id="goalsEmpty">No goals yet — and you don't need one to keep learning. Create a direction when you want something to focus around.</p>
+      </div>
+    </section>
+
+    <!-- ============ GOAL DETAIL ============ -->
+    <section class="view goal-detail" data-panel="goal" hidden>
+      <button class="back" data-view="goals">Goals</button>
+
+      <header class="goal-head">
+        <p class="kicker">Learning direction</p>
+        <h1 id="goalTitle">AI-native product design</h1>
+      </header>
+
+      <section class="block">
+        <p class="kicker">Why this direction</p>
+        <p id="goalWhy">You've repeatedly explored AI UX, agents and product design, and kept returning to how they fit together.</p>
+      </section>
+
+      <section class="block">
+        <p class="kicker">Learning areas</p>
+        <div class="area-chips" id="goalAreas">
+          <span>AI fundamentals</span><span>AI UX</span><span>AI agents</span>
+          <span>AI prototyping</span><span>AI evaluation</span><span>AI product strategy</span>
+        </div>
+      </section>
+
+      <section class="block">
+        <p class="kicker">What I've explored</p>
+        <div class="explored">
+          <div class="explored-row">
+            <div class="explored-top"><b>AI UX</b><span>8 saved · 5 completed</span></div>
+            <i class="bar"><u style="width:62%"></u></i>
+          </div>
+          <div class="explored-row">
+            <div class="explored-top"><b>AI agents</b><span>5 saved · 2 completed</span></div>
+            <i class="bar"><u style="width:40%"></u></i>
+          </div>
+          <div class="explored-row">
+            <div class="explored-top"><b>AI evaluation</b><span>1 saved · current focus</span></div>
+            <i class="bar"><u style="width:10%"></u></i>
+          </div>
+          <div class="explored-row muted-row">
+            <div class="explored-top"><b>AI prototyping · AI product strategy · AI fundamentals</b><span>No activity yet</span></div>
+            <i class="bar"><u style="width:0%"></u></i>
+          </div>
+        </div>
+        <p class="foot-note">Counts of what you've saved and finished — not an expertise score.</p>
+      </section>
+
+      <section class="block focus">
+        <p class="kicker"><span class="ai-tag">AI</span> Where to focus now</p>
+        <h3>AI evaluation</h3>
+        <p class="why-line">The thinnest area on the path, and the one that connects your AI UX and agent work into something shippable.</p>
+        <button class="linkish" data-ask-q="How does my learning relate to my goal?" data-ask>Ask AI how this connects</button>
+      </section>
+
+      <section class="block">
+        <p class="kicker">Learn this next</p>
+        <div class="rec-grid" data-recs="evaluation"></div>
+      </section>
+    </section>
+
+  </main>
+</div>
+
+<!-- ============ ADD LEARNING ============ -->
+<dialog class="sheet add-dialog">
+  <button class="sheet-close" aria-label="Close">×</button>
+  <div class="sheet-step" data-step="form">
+    <p class="kicker">Add to your library</p>
+    <h2>Save something<br>you're learning.</h2>
+    <p class="sheet-lede">A YouTube link, an article, a Substack post, a PDF. Learning Engine reads it and files it.</p>
+    <form id="addForm">
+      <label class="sr-only" for="resourceUrl">Resource link</label>
+      <div class="url-row">
+        <input id="resourceUrl" type="url" placeholder="Paste a link" required />
+        <button type="submit">Read it</button>
+      </div>
+    </form>
+    <p class="supported">youtube · medium · substack · web · pdf</p>
+  </div>
+  <div class="sheet-step" data-step="preview" hidden>
+    <p class="kicker">Understood as</p>
+    <div class="preview-resource">
+      <span class="preview-mark">▶</span>
+      <div>
+        <span class="src src-yt">YouTube · 32 min</span>
+        <h2>The future of<br>AI agents</h2>
+      </div>
+    </div>
+    <p class="kicker">Topics detected</p>
+    <div class="detected"><span>AI agents</span><span>AI UX</span><span>Product design</span></div>
+    <p class="connects">Supports your direction: <strong>AI-native product design</strong></p>
+    <button class="btn-primary wide" id="saveResource">Save to library</button>
+  </div>
+</dialog>
+
+<!-- ============ CREATE GOAL ============ -->
+<dialog class="sheet goal-dialog">
+  <button class="sheet-close" aria-label="Close">×</button>
+  <div class="sheet-step" data-step="ask">
+    <p class="kicker">Create a goal</p>
+    <h2>What do you want to<br>get better at?</h2>
+    <form id="goalForm">
+      <input id="goalInput" type="text" placeholder="I want to become an AI-native product designer" required />
+      <button class="btn-primary wide" type="submit">Continue</button>
+    </form>
+    <p class="sheet-lede">One sentence. AI proposes the structure and you edit it — no long form.</p>
+  </div>
+  <div class="sheet-step" data-step="structure" hidden>
+    <p class="kicker"><span class="ai-tag">AI</span> Proposed structure</p>
+    <h2 class="sm" id="goalDraftTitle">AI-native product design</h2>
+    <p class="sheet-lede">Learning areas AI pulled from your sentence. Adjust anything that's off.</p>
+    <ul class="draft-areas" id="draftAreas"></ul>
+    <div class="btn-row">
+      <button class="btn-primary" id="confirmGoal">Create goal</button>
+      <button class="btn-ghost" data-goal-edit>Edit sentence</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ============ ASK AI ============ -->
+<div class="ask-scrim" id="askScrim" hidden></div>
+<aside class="ask-panel" id="askPanel" hidden aria-label="Ask AI">
+  <header>
+    <p class="kicker"><span class="ai-tag">AI</span> Ask AI</p>
+    <button class="sheet-close" data-ask-close aria-label="Close">×</button>
+  </header>
+  <p class="ask-scope">Answers come from your library, your goals and how your activity is changing — not the open web.</p>
+  <div class="ask-thread" id="askThread"></div>
+  <div class="ask-suggests" id="askSuggests">
+    <button data-ask-q="What have I been learning recently?">What have I been learning recently?</button>
+    <button data-ask-q="What should I focus on?">What should I focus on?</button>
+    <button data-ask-q="What should I learn next?">What should I learn next?</button>
+    <button data-ask-q="How does my learning relate to my goal?">How does my learning relate to my goal?</button>
+    <button data-ask-q="What areas have I not explored much?">What areas have I not explored much?</button>
+    <button data-ask-q="What is becoming relevant in my industry?">What is becoming relevant in my industry?</button>
+  </div>
+  <form id="askForm" class="ask-input">
+    <input id="askInput" type="text" placeholder="Ask about your learning" autocomplete="off" />
+    <button type="submit" aria-label="Send">→</button>
+  </form>
+</aside>
+
+<!-- ============ WELCOME ============ -->
+<dialog class="welcome-dialog">
+  <div class="welcome-art"><i></i><i></i><i></i></div>
+  <div class="welcome-copy">
+    <p class="kicker">Learning Engine</p>
+    <h2>Start with something<br>you're already learning.</h2>
+    <p>Save a video, an article, a newsletter, a PDF. As the archive grows, the patterns, the direction and the next thing to learn come into focus.</p>
+    <button class="btn-primary wide" data-welcome-add>Add your first resource</button>
+    <button class="welcome-secondary" data-welcome-dismiss>Look around first</button>
+    <small>You're in control. Learning Engine describes activity in your library — not your expertise.</small>
+  </div>
+</dialog>
+
+<script src="./app.js"></script>
+</body>
+</html>
