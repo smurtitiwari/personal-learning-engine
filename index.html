@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./styles.css?v=3" />
+<link rel="stylesheet" href="./styles.css?v=10" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -25,12 +25,26 @@
       <a href="#goals" data-view="goals"><span class="nav-ico">◎</span> <span class="nav-label">Goals</span></a>
     </nav>
 
-    <button class="ask-btn" data-ask><span class="ai-tag">AI</span> <span class="ask-text">Ask AI</span></button>
+    <div class="rail-bottom">
+      <button class="ask-btn" data-ask><span class="ai-tag">AI</span> <span class="ask-text">Ask AI</span></button>
 
-    <div class="rail-foot">
-      <button class="theme-toggle" aria-label="Switch theme">◐</button>
-      <button class="account"><span class="avatar">AS</span><b>Ayush</b></button>
-      <button class="settings-btn" aria-label="Profile and settings">⚙</button>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button data-theme-set="light">Light</button>
+        <button data-theme-set="dark">Dark</button>
+      </div>
+
+      <div class="account-wrap">
+        <button class="account" data-account aria-haspopup="true">
+          <span class="avatar">AS</span>
+          <span class="account-name">Ayush</span>
+          <span class="account-caret" aria-hidden="true">⌄</span>
+        </button>
+        <div class="account-menu" id="accountMenu" hidden>
+          <button>Profile</button>
+          <button>Settings</button>
+          <button>Sign out</button>
+        </div>
+      </div>
     </div>
   </aside>
 
@@ -67,19 +81,8 @@
         </div>
       </div>
 
-      <div class="ask-inline" data-ask-context>
-        <span class="ai-tag">AI</span>
-        <p>Ask about what's in your collection — the patterns, the gaps, how it has shifted.</p>
-        <div class="ask-chips">
-          <button data-ask-q="What have I been learning recently?">Recent learning</button>
-          <button data-ask-q="What are my recurring topics?">Recurring topics</button>
-          <button data-ask-q="What areas have I not explored much?">Gaps</button>
-          <button data-ask-q="How has my learning changed?">How it's changed</button>
-        </div>
-      </div>
-
-      <ol class="archive" id="resourceGrid"></ol>
-      <p class="empty-note" id="emptyNote" hidden>Nothing in the archive matches those filters.</p>
+      <div class="res-grid" id="resourceGrid"></div>
+      <p class="empty-note" id="emptyNote" hidden>Nothing here matches those filters.</p>
     </section>
 
     <!-- ============ DISCOVER ============ -->
@@ -98,7 +101,7 @@
           <span class="ai-tag">AI</span>
           <p>You've saved four pieces on <strong>AI UX</strong> and four on <strong>AI agents</strong>, but only two touch evaluation — the part that decides whether an AI feature is good enough to ship.</p>
         </div>
-        <div class="rec-grid" data-recs="evaluation"></div>
+        <div class="card-grid" data-recs="evaluation"></div>
         <button class="linkish" data-ask-q="Why are you recommending AI evaluation?" data-ask>Ask AI to expand this</button>
       </section>
 
@@ -119,7 +122,7 @@
       <section class="block">
         <p class="kicker">Emerging in your field <span class="ember-dot" aria-hidden="true"></span></p>
         <p class="block-lede">Two threads are gaining weight in AI product circles, and both connect to what you already save.</p>
-        <div class="rec-grid" data-recs="emerging"></div>
+        <div class="card-grid" data-recs="emerging"></div>
       </section>
     </section>
 
@@ -133,20 +136,11 @@
         <button class="btn-outline" data-create-goal>Create a goal</button>
       </header>
 
-      <section class="goal-suggestion" id="goalSuggestion">
-        <p class="kicker"><span class="ai-tag">AI</span> A pattern in your learning</p>
-        <p class="suggestion-lead">You keep returning to</p>
-        <div class="pattern-topics"><span>AI UX</span><span>AI agents</span><span>Product design</span></div>
-        <h2>AI-native product design</h2>
-        <p class="why-line">A direction that ties those threads together. AI is only pointing it out — you decide whether to pursue it.</p>
-        <div class="btn-row">
-          <button class="btn-primary" data-accept-suggestion>Make this a goal</button>
-          <button class="btn-ghost" data-dismiss-suggestion>Not now</button>
-        </div>
-      </section>
+      <div class="goal-suggestions" id="goalSuggestions" hidden></div>
 
+      <p class="kicker goals-heading">Your goals</p>
       <div class="goals-list" id="goalsList">
-        <p class="goals-empty" id="goalsEmpty">No goals yet — and you don't need one to keep learning. Create a direction when you want something to focus around.</p>
+        <p class="goals-empty" id="goalsEmpty">No goals yet — accept a pattern above, or create your own direction to focus around.</p>
       </div>
     </section>
 
@@ -157,54 +151,21 @@
       <header class="goal-head">
         <p class="kicker">Learning direction</p>
         <h1 id="goalTitle">AI-native product design</h1>
+        <p class="goal-why" id="goalWhy"></p>
       </header>
 
-      <section class="block">
-        <p class="kicker">Why this direction</p>
-        <p id="goalWhy">You've repeatedly explored AI UX, agents and product design, and kept returning to how they fit together.</p>
-      </section>
+      <p class="goal-count" id="goalCount"></p>
 
       <section class="block">
-        <p class="kicker">Learning areas</p>
-        <div class="area-chips" id="goalAreas">
-          <span>AI fundamentals</span><span>AI UX</span><span>AI agents</span>
-          <span>AI prototyping</span><span>AI evaluation</span><span>AI product strategy</span>
-        </div>
-      </section>
-
-      <section class="block">
-        <p class="kicker">What I've explored</p>
-        <div class="explored">
-          <div class="explored-row">
-            <div class="explored-top"><b>AI UX</b><span>8 saved · 5 completed</span></div>
-            <i class="bar"><u style="width:62%"></u></i>
-          </div>
-          <div class="explored-row">
-            <div class="explored-top"><b>AI agents</b><span>5 saved · 2 completed</span></div>
-            <i class="bar"><u style="width:40%"></u></i>
-          </div>
-          <div class="explored-row">
-            <div class="explored-top"><b>AI evaluation</b><span>1 saved · current focus</span></div>
-            <i class="bar"><u style="width:10%"></u></i>
-          </div>
-          <div class="explored-row muted-row">
-            <div class="explored-top"><b>AI prototyping · AI product strategy · AI fundamentals</b><span>No activity yet</span></div>
-            <i class="bar"><u style="width:0%"></u></i>
-          </div>
-        </div>
-        <p class="foot-note">Counts of what you've saved and finished — not an expertise score.</p>
+        <p class="kicker">Learning areas · what to learn for each</p>
+        <div class="area-grid" id="goalAreas"></div>
       </section>
 
       <section class="block focus">
         <p class="kicker"><span class="ai-tag">AI</span> Where to focus now</p>
-        <h3>AI evaluation</h3>
-        <p class="why-line">The thinnest area on the path, and the one that connects your AI UX and agent work into something shippable.</p>
+        <h3 id="goalFocus">AI evaluation</h3>
+        <p class="goal-why" id="goalFocusWhy"></p>
         <button class="linkish" data-ask-q="How does my learning relate to my goal?" data-ask>Ask AI how this connects</button>
-      </section>
-
-      <section class="block">
-        <p class="kicker">Learn this next</p>
-        <div class="rec-grid" data-recs="evaluation"></div>
       </section>
     </section>
 
@@ -248,22 +209,42 @@
   <button class="sheet-close" aria-label="Close">×</button>
   <div class="sheet-step" data-step="ask">
     <p class="kicker">Create a goal</p>
-    <h2>What do you want to<br>get better at?</h2>
+    <h2>Name it, and say what<br>you want to learn.</h2>
     <form id="goalForm">
-      <input id="goalInput" type="text" placeholder="I want to become an AI-native product designer" required />
+      <label class="field-label" for="goalName">Goal name</label>
+      <input id="goalName" type="text" placeholder="AI-native product design" required />
+      <label class="field-label" for="goalKeywords">What do you want to learn? A few keywords.</label>
+      <input id="goalKeywords" type="text" placeholder="evaluation, agents, prototyping" />
       <button class="btn-primary wide" type="submit">Continue</button>
     </form>
-    <p class="sheet-lede">One sentence. AI proposes the structure and you edit it — no long form.</p>
+    <p class="sheet-lede">AI matches your keywords to what's already in your library, then suggests areas and real resources to start from.</p>
   </div>
   <div class="sheet-step" data-step="structure" hidden>
-    <p class="kicker"><span class="ai-tag">AI</span> Proposed structure</p>
+    <p class="kicker"><span class="ai-tag">AI</span> Suggested structure</p>
     <h2 class="sm" id="goalDraftTitle">AI-native product design</h2>
-    <p class="sheet-lede">Learning areas AI pulled from your sentence. Adjust anything that's off.</p>
+    <p class="sheet-lede">Learning areas drawn from your keywords.</p>
     <ul class="draft-areas" id="draftAreas"></ul>
+    <p class="kicker">From your library</p>
+    <div class="draft-res-list" id="draftResources"></div>
     <div class="btn-row">
       <button class="btn-primary" id="confirmGoal">Create goal</button>
-      <button class="btn-ghost" data-goal-edit>Edit sentence</button>
+      <button class="btn-ghost" data-goal-edit>Edit</button>
     </div>
+  </div>
+</dialog>
+
+<!-- ============ RESOURCE DETAIL ============ -->
+<dialog class="sheet detail-dialog">
+  <button class="sheet-close" aria-label="Close">×</button>
+  <div class="sheet-step">
+    <p class="kicker" id="detailKicker">Video · Wes Roth</p>
+    <h2 class="sm" id="detailTitle">The future of AI agents</h2>
+    <p class="detail-meta" id="detailMeta"></p>
+    <p class="detail-summary" id="detailSummary"></p>
+    <p class="kicker">What it covers</p>
+    <ul class="detail-covers" id="detailCovers"></ul>
+    <div class="detail-topics" id="detailTopics"></div>
+    <a class="btn-primary wide" id="detailOpen" href="#" target="_blank" rel="noopener noreferrer">Open source</a>
   </div>
 </dialog>
 
