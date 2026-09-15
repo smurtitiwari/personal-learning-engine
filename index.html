@@ -7,15 +7,16 @@
 <meta name="color-scheme" content="light dark" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./styles.css?v=10" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css?v=21" />
+<link rel="stylesheet" href="./styles-mario.css" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <div class="app">
 
   <aside class="rail">
-    <a class="brand" href="#learning"><span class="brand-mark">Le</span><span class="brand-word">Learning<br>Engine</span></a>
+    <a class="brand" href="#learning"><span class="brand-mark"><span class="brand-mark-classic">Le</span><span class="brand-mark-mario" hidden>⭐</span></span><span class="brand-word">Learning<br>Engine</span></a>
 
     <button class="add-btn" data-add><b>+</b> <span class="add-text">Add learning</span></button>
 
@@ -26,6 +27,42 @@
     </nav>
 
     <div class="rail-bottom">
+      <!-- Mario decorative elements — only visible in Mario theme -->
+      <div class="mario-xp-bar" aria-hidden="true" hidden>
+        <span class="mario-xp-label"><span>XP</span><span>620 / 1000</span></span>
+        <div class="mario-xp-track"><div class="mario-xp-fill"></div></div>
+      </div>
+      <div class="mario-coins" aria-hidden="true" hidden>
+        <span class="mario-coin-icon"></span>
+        <span>× 42</span>
+      </div>
+      <div class="mario-sprite" aria-hidden="true" hidden>
+        <svg class="mario-svg" viewBox="0 0 56 56" width="52" height="52" xmlns="http://www.w3.org/2000/svg" image-rendering="pixelated">
+          <!-- hat -->
+          <rect x="16" y="4"  width="24" height="4" fill="#e52521"/>
+          <rect x="12" y="8"  width="32" height="4" fill="#e52521"/>
+          <!-- face -->
+          <rect x="12" y="12" width="32" height="4" fill="#fbc884"/>
+          <rect x="8"  y="16" width="40" height="8" fill="#fbc884"/>
+          <!-- eyes -->
+          <rect x="16" y="16" width="4"  height="4" fill="#1a0500"/>
+          <rect x="36" y="16" width="4"  height="4" fill="#1a0500"/>
+          <!-- mustache -->
+          <rect x="12" y="24" width="32" height="4" fill="#1a0500"/>
+          <!-- body (overalls) -->
+          <rect x="12" y="28" width="32" height="12" fill="#049cd8"/>
+          <!-- buttons -->
+          <rect x="20" y="32" width="4"  height="4" fill="#fef9e7"/>
+          <rect x="32" y="32" width="4"  height="4" fill="#fef9e7"/>
+          <!-- legs -->
+          <rect x="12" y="40" width="12" height="8" fill="#e52521"/>
+          <rect x="32" y="40" width="12" height="8" fill="#e52521"/>
+          <!-- shoes -->
+          <rect x="8"  y="48" width="16" height="4" fill="#1a0500"/>
+          <rect x="32" y="48" width="16" height="4" fill="#1a0500"/>
+        </svg>
+      </div>
+
       <button class="ask-btn" data-ask><span class="ai-tag">AI</span> <span class="ask-text">Ask AI</span></button>
 
       <div class="theme-switch" role="group" aria-label="Theme">
@@ -34,17 +71,55 @@
       </div>
 
       <div class="account-wrap">
-        <button class="account" data-account aria-haspopup="true">
+        <button class="account" data-open-settings aria-haspopup="dialog">
           <span class="avatar">AS</span>
           <span class="account-name">Ayush</span>
           <span class="account-caret" aria-hidden="true">⌄</span>
         </button>
-        <div class="account-menu" id="accountMenu" hidden>
-          <button>Profile</button>
-          <button>Settings</button>
-          <button>Sign out</button>
-        </div>
       </div>
+    </div>
+  </aside>
+
+  <!-- ============ ASK AI ============ -->
+  <aside class="ask-panel" id="askPanel" aria-label="Ask AI">
+    <!-- View: Conversation list -->
+    <div class="ask-list-view" id="askListView">
+      <header class="ask-panel-header">
+        <p class="kicker"><span class="ai-tag">AI</span> Ask AI</p>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button class="ask-new-btn" id="askNewBtn" aria-label="New chat">New</button>
+          <button class="ask-close-panel" id="askClosePanel" aria-label="Close Ask AI">×</button>
+        </div>
+      </header>
+      <div class="ask-convs" id="askConvs"></div>
+      <div class="ask-home-suggests" id="askHomeSuggests">
+        <button data-ask-q="What have I been learning recently?">What have I been learning?</button>
+        <button data-ask-q="What should I focus on?">What should I focus on?</button>
+        <button data-ask-q="What should I learn next?">What should I learn next?</button>
+        <button data-ask-q="What areas have I not explored much?">Knowledge gaps?</button>
+      </div>
+      <form id="askHomeForm" class="ask-input">
+        <input id="askHomeInput" type="text" placeholder="Ask something…" autocomplete="off" />
+        <button type="submit" aria-label="Send">→</button>
+      </form>
+    </div>
+    <!-- View: Active chat -->
+    <div class="ask-chat-view" id="askChatView" hidden>
+      <header class="ask-panel-header">
+        <button class="ask-back-btn" id="askBackBtn">← Chats</button>
+        <button class="ask-del-conv" id="askDelConv" aria-label="Delete chat">✕</button>
+      </header>
+      <div class="ask-resource-card" id="askResourceCard" hidden></div>
+      <div class="ask-thread" id="askThread"></div>
+      <div class="ask-suggests" id="askSuggests" hidden>
+        <button data-ask-q="What are the key takeaways?">Key takeaways?</button>
+        <button data-ask-q="How does this connect to my goals?">Connect to goals?</button>
+        <button data-ask-q="What should I learn next from this?">What next?</button>
+      </div>
+      <form id="askForm" class="ask-input">
+        <input id="askInput" type="text" placeholder="Ask about your learning" autocomplete="off" />
+        <button type="submit" aria-label="Send">→</button>
+      </form>
     </div>
   </aside>
 
@@ -58,6 +133,18 @@
           <p class="lede">Everything you've saved, watched and read — an archive that gets clearer as it grows.</p>
         </div>
       </header>
+
+      <!-- Learning insights strip -->
+      <div class="learn-insights" id="learnInsights" hidden>
+        <div class="li-stats" id="liStats">
+          <div class="li-stat" id="liStatTime"><span class="li-val">—</span><span class="li-lbl">Learning time this week</span></div>
+        </div>
+        <div class="li-chart" id="liChart" hidden>
+          <p class="kicker li-chart-kicker">This week</p>
+          <div class="li-bars" id="liBars"></div>
+        </div>
+        <p class="li-insight" id="liInsight" hidden></p>
+      </div>
 
       <div class="learn-controls">
         <div class="search">
@@ -94,35 +181,19 @@
         </div>
       </header>
 
-      <section class="block explore-next">
-        <p class="kicker">What to explore next</p>
-        <h2>AI evaluation</h2>
-        <div class="why">
-          <span class="ai-tag">AI</span>
-          <p>You've saved four pieces on <strong>AI UX</strong> and four on <strong>AI agents</strong>, but only two touch evaluation — the part that decides whether an AI feature is good enough to ship.</p>
-        </div>
-        <div class="card-grid" data-recs="evaluation"></div>
-        <button class="linkish" data-ask-q="Why are you recommending AI evaluation?" data-ask>Ask AI to expand this</button>
+      <!-- AI Recommended -->
+      <section class="block discover-recs-block">
+        <p class="kicker"><span class="ai-tag">AI</span> Recommended for you</p>
+        <p class="ai-rec-summary" id="aiRecSummary"></p>
+        <div class="card-grid" id="aiRecGrid"></div>
+        <button class="linkish" data-ask-q="Why are you recommending these?" data-ask>Ask AI why these</button>
       </section>
 
-      <section class="block">
-        <p class="kicker">Areas worth opening up</p>
-        <ul class="area-list">
-          <li>
-            <b>AI prototyping</b>
-            <span>Connects the AI UX thinking you keep saving to the tools that let you build with it.</span>
-          </li>
-          <li>
-            <b>AI product strategy</b>
-            <span>Several saved pieces raise strategy questions and leave them open.</span>
-          </li>
-        </ul>
-      </section>
-
-      <section class="block">
+      <!-- Emerging in your field -->
+      <section class="block" id="emergingBlock" hidden>
         <p class="kicker">Emerging in your field <span class="ember-dot" aria-hidden="true"></span></p>
-        <p class="block-lede">Two threads are gaining weight in AI product circles, and both connect to what you already save.</p>
-        <div class="card-grid" data-recs="emerging"></div>
+        <p class="block-lede" id="emergingLede"></p>
+        <div class="card-grid" id="emergingGrid"></div>
       </section>
     </section>
 
@@ -136,6 +207,18 @@
         <button class="btn-outline" data-create-goal>Create a goal</button>
       </header>
 
+      <!-- AI weekly focus -->
+      <div class="weekly-focus" id="weeklyFocus" hidden>
+        <div class="wf-header">
+          <span class="ai-tag">AI</span>
+          <p class="kicker" style="margin:0">This week's focus</p>
+        </div>
+        <p class="wf-suggestion" id="wfSuggestion"></p>
+        <p class="wf-why" id="wfWhy"></p>
+        <button class="wf-toggle linkish" id="wfToggle">See related resources ↓</button>
+        <div class="wf-resources" id="wfResources" hidden></div>
+      </div>
+
       <div class="goal-suggestions" id="goalSuggestions" hidden></div>
 
       <p class="kicker goals-heading">Your goals</p>
@@ -146,11 +229,14 @@
 
     <!-- ============ GOAL DETAIL ============ -->
     <section class="view goal-detail" data-panel="goal" hidden>
-      <button class="back" data-view="goals">Goals</button>
+      <div class="goal-detail-top">
+        <button class="back" data-view="goals">Goals</button>
+        <button class="goal-delete-btn" id="goalDeleteBtn" hidden>Delete goal</button>
+      </div>
 
       <header class="goal-head">
         <p class="kicker">Learning direction</p>
-        <h1 id="goalTitle">AI-native product design</h1>
+        <h1 id="goalTitle"></h1>
         <p class="goal-why" id="goalWhy"></p>
       </header>
 
@@ -161,9 +247,14 @@
         <div class="area-grid" id="goalAreas"></div>
       </section>
 
+      <section class="block" id="goalLinkedSection" hidden>
+        <p class="kicker">Saved resources for this goal</p>
+        <div class="goal-linked-list" id="goalLinkedList"></div>
+      </section>
+
       <section class="block focus">
         <p class="kicker"><span class="ai-tag">AI</span> Where to focus now</p>
-        <h3 id="goalFocus">AI evaluation</h3>
+        <h3 id="goalFocus"></h3>
         <p class="goal-why" id="goalFocusWhy"></p>
         <button class="linkish" data-ask-q="How does my learning relate to my goal?" data-ask>Ask AI how this connects</button>
       </section>
@@ -183,24 +274,31 @@
       <label class="sr-only" for="resourceUrl">Resource link</label>
       <div class="url-row">
         <input id="resourceUrl" type="url" placeholder="Paste a link" required />
-        <button type="submit">Read it</button>
+        <button type="submit" id="addSubmitBtn">Read it</button>
       </div>
+      <p class="add-error" id="addError" hidden></p>
     </form>
     <p class="supported">youtube · medium · substack · web · pdf</p>
   </div>
+  <div class="sheet-step" data-step="processing" hidden>
+    <p class="kicker">Reading it</p>
+    <h2>Processing your<br>learning&hellip;</h2>
+    <div class="processing-anim" aria-hidden="true"><span></span><span></span><span></span></div>
+    <p class="sheet-lede" id="processingNote">Extracting content and generating summary — this takes a few seconds.</p>
+  </div>
   <div class="sheet-step" data-step="preview" hidden>
-    <p class="kicker">Understood as</p>
+    <p class="kicker" id="previewKicker">Understood as</p>
     <div class="preview-resource">
-      <span class="preview-mark">▶</span>
+      <span class="preview-mark" id="previewMark">▶</span>
       <div>
-        <span class="src src-yt">YouTube · 32 min</span>
-        <h2>The future of<br>AI agents</h2>
+        <span class="src" id="previewSrc"></span>
+        <h2 id="previewTitle"></h2>
       </div>
     </div>
-    <p class="kicker">Topics detected</p>
-    <div class="detected"><span>AI agents</span><span>AI UX</span><span>Product design</span></div>
-    <p class="connects">Supports your direction: <strong>AI-native product design</strong></p>
-    <button class="btn-primary wide" id="saveResource">Save to library</button>
+    <p class="kicker" id="previewTopicsLabel" hidden>Topics detected</p>
+    <div class="detected" id="previewTopics"></div>
+    <p class="sheet-lede preview-summary" id="previewSummary" hidden></p>
+    <button class="btn-primary wide" id="saveResource">Done — view in library</button>
   </div>
 </dialog>
 
@@ -236,40 +334,49 @@
 <!-- ============ RESOURCE DETAIL ============ -->
 <dialog class="sheet detail-dialog">
   <button class="sheet-close" aria-label="Close">×</button>
-  <div class="sheet-step">
-    <p class="kicker" id="detailKicker">Video · Wes Roth</p>
-    <h2 class="sm" id="detailTitle">The future of AI agents</h2>
+  <div class="sheet-step detail-scroll">
+
+    <!-- Why AI recommended this — shown for rec cards -->
+    <div class="detail-why-block" id="detailWhyBlock" hidden>
+      <p class="kicker">Why this</p>
+      <p class="detail-why-text" id="detailWhy"></p>
+    </div>
+
+    <!-- AI summary — shown at top when available -->
+    <div class="detail-summary-block" id="detailSummaryBlock" hidden>
+      <p class="kicker">Summary</p>
+      <p class="detail-summary" id="detailSummary"></p>
+    </div>
+
+    <!-- Identity -->
+    <p class="kicker" id="detailKicker"></p>
+    <h2 class="sm" id="detailTitle"></h2>
     <p class="detail-meta" id="detailMeta"></p>
-    <p class="detail-summary" id="detailSummary"></p>
-    <p class="kicker">What it covers</p>
-    <ul class="detail-covers" id="detailCovers"></ul>
+
+    <!-- Key takeaways -->
+    <div id="detailCoversBlock" hidden>
+      <p class="kicker">What it covers</p>
+      <ul class="detail-covers" id="detailCovers"></ul>
+    </div>
+
+    <!-- Topics -->
     <div class="detail-topics" id="detailTopics"></div>
-    <a class="btn-primary wide" id="detailOpen" href="#" target="_blank" rel="noopener noreferrer">Open source</a>
+
+    <!-- Primary action -->
+    <div class="detail-actions">
+      <a class="btn-primary wide" id="detailOpen" href="#" target="_blank" rel="noopener noreferrer">Open source</a>
+    </div>
+    <button class="detail-ask-btn" id="detailAskBtn">Ask AI about this</button>
+    <button class="detail-delete-btn" id="detailDelete" hidden>Delete this resource</button>
+
+    <!-- Related in library -->
+    <div id="detailRelatedWrap" hidden>
+      <p class="kicker detail-related-kicker">Related in your library</p>
+      <div class="detail-related-list" id="detailRelatedList"></div>
+    </div>
+
   </div>
 </dialog>
-
-<!-- ============ ASK AI ============ -->
-<div class="ask-scrim" id="askScrim" hidden></div>
-<aside class="ask-panel" id="askPanel" hidden aria-label="Ask AI">
-  <header>
-    <p class="kicker"><span class="ai-tag">AI</span> Ask AI</p>
-    <button class="sheet-close" data-ask-close aria-label="Close">×</button>
-  </header>
-  <p class="ask-scope">Answers come from your library, your goals and how your activity is changing — not the open web.</p>
-  <div class="ask-thread" id="askThread"></div>
-  <div class="ask-suggests" id="askSuggests">
-    <button data-ask-q="What have I been learning recently?">What have I been learning recently?</button>
-    <button data-ask-q="What should I focus on?">What should I focus on?</button>
-    <button data-ask-q="What should I learn next?">What should I learn next?</button>
-    <button data-ask-q="How does my learning relate to my goal?">How does my learning relate to my goal?</button>
-    <button data-ask-q="What areas have I not explored much?">What areas have I not explored much?</button>
-    <button data-ask-q="What is becoming relevant in my industry?">What is becoming relevant in my industry?</button>
-  </div>
-  <form id="askForm" class="ask-input">
-    <input id="askInput" type="text" placeholder="Ask about your learning" autocomplete="off" />
-    <button type="submit" aria-label="Send">→</button>
-  </form>
-</aside>
 
 <!-- ============ WELCOME ============ -->
 <dialog class="welcome-dialog">
@@ -281,6 +388,55 @@
     <button class="btn-primary wide" data-welcome-add>Add your first resource</button>
     <button class="welcome-secondary" data-welcome-dismiss>Look around first</button>
     <small>You're in control. Learning Engine describes activity in your library — not your expertise.</small>
+  </div>
+</dialog>
+
+<!-- ============ SETTINGS ============ -->
+<dialog class="sheet settings-dialog">
+  <button class="sheet-close" aria-label="Close">×</button>
+  <div class="sheet-step settings-step">
+    <div class="settings-profile">
+      <span class="avatar settings-avatar">AS</span>
+      <div>
+        <p class="settings-name">Ayush</p>
+        <p class="settings-sub">Personal workspace</p>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <label class="setting-label" for="weeklyTargetInput">Weekly learning target</label>
+      <div class="setting-row">
+        <input class="setting-num" id="weeklyTargetInput" type="number" min="0" max="40" step="1" value="5" />
+        <span class="setting-unit">hours / week</span>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <p class="setting-label">Theme</p>
+      <div class="setting-theme" role="group" aria-label="Theme">
+        <button data-theme-set="light">Light</button>
+        <button data-theme-set="system">System</button>
+        <button data-theme-set="dark">Dark</button>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <label class="setting-label" for="aiRecsSelect">AI recommendations</label>
+      <select class="setting-select" id="aiRecsSelect">
+        <option value="1">Always on</option>
+        <option value="0">Off</option>
+      </select>
+    </div>
+
+    <div class="setting-group">
+      <p class="setting-label">UI style</p>
+      <div class="setting-ui-mode" role="group" aria-label="UI style">
+        <button data-ui-set="classic">Classic</button>
+        <button data-ui-set="mario">Mario ★</button>
+      </div>
+    </div>
+
+    <button class="settings-signout" id="settingsSignout">Sign out</button>
   </div>
 </dialog>
 
