@@ -500,6 +500,10 @@ body.dark .goal-card:hover{box-shadow:0 0 0 1px var(--accent), 0 18px 44px -16px
 .gc-areas span{font:400 10px/1 var(--mono);color:var(--ink-3);border:1px solid var(--line);border-radius:4px;padding:3px 7px}
 .gc-line{margin-top:auto;font:400 11.5px/1.5 var(--sans);color:var(--ink-3)}
 .gc-line strong{color:var(--ink-2);font-weight:600}
+.gc-ai-recs{margin-top:auto;display:flex;flex-direction:column;gap:3px;padding-top:var(--s3);border-top:1px solid var(--line)}
+.gc-ai-label{display:flex;align-items:center;gap:5px;font:600 11.5px/1 var(--sans);color:var(--ink-2)}
+.gc-ai-count{font:400 11.5px/1.4 var(--sans);color:var(--ink-3)}
+.gc-ai-cta{font:600 11.5px/1 var(--sans);color:var(--accent)}
 
 /* ============================================================
    GOAL DETAIL
@@ -622,37 +626,108 @@ body.dark .sheet::backdrop,body.dark .welcome-dialog::backdrop{background:rgba(4
 .dr-title{font:500 13px/1.3 var(--sans);color:var(--ink)}
 .dr-by{font:10px/1 var(--mono);color:var(--ink-3)}
 
-/* resource detail */
-.detail-why-block{background:var(--ai-weak);border-left:2px solid var(--ai);border-radius:0 var(--r-md) var(--r-md) 0;
-  padding:var(--s4) var(--s5);margin-bottom:var(--s4)}
-.detail-why-block .kicker{margin-bottom:var(--s2)}
-.detail-why-text{font:400 13.5px/1.55 var(--sans);color:var(--ink-2);margin:0}
+/* ── Resource detail modal ─────────────────────────────────── */
 .detail-scroll{overflow-y:auto;max-height:82vh}
-.detail-summary-block{background:var(--ai-weak);border-radius:var(--r-md);padding:var(--s4) var(--s5);margin-bottom:var(--s5)}
-.detail-summary-block .kicker{margin-bottom:var(--s2)}
-.detail-meta{margin:var(--s2) 0 var(--s4);font:10.5px/1 var(--mono);color:var(--ink-3)}
+
+/* 1. Type tag — "VIDEO · CODEX COMMUNITY" */
+.detail-type-tag{
+  font:600 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 var(--s3);
+}
+
+/* 2. Title */
+.detail-title{
+  font:600 var(--t-h2)/1.2 var(--sans);letter-spacing:-.025em;
+  margin:0 0 var(--s2);color:var(--ink);
+}
+
+/* 3. Meta — duration · date */
+.detail-meta{
+  font:400 11px/1 var(--mono);color:var(--ink-3);
+  margin:0 0 var(--s5);
+}
+
+/* 4. Summary block — label + body, no card box */
+.detail-summary-block{
+  border-top:1px solid var(--line);
+  padding:var(--s4) 0 var(--s5);
+  margin-bottom:var(--s4);
+}
+.detail-summary-label{
+  font:600 10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 var(--s3);
+}
 .detail-summary{font:400 14px/1.6 var(--sans);color:var(--ink-2);margin:0}
 .detail-summary--loading{color:var(--ink-3);font-style:italic;animation:skel-pulse 1.6s ease-in-out infinite}
+
+/* 5. Topics / content tags */
+.detail-topics{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:var(--s5)}
+.detail-topics span{
+  font:400 10.5px/1 var(--mono);color:var(--ink-2);
+  border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:4px 9px;
+}
+
+/* 6. Why block */
+.detail-why-block{
+  background:var(--ai-weak);border-left:2px solid var(--ai);
+  border-radius:0 var(--r-md) var(--r-md) 0;
+  padding:var(--s4) var(--s5);margin-bottom:var(--s4);
+}
+.detail-why-block .kicker{margin-bottom:var(--s2)}
+.detail-why-text{font:400 13.5px/1.55 var(--sans);color:var(--ink-2);margin:0}
+
+/* 7. Covers */
 .detail-covers{list-style:none;margin:var(--s3) 0 var(--s5);padding:0;display:grid;gap:2px}
-.detail-covers li{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font:400 13px/1.4 var(--sans);color:var(--ink)}
+.detail-covers li{
+  display:flex;align-items:center;gap:10px;padding:9px 0;
+  border-bottom:1px solid var(--line);font:400 13px/1.4 var(--sans);color:var(--ink);
+}
 .detail-covers li::before{content:"";width:4px;height:4px;flex:none;border-radius:50%;background:var(--accent)}
-.detail-topics{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:var(--s5)}
-.detail-topics span{font:400 10.5px/1 var(--mono);color:var(--ink-2);border:1px solid var(--line);border-radius:4px;padding:4px 8px}
+
+/* 8. Action row — two equal buttons */
+.detail-actions{
+  display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);
+  align-items:stretch;
+  margin:var(--s4) 0 var(--s3);
+}
+.detail-open-btn{
+  display:flex;align-items:center;justify-content:center;
+  text-decoration:none;text-align:center;
+  min-height:44px;padding:10px var(--s3);border-radius:var(--r-sm);
+  background:var(--accent);color:var(--accent-ink);
+  font:500 13px/1 var(--sans);
+  transition:filter var(--m-fast);
+}
+.detail-open-btn:hover{filter:brightness(1.08)}
+.detail-ask-btn{
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  min-height:44px;padding:10px var(--s3);border-radius:var(--r-sm);
+  font:500 13px/1 var(--sans);
+  color:var(--ai);
+  border:1.5px solid color-mix(in srgb, var(--ai) 35%, transparent);
+  background:var(--ai-weak);
+  transition:background var(--m-fast),border-color var(--m-fast);
+}
+.detail-ask-btn:hover{
+  background:color-mix(in srgb,var(--ai-weak) 80%,var(--ai));
+  border-color:color-mix(in srgb,var(--ai) 55%,transparent);
+}
+
+/* 9. Destructive action */
+.detail-delete-btn{
+  display:block;width:100%;text-align:center;
+  font:400 11px/1 var(--mono);color:var(--ink-3);
+  padding:var(--s3) 0;letter-spacing:.04em;margin-bottom:var(--s5);
+}
+.detail-delete-btn:hover{color:#d94f4f}
+.detail-delete-btn[hidden]{display:none}
 
 /* Detail progress bar */
 .detail-progress-wrap{margin-bottom:var(--s5)}
 .detail-progress-bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:6px}
 .detail-progress-bar span{display:block;height:100%;background:var(--accent);border-radius:2px;transition:width .4s var(--ease)}
 .detail-progress-label{font:10.5px/1 var(--mono);color:var(--ink-3)}
-
-/* Detail action buttons */
-.detail-actions{display:flex;gap:var(--s3);align-items:center;margin-bottom:var(--s3);flex-wrap:wrap}
-.detail-actions .btn-primary{text-decoration:none;flex:1;text-align:center}
-.detail-actions .btn-outline{flex:1;text-align:center}
-.detail-delete-btn{display:block;width:100%;text-align:center;font:400 12px/1 var(--mono);
-  color:var(--ink-3);padding:var(--s3) 0;letter-spacing:.04em;margin-bottom:var(--s5)}
-.detail-delete-btn:hover{color:#d94f4f}
-.detail-delete-btn[hidden]{display:none}
 
 /* Related resources in detail */
 .detail-related-kicker{margin-top:var(--s5)}
@@ -933,12 +1008,6 @@ body.dark .welcome-art::before{opacity:.16}
 .ask-context-clear{color:var(--ink-3);font-size:13px;padding:0 4px}
 .ask-context-clear:hover{color:var(--ink)}
 
-/* Detail dialog — ask AI about this */
-.detail-ask-btn{display:block;width:100%;text-align:center;font:500 12.5px/1 var(--sans);
-  color:var(--ai);border:none;background:transparent;padding:10px;margin-bottom:var(--s4);
-  transition:opacity var(--m-fast)}
-.detail-ask-btn:hover{opacity:.7}
-
 /* ---------- discover skeleton ---------- */
 .discover-skeleton{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:var(--s4);margin-top:var(--s4)}
 .skel-card{height:220px;border-radius:var(--r-md);background:var(--bg-2);border:1px solid var(--line);
@@ -1005,6 +1074,85 @@ body.dark .welcome-art{background:
   var(--bg)}
 
 /* ============================================================
+   DISCOVER TABS
+   ============================================================ */
+.discover-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: var(--s6);
+  border-bottom: 2px solid var(--line);
+}
+.discover-tab {
+  padding: var(--s3) var(--s5) calc(var(--s3) - 2px);
+  font: 500 13px/1 var(--sans);
+  color: var(--ink-3);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color var(--m-fast), border-color var(--m-fast);
+  border-radius: 0;
+}
+.discover-tab:hover { color: var(--ink); }
+.discover-tab.active {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+body.dark .discover-tab.active { border-bottom-color: var(--accent); }
+
+/* ============================================================
+   SETTINGS SECTIONS
+   ============================================================ */
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s4);
+  padding-top: var(--s5);
+  border-top: 1px solid var(--line);
+}
+.settings-section-title {
+  font: 600 10px/1 var(--mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin: 0 0 var(--s1);
+}
+.setting-hint {
+  font: 400 11px/1.5 var(--sans);
+  color: var(--ink-3);
+  margin: var(--s1) 0 0;
+}
+.settings-section--account {
+  padding-bottom: var(--s2);
+}
+.btn-sm {
+  font-size: 11px !important;
+  padding: 8px 12px !important;
+}
+.goals-list-section {
+  margin-top: var(--s5);
+}
+.goals-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--s4);
+}
+.goals-list-header .goals-heading {
+  margin: 0;
+}
+
+
+/* Ask AI button on cards — slightly visible, not opacity:0 */
+.rc-ask {
+  opacity: 0.55;
+}
+.res-card:hover .rc-ask,
+.res-card:focus-visible .rc-ask {
+  opacity: 1;
+}
+
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 @media(max-width:1080px){ :root{--pad:40px;--rail-w:216px;--ask-panel-w:268px} }
@@ -1057,4 +1205,27 @@ body.dark .welcome-art{background:
   .welcome-art::before{font-size:70px;bottom:8px}
   .welcome-copy{padding:var(--s6) var(--s5)}
   .sheet-step{padding:var(--s6) var(--s5)}
+}
+
+/* ── Processing skeleton card ── */
+.res-card--processing {
+  pointer-events: none;
+  opacity: 0.7;
+}
+.rc-media--skel {
+  height: var(--rc-media-h, 120px);
+  background: var(--bg-2);
+  animation: skel-pulse 1.6s ease-in-out infinite;
+  border-bottom: 1px solid var(--line);
+}
+.rc-skel-line {
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  animation: skel-pulse 1.6s ease-in-out infinite;
+  display: block;
+}
+.rc-processing-label {
+  font: 400 11px/1 var(--mono);
+  color: var(--ink-3);
+  margin: 0;
 }

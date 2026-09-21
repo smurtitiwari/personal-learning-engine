@@ -4,7 +4,6 @@ import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
-import { getDb } from './db/db.js';
 import { errorHandler, notFound } from './middleware/error.js';
 
 import profileRouter from './routes/profile.js';
@@ -32,11 +31,8 @@ app.use(express.urlencoded({ extended: false }));
 const root = join(__dirname, '..');
 app.use(express.static(root, {
   index: 'index.html',
-  // Don't serve the server/ directory
   setHeaders: (res, filePath) => {
-    if (filePath.includes('/server/')) {
-      res.status(403).end();
-    }
+    if (filePath.includes('/server/')) res.status(403).end();
   },
 }));
 
@@ -54,17 +50,17 @@ app.use('/api/ask', askRouter);
 
 // ── Health check ────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
-  const db = getDb();
-  const user = db.prepare('SELECT name, created_at FROM users WHERE id = ?').get('user_default');
   res.json({
     ok: true,
-    user: user?.name,
-    since: user?.created_at,
+    backend: 'supabase',
     timestamp: new Date().toISOString(),
+    supabase_url: process.env.SUPABASE_URL ? '✓ configured' : '✗ missing SUPABASE_URL',
+    anthropic: process.env.ANTHROPIC_API_KEY ? '✓ configured' : '✗ missing ANTHROPIC_API_KEY',
+    embeddings: process.env.OPENAI_API_KEY ? '✓ openai' : '⚠ fallback (no OPENAI_API_KEY)',
   });
 });
 
-// ── SPA fallback (serve index.html for non-API routes) ──────
+// ── SPA fallback ────────────────────────────────────────────
 app.get('*', (_req, res) => {
   res.sendFile(join(root, 'index.html'));
 });
@@ -73,17 +69,21 @@ app.get('*', (_req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-// ── Boot ────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  // Ensure DB is initialised and seeded at startup
-  getDb();
-  console.log(`\n  Learning Engine`);
-  console.log(`  ───────────────────────────────`);
-  console.log(`  Server:  http://localhost:${PORT}`);
-  console.log(`  API:     http://localhost:${PORT}/api/health`);
-  console.log(`  Mode:    ${process.env.NODE_ENV || 'development'}`);
-  console.log(`  AI:      ${process.env.ANTHROPIC_API_KEY && process.env.ANTHROPIC_API_KEY !== 'your_api_key_here' ? 'configured' : 'not configured (add ANTHROPIC_API_KEY to .env)'}`);
-  console.log('');
-});
+// ── Boot (local only — Vercel uses the exported app directly) ──
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`\n  Learning Engine`);
+    console.log(`  ───────────────────────────────────────`);
+    console.log(`  Server:   http://localhost:${PORT}`);
+    console.log(`  Health:   http://localhost:${PORT}/api/health`);
+    console.log(`  Supabase: ${process.env.SUPABASE_URL ?? '⚠  SUPABASE_URL not set'}`);
+    console.log(`  DeepSeek: ${process.env.DEEPSEEK_MODEL ?? 'deepseek-flash'}`);
+    console.log(`  Embed:    ${process.env.OPENAI_API_KEY ? '✓ OpenAI configured' : '⚠  OPENAI_API_KEY not set (using fallback)'}`);
+    if (process.env.SUPABASE_DEV_USER_ID) {
+      console.log(`  Dev user: ${process.env.SUPABASE_DEV_USER_ID}`);
+    }
+    console.log('');
+  });
+}
 
 export default app;

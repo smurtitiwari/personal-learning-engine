@@ -78,9 +78,25 @@ const parseMins = (r) => {
 const CARD_INDEX = [];
 const registerCard = (obj) => { CARD_INDEX.push(obj); return CARD_INDEX.length - 1; };
 
+/* ---------- processing skeleton card ---------- */
+function processingCard(idx) {
+  return `
+    <article class="res-card res-card--processing" data-card="${idx}"
+             role="status" aria-label="Processing resource">
+      <div class="rc-media rc-media--skel" aria-hidden="true"></div>
+      <div class="rc-body">
+        <div class="rc-skel-line" style="width:55%;height:8px;margin-bottom:10px"></div>
+        <div class="rc-skel-line" style="width:90%;height:11px;margin-bottom:6px"></div>
+        <div class="rc-skel-line" style="width:72%;height:11px;margin-bottom:14px"></div>
+        <p class="rc-processing-label">Processing resource…</p>
+      </div>
+    </article>`;
+}
+
 /* ---------- unified resource card ---------- */
 function card(r, { rec = false } = {}){
   const idx = registerCard(r);
+  if (r.status === 'processing') return processingCard(idx);
   const hue = hueFor(r.topics, r.type);
   const hueL = hueLightFor(r.topics, r.type);
   const cls = ['res-card', `rc-${r.type}`, rec ? 'res-card--rec' : ''].filter(Boolean).join(' ');
@@ -229,6 +245,7 @@ async function loadDiscover() {
     _allTrends = trends || [];
     $('#discoverSkeleton')?.remove();
     renderDiscover();
+    if (_goalsLoaded) renderGoals(); // refresh goal cards with rec counts
   } catch (err) {
     $('#discoverSkeleton')?.remove();
     console.warn('loadDiscover failed:', err.message);
@@ -259,6 +276,7 @@ function renderDiscover() {
     }
     aiSummary.textContent = summaryText;
     aiGrid.innerHTML = top6.map(r => card(r, { rec: true })).join('');
+
   } else if (aiGrid) {
     aiSummary.textContent = 'Add resources to your library to get personalised recommendations.';
     aiGrid.innerHTML = '';
@@ -319,13 +337,11 @@ function renderDetailDialog(obj) {
   if (obj.date) metaParts.push(obj.date);
   $('#detailMeta').textContent = metaParts.join(' · ');
 
-  // AI Summary — always shown; placeholder if not yet generated
+  // AI Summary — always visible; loading state while generating
   const summaryEl = $('#detailSummary');
-  const summaryBlock = $('#detailSummaryBlock');
   const summary = obj.summary || obj.ai_summary || '';
   summaryEl.textContent = summary || 'Generating summary…';
   summaryEl.classList.toggle('detail-summary--loading', !summary);
-  summaryBlock.hidden = false;
 
   // Why AI recommended this (rec cards only)
   const whyBlock = $('#detailWhyBlock');
@@ -348,9 +364,13 @@ function renderDetailDialog(obj) {
     coversBlock.hidden = true;
   }
 
-  // Topics
+  // Topics — always show at least the source/creator as a tag
   const topics = obj.topics || [];
-  $('#detailTopics').innerHTML = topics.map(t => `<span>${t}</span>`).join('');
+  const byTags = obj.by ? obj.by.split(' · ') : [];
+  const allTags = [...new Set([...byTags, ...topics])];
+  const topicsEl = $('#detailTopics');
+  topicsEl.innerHTML = allTags.map(t => `<span>${t}</span>`).join('');
+  topicsEl.hidden = allTags.length === 0;
 
   // Open source link
   const link = $('#detailOpen');
@@ -389,9 +409,10 @@ async function openDetail(obj) {
   try {
     const { data } = await apiFetch(`/api/resources/${obj._id}`);
 
-    // Update summary when API returns it
-    if (data.ai_summary) {
-      $('#detailSummary').textContent = data.ai_summary;
+    // Update summary — prefer ai_summary, fall back to description
+    const freshSummary = data.ai_summary || data.description || '';
+    if (freshSummary) {
+      $('#detailSummary').textContent = freshSummary;
       $('#detailSummary').classList.remove('detail-summary--loading');
     }
 
@@ -487,11 +508,18 @@ $$('[data-filter-set] .chip').forEach((chip) => chip.addEventListener('click', (
 /* ---------- view routing ---------- */
 const VIEWS = ['learning', 'discover', 'goals', 'goal'];
 let _discoverLoaded = false;
+let _goalsLoaded = false;
 function setView(name){
+  // Legacy #goals route → discover Goals tab
+  if (name === 'goals') {
+    setView('discover');
+    setTimeout(() => setDiscoverTab('goals'), 10);
+    return;
+  }
   if (!VIEWS.includes(name)) name = 'learning';
   $$('[data-panel]').forEach((p) => { p.hidden = p.dataset.panel !== name; });
   $$('.nav a').forEach((a) => {
-    const active = a.dataset.view === name || (name === 'goal' && a.dataset.view === 'goals');
+    const active = a.dataset.view === name || (name === 'goal' && a.dataset.view === 'discover');
     a.classList.toggle('active', active);
     a.toggleAttribute('aria-current', active);
   });
@@ -505,9 +533,41 @@ function setView(name){
   }
 }
 window.addEventListener('hashchange', () => setView(location.hash.slice(1)));
+
+/* ---------- Discover tabs ---------- */
+let _discoverTab = 'foryou';
+function setDiscoverTab(tab) {
+  _discoverTab = tab;
+  $$('[data-discover-tab]').forEach(b => {
+    const isActive = b.dataset.discoverTab === tab;
+    b.classList.toggle('active', isActive);
+    b.setAttribute('aria-selected', String(isActive));
+  });
+  $$('[data-tab-panel]').forEach(p => {
+    p.hidden = p.dataset.tabPanel !== tab;
+  });
+  if (tab === 'goals') {
+    if (!_discoverLoaded) {
+      _discoverLoaded = true;
+      loadDiscover(); // populates _allRecs; re-renders goals after
+    }
+    if (!_goalsLoaded) {
+      _goalsLoaded = true;
+      loadGoals();
+    }
+  }
+}
+
+$$('[data-discover-tab]').forEach(b => {
+  b.addEventListener('click', () => setDiscoverTab(b.dataset.discoverTab));
+});
 $$('[data-view]').forEach((el) => {
   if (el.tagName === 'A') return;
-  el.addEventListener('click', () => { location.hash = '#' + el.dataset.view; });
+  el.addEventListener('click', () => {
+    const tab = el.dataset.discoverTabBack;
+    location.hash = '#' + el.dataset.view;
+    if (tab) setTimeout(() => setDiscoverTab(tab), 10);
+  });
 });
 
 /* ---------- theme ---------- */
@@ -1050,18 +1110,23 @@ function goalCardHTML(g, i){
   const areas = g.areas || [];
   const chips = areas.slice(0, 4).map((a) => `<span>${a}</span>`).join('')
     + (areas.length > 4 ? `<span>+${areas.length - 4}</span>` : '');
-  const resCount = g.resource_count || 0;
-  const compCount = g.completed_count || 0;
-  const topArea = Object.entries(g.topic_coverage || {}).sort((a,b)=>b[1]-a[1])[0]?.[0] || (areas[0] || '');
-  const countLine = resCount
-    ? `${resCount} resource${resCount !== 1 ? 's' : ''} linked · ${compCount} completed`
-    : 'No resources linked yet';
+  const recCount = _allRecs.filter(r => {
+    const topics = Array.isArray(r.topics) ? r.topics : [];
+    return topics.some(t => areas.includes(t));
+  }).length;
+  const recCountText = recCount > 0
+    ? `${recCount} resource${recCount !== 1 ? 's' : ''} recommended for this goal`
+    : _allRecs.length ? 'No matches found yet' : 'Loading recommendations…';
   return `
     <button class="goal-card" data-goal-id="${g.id}">
       <div class="gc-head"><h3>${g.title}</h3></div>
       ${g.reason ? `<p class="gc-why">${g.reason}</p>` : ''}
       <div class="gc-areas">${chips}</div>
-      <p class="gc-line">${countLine}${topArea ? ` · most on <strong>${topArea}</strong>` : ''}</p>
+      <div class="gc-ai-recs">
+        <span class="gc-ai-label"><span class="ai-tag">AI</span> Suggested learning</span>
+        <span class="gc-ai-count">${recCountText}</span>
+        <span class="gc-ai-cta">View resources →</span>
+      </div>
     </button>`;
 }
 
@@ -1071,7 +1136,6 @@ async function loadGoals() {
     _liveGoals = data;
     renderGoals();
     renderSuggestions();
-    renderWeeklyFocus();
   } catch (err) {
     console.warn('loadGoals failed:', err.message);
   }
@@ -1197,13 +1261,13 @@ async function openGoalDetail(goalId) {
     $('#goalWhy').textContent = g.reason || g.description || '';
     $('#goalDeleteBtn').hidden = false;
 
-    // Count line
+    // Count line — describe the evidence, not the linking action
     const resCount = g.resource_count || 0;
     const compCount = g.completed_count || 0;
     const topArea = Object.entries(g.topic_coverage || {}).sort((a,b)=>b[1]-a[1])[0]?.[0];
-    $('#goalCount').textContent = resCount
-      ? `${resCount} resource${resCount !== 1 ? 's' : ''} linked to this goal — ${compCount} completed${topArea ? `. Most on ${topArea}` : ''}.`
-      : 'No resources linked yet. Add resources from your library or Discover.';
+    $('#goalCount').textContent = resCount > 0
+      ? `${resCount} saved resource${resCount !== 1 ? 's' : ''} in your library relate to this goal${topArea ? ` — most on ${topArea}` : ''}.`
+      : 'Not enough learning activity yet to show evidence.';
 
     // Areas grid (topic areas with resource counts)
     if (areas.length > 0) {
@@ -1253,13 +1317,25 @@ async function openGoalDetail(goalId) {
       linkedSection.hidden = true;
     }
 
-    // Focus suggestion
-    const focus = g.focus_area || areas[0];
-    if (focus) {
-      const topArea2 = topArea || areas[0] || 'other areas';
-      $('#goalFocus').textContent = focus;
-      $('#goalFocusWhy').textContent =
-        `Your lightest area for this goal — start here to build coverage alongside ${topArea2}.`;
+    // Filtered Discover recommendations for this goal
+    const recsSection = $('#goalRecsSection');
+    const recsGrid = $('#goalRecsGrid');
+    if (recsSection && recsGrid) {
+      // Load discover recs if not yet available
+      if (!_discoverLoaded && !_allRecs.length) {
+        _discoverLoaded = true;
+        loadDiscover();
+      }
+      const goalRecs = _allRecs
+        .map(recToCard)
+        .filter(r => r.topics.some(t => areas.includes(t)))
+        .slice(0, 4);
+      if (goalRecs.length > 0) {
+        recsGrid.innerHTML = goalRecs.map(r => card(r, { rec: true })).join('');
+        recsSection.hidden = false;
+      } else {
+        recsSection.hidden = true;
+      }
     }
   } catch (err) {
     console.error('openGoalDetail failed:', err.message);
@@ -1274,7 +1350,8 @@ $('#goalDeleteBtn')?.addEventListener('click', async () => {
   if (!confirm(`Delete "${g?.title || 'this goal'}"? Resources won't be deleted.`)) return;
   try {
     await apiFetch(`/api/goals/${_currentGoalId}`, { method: 'DELETE' });
-    location.hash = '#goals';
+    location.hash = '#discover';
+    setDiscoverTab('goals');
     await loadGoals();
     toast('Goal deleted');
   } catch {
@@ -1420,6 +1497,6 @@ async function loadAnalytics() {
 setView(location.hash.slice(1) || 'learning');
 // Load preferences first so _prefs is available for weekly focus
 apiFetch('/api/preferences').then(({ data }) => { _prefs = data; }).catch(() => {});
-loadResources().then(() => renderWeeklyFocus());
+loadResources();
 loadAnalytics();
 loadGoals();

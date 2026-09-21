@@ -1,43 +1,58 @@
 import { Router } from 'express';
-import { get, run } from '../db/db.js';
+import { supabase, getUserId } from '../db/supabase.js';
 import { createError } from '../middleware/error.js';
 
 const router = Router();
-const USER_ID = 'user_default';
+
+async function ensurePrefs(userId) {
+  const { data } = await supabase.from('user_preferences').select('*').eq('user_id', userId).single();
+  if (data) return data;
+  const { data: created } = await supabase.from('user_preferences').insert({ user_id: userId }).select().single();
+  return created;
+}
 
 // GET /api/preferences
-router.get('/', (_req, res, next) => {
+router.get('/', async (req, res, next) => {
   try {
-    const prefs = get('SELECT * FROM user_preferences WHERE user_id = ?', [USER_ID]);
-    if (!prefs) return next(createError(404, 'Preferences not found'));
-    res.json({ data: prefs });
-  } catch (err) {
-    next(err);
-  }
+    const userId = await getUserId(req);
+    const prefs = await ensurePrefs(userId);
+    res.json({
+      data: {
+        user_id: userId,
+        appearance: prefs.appearance,
+        ai_recommendations_enabled: prefs.ai_recommendations_enabled ? 1 : 0,
+        weekly_target_minutes: prefs.weekly_target_minutes,
+        updated_at: prefs.updated_at,
+      },
+    });
+  } catch (err) { next(err); }
 });
 
 // PATCH /api/preferences
-router.patch('/', (req, res, next) => {
+router.patch('/', async (req, res, next) => {
   try {
-    const allowed = ['appearance', 'ai_recommendations_enabled', 'weekly_target_minutes'];
-    const updates = {};
-    for (const key of allowed) {
-      if (req.body[key] !== undefined) updates[key] = req.body[key];
-    }
+    const userId = await getUserId(req);
+    await ensurePrefs(userId);
+    const { appearance, weekly_target_minutes, ai_recommendations_enabled } = req.body;
+    const updates = { updated_at: new Date().toISOString() };
+    if (appearance) updates.appearance = appearance;
+    if (weekly_target_minutes != null) updates.weekly_target_minutes = Number(weekly_target_minutes);
+    if (ai_recommendations_enabled != null) updates.ai_recommendations_enabled = Boolean(Number(ai_recommendations_enabled));
 
-    if (Object.keys(updates).length === 0) {
-      return res.json({ data: get('SELECT * FROM user_preferences WHERE user_id = ?', [USER_ID]) });
-    }
+    const { data, error } = await supabase
+      .from('user_preferences')
+      .update(updates)
+      .eq('user_id', userId)
+      .select().single();
 
-    updates.updated_at = new Date().toISOString();
-    const cols = Object.keys(updates).map(k => `${k} = ?`).join(', ');
-    run(`UPDATE user_preferences SET ${cols} WHERE user_id = ?`, [...Object.values(updates), USER_ID]);
-
-    const prefs = get('SELECT * FROM user_preferences WHERE user_id = ?', [USER_ID]);
-    res.json({ data: prefs });
-  } catch (err) {
-    next(err);
-  }
+    if (error) throw createError(error.message, 500);
+    res.json({
+      data: {
+        ...data,
+        ai_recommendations_enabled: data.ai_recommendations_enabled ? 1 : 0,
+      },
+    });
+  } catch (err) { next(err); }
 });
 
 export default router;

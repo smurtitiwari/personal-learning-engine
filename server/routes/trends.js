@@ -1,20 +1,22 @@
 import { Router } from 'express';
-import { all } from '../db/db.js';
+import { supabase, getUserId } from '../db/supabase.js';
+import { createError } from '../middleware/error.js';
 
 const router = Router();
 
 // GET /api/trends
-router.get('/', (_req, res, next) => {
+router.get('/', async (req, res, next) => {
   try {
-    const trends = all(
-      `SELECT * FROM trends WHERE is_active = 1 ORDER BY momentum DESC, relevance DESC`,
-      [],
-      ['source_info']
-    );
-    res.json({ data: trends });
-  } catch (err) {
-    next(err);
-  }
+    await getUserId(req); // auth check
+    const { data, error } = await supabase
+      .from('trends')
+      .select('id, topic, description, relevance, momentum, source_info')
+      .eq('is_active', true)
+      .order('relevance', { ascending: false })
+      .limit(10);
+    if (error) throw createError(error.message, 500);
+    res.json({ data: data ?? [] });
+  } catch (err) { next(err); }
 });
 
 export default router;

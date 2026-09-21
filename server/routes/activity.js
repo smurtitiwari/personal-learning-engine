@@ -1,73 +1,50 @@
 import { Router } from 'express';
-import { all, run, newId } from '../db/db.js';
+import { supabase, getUserId } from '../db/supabase.js';
 import { createError } from '../middleware/error.js';
 
 const router = Router();
-const USER_ID = 'user_default';
-
-const VALID_EVENTS = ['added', 'opened', 'started', 'progressed', 'completed', 'note_added'];
 
 // GET /api/activity
-router.get('/', (req, res, next) => {
+router.get('/', async (req, res, next) => {
   try {
-    const { resource_id, event_type, limit = 50, offset = 0 } = req.query;
+    const userId = await getUserId(req);
+    const { limit = 20, resource_id } = req.query;
+    let query = supabase
+      .from('activity_events')
+      .select('id, resource_id, event_type, duration_seconds, progress_percentage, metadata, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(Number(limit));
 
-    let sql = `
-      SELECT la.*, r.title as resource_title, r.source_type
-      FROM learning_activities la
-      LEFT JOIN resources r ON r.id = la.resource_id
-      WHERE la.user_id = ?
-    `;
-    const params = [USER_ID];
-
-    if (resource_id) { sql += ' AND la.resource_id = ?'; params.push(resource_id); }
-    if (event_type)  { sql += ' AND la.event_type = ?';  params.push(event_type); }
-
-    sql += ' ORDER BY la.timestamp DESC LIMIT ? OFFSET ?';
-    params.push(parseInt(limit), parseInt(offset));
-
-    const rows = all(sql, params, ['metadata']);
-    res.json({ data: rows });
-  } catch (err) {
-    next(err);
-  }
+    if (resource_id) query = query.eq('resource_id', resource_id);
+    const { data, error } = await query;
+    if (error) throw createError(error.message, 500);
+    res.json({ data: (data ?? []).map(e => ({ ...e, timestamp: e.created_at })) });
+  } catch (err) { next(err); }
 });
 
 // POST /api/activity
-router.post('/', (req, res, next) => {
+router.post('/', async (req, res, next) => {
   try {
-    const {
-      resource_id,
-      event_type,
-      duration_seconds   = 0,
-      progress_percentage = 0,
-      metadata            = {},
-    } = req.body || {};
+    const userId = await getUserId(req);
+    const { resource_id, event_type, duration_seconds, progress_percentage, metadata } = req.body;
+    if (!event_type) throw createError('event_type is required', 400);
 
-    if (!event_type || !VALID_EVENTS.includes(event_type)) {
-      return next(createError(400, `event_type must be one of: ${VALID_EVENTS.join(', ')}`));
-    }
-
-    const id = newId();
-    run(
-      `INSERT INTO learning_activities
-         (id, resource_id, user_id, event_type, duration_seconds, progress_percentage, metadata, timestamp)
-       VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
-      [
-        id,
-        resource_id || null,
-        USER_ID,
+    const { data, error } = await supabase
+      .from('activity_events')
+      .insert({
+        user_id: userId,
+        resource_id: resource_id ?? null,
         event_type,
-        Math.max(0, parseInt(duration_seconds) || 0),
-        Math.min(100, Math.max(0, parseInt(progress_percentage) || 0)),
-        JSON.stringify(metadata),
-      ]
-    );
+        duration_seconds: duration_seconds ?? 0,
+        progress_percentage: progress_percentage ?? 0,
+        metadata: metadata ?? {},
+      })
+      .select().single();
 
-    res.status(201).json({ data: { id, event_type, timestamp: new Date().toISOString() } });
-  } catch (err) {
-    next(err);
-  }
+    if (error) throw createError(error.message, 500);
+    res.status(201).json({ data: { id: data.id, event_type: data.event_type, timestamp: data.created_at } });
+  } catch (err) { next(err); }
 });
 
 export default router;

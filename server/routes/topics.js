@@ -1,16 +1,20 @@
 import { Router } from 'express';
-import { all } from '../db/db.js';
+import { supabase, getUserId } from '../db/supabase.js';
+import { createError } from '../middleware/error.js';
 
 const router = Router();
 
 // GET /api/topics
-router.get('/', (_req, res, next) => {
+router.get('/', async (req, res, next) => {
   try {
-    const topics = all('SELECT id, name FROM topics ORDER BY name ASC');
-    res.json({ data: topics });
-  } catch (err) {
-    next(err);
-  }
+    await getUserId(req); // auth check
+    const { data, error } = await supabase
+      .from('topics')
+      .select('id, name, created_at')
+      .order('name');
+    if (error) throw createError(error.message, 500);
+    res.json({ data: data ?? [] });
+  } catch (err) { next(err); }
 });
 
 export default router;
