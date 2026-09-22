@@ -3796,6 +3796,13 @@ html[data-ui="mario"] .goals-empty {
   line-height: 1.6 !important;
   letter-spacing: 0 !important;
 }
+html[data-ui="mario"] .li-insight {
+  font-family: 'Geist', 'Inter', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  line-height: 1.65 !important;
+  letter-spacing: 0 !important;
+}
 html[data-ui="mario"] :is(a, button, input, select, [tabindex]):focus-visible {
   outline: 3px solid #0077a3 !important;
   outline-offset: 3px !important;
