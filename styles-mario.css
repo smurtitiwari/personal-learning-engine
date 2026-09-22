@@ -3978,9 +3978,9 @@ html[data-ui="mario"] body.dark .detail-dialog .detail-actions {
     border-top: 3px solid #ffd600 !important;
   }
   html[data-ui="mario"] .ask-btn {
-    width: 86px !important;
-    height: 52px !important;
-    min-height: 52px !important;
+    width: 54px !important;
+    height: 54px !important;
+    min-height: 54px !important;
     background: #0077a3 !important;
     border: 3px solid #1c0e04 !important;
     border-radius: 0 !important;
@@ -3988,11 +3988,11 @@ html[data-ui="mario"] body.dark .detail-dialog .detail-actions {
     color: #fff !important;
   }
   html[data-ui="mario"] .ask-btn.active { background: #005d80 !important; }
-  html[data-ui="mario"] .ask-btn .ask-text { font-size: 12px !important; }
+  html[data-ui="mario"] .ask-btn .ask-text { display: none !important; }
   html[data-ui="mario"] .add-btn {
-    width: 54px !important;
-    height: 54px !important;
-    min-height: 54px !important;
+    width: 104px !important;
+    height: 52px !important;
+    min-height: 52px !important;
     border: 3px solid #1c0e04 !important;
     border-radius: 0 !important;
     box-shadow: 3px 3px 0 #1c0e04 !important;

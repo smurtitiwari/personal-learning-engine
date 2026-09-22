@@ -1305,14 +1305,14 @@ body.dark .discover-tab.active { border-bottom-color: var(--accent); }
   .nav a:last-child{grid-column:3}
   .nav a.active::before{height:3px}
 
-  .ask-btn{position:fixed;left:50%;bottom:7px;transform:translateX(-50%);z-index:45;display:flex;flex-direction:column;justify-content:center;gap:2px;width:86px;height:52px !important;padding:0 !important;border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface);box-shadow:var(--shadow-sm)}
-  .ask-btn .ai-tag{display:none}
-  .ask-btn .ask-text{display:block;font-size:10px}
+  .ask-btn{position:fixed;right:16px;bottom:82px;z-index:45;display:flex;justify-content:center;width:54px;height:54px !important;padding:0 !important;border:1px solid var(--line);border-radius:50%;background:var(--surface);box-shadow:0 8px 20px -8px rgba(17,17,17,.42)}
+  .ask-btn .ai-tag{display:block}
+  .ask-btn .ask-text{display:none}
   .ask-btn.active{background:var(--ai-weak)}
 
-  .add-btn{position:fixed;right:16px;bottom:82px;z-index:45;width:54px;height:54px !important;padding:0;border-radius:50%;box-shadow:0 8px 20px -8px rgba(17,17,17,.42)}
-  .add-btn b{font-size:24px;margin:0}
-  .add-text{display:none}
+  .add-btn{position:fixed;left:50%;bottom:7px;transform:translateX(-50%);z-index:45;width:104px;height:52px !important;padding:0 10px;border-radius:var(--r-md);box-shadow:var(--shadow-sm)}
+  .add-btn b{font-size:18px;margin:0}
+  .add-text{display:block}
 
   main{padding:calc(56px + var(--s5)) var(--pad) calc(128px + env(safe-area-inset-bottom));}
   .view-head{margin-bottom:var(--s4)}
