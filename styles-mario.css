@@ -273,8 +273,8 @@ html[data-ui="mario"] .ask-btn:hover {
   box-shadow: 1px 1px 0 var(--mario-blue);
 }
 html[data-ui="mario"] .ask-btn.active {
-  background: var(--mario-blue);
-  color: #fff;
+  background: transparent;
+  color: var(--mario-blue);
 }
 /* ASK AI stays blue in both light AND dark — images confirm this */
 html[data-ui="mario"] body.dark .ask-btn {
@@ -283,7 +283,7 @@ html[data-ui="mario"] body.dark .ask-btn {
   color: #0077A3;
 }
 html[data-ui="mario"] body.dark .ask-btn:hover { box-shadow: 1px 1px 0 #0077A3; }
-html[data-ui="mario"] body.dark .ask-btn.active { background: #0077A3; color: #fff; }
+html[data-ui="mario"] body.dark .ask-btn.active { background: transparent; color: #0077A3; }
 
 /* Theme switch */
 html[data-ui="mario"] .theme-switch {
@@ -1780,12 +1780,16 @@ html[data-ui="mario"] body.dark .li-bar--active .li-bar-fill {
   border-color: #f0ece0 !important;
 }
 html[data-ui="mario"] .li-bar--today .li-bar-fill {
-  background: #ffd400 !important;
+  background: #0077a3 !important;
   border: 2px solid #1c0e04 !important;
 }
 html[data-ui="mario"] body.dark .li-bar--today .li-bar-fill {
-  background: #e8751a !important;
+  background: #168db8 !important;
   border-color: #f0ece0 !important;            /* cream border dark — matches reference */
+}
+html[data-ui="mario"] .li-bar--today .li-bar-day,
+html[data-ui="mario"] body.dark .li-bar--today .li-bar-day {
+  color: #0077a3 !important;
 }
 
 /* 12. Stars decoration visible in coins row */
@@ -3750,7 +3754,8 @@ html[data-ui="mario"] .ask-btn {
   color: #f5efe6 !important;
 }
 html[data-ui="mario"] .ask-btn.active {
-  color: #ffffff !important;
+  color: #f5efe6 !important;
+  background: transparent !important;
 }
 html[data-ui="mario"] .theme-switch button {
   font-family: 'Pixelify Sans', sans-serif !important;
