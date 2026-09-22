@@ -1407,7 +1407,7 @@ function renderSuggestions(){
         <h3>${s.title}</h3>
         <p class="sc-why">${s.why}</p>
         <div class="btn-row">
-          <button class="btn-primary" data-start-goal="${s.title}">Start this goal</button>
+          <button class="btn-outline btn-sm" data-start-goal="${s.title}">Start this goal</button>
         </div>
       </div>`;
   }).join(''));
