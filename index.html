@@ -208,12 +208,12 @@
 
       <!-- Sub-tab bar -->
       <div class="discover-tabs" role="tablist" aria-label="Discover sections">
-        <button class="discover-tab active" data-discover-tab="foryou" role="tab" aria-selected="true">For you</button>
-        <button class="discover-tab" data-discover-tab="goals" role="tab" aria-selected="false">Goals</button>
+        <button class="discover-tab active" data-discover-tab="foryou" role="tab" id="tabBtnForyou" aria-controls="tabForyou" aria-selected="true">For you</button>
+        <button class="discover-tab" data-discover-tab="goals" role="tab" id="tabBtnGoals" aria-controls="tabGoals" aria-selected="false">Goals</button>
       </div>
 
       <!-- For You tab -->
-      <div class="discover-tab-panel" data-tab-panel="foryou">
+      <div class="discover-tab-panel" data-tab-panel="foryou" id="tabForyou" role="tabpanel" aria-labelledby="tabBtnForyou">
         <section class="block discover-recs-block">
           <div class="discover-recs-banner">
             <p class="kicker"><span class="ai-tag">AI</span> Recommended for you</p>
@@ -231,7 +231,7 @@
       </div>
 
       <!-- Goals tab -->
-      <div class="discover-tab-panel" data-tab-panel="goals" hidden>
+      <div class="discover-tab-panel" data-tab-panel="goals" id="tabGoals" role="tabpanel" aria-labelledby="tabBtnGoals" hidden>
 <div class="goal-suggestions" id="goalSuggestions" hidden></div>
 
         <div class="goals-list-section">
@@ -282,11 +282,11 @@
 </div>
 
 <!-- ============ ADD LEARNING ============ -->
-<dialog class="sheet add-dialog">
-  <button class="sheet-close" aria-label="Close">×</button>
+<dialog class="sheet add-dialog" aria-labelledby="addDialogTitle">
+  <button class="sheet-close" aria-label="Close Add learning dialog">×</button>
   <div class="sheet-step" data-step="form">
     <p class="kicker">Add to your library</p>
-    <h2>Save something<br>you're learning.</h2>
+    <h2 id="addDialogTitle">Save something<br>you're learning.</h2>
     <p class="sheet-lede">A YouTube link, an article, a Substack post, a PDF. Learning Engine reads it and files it.</p>
     <form id="addForm">
       <label class="sr-only" for="resourceUrl">Resource link</label>
@@ -294,7 +294,7 @@
         <input id="resourceUrl" type="url" placeholder="Paste a link" required />
       </div>
       <button type="submit" id="addSubmitBtn" class="btn-primary wide">Add</button>
-      <p class="add-error" id="addError" hidden></p>
+      <p class="add-error" id="addError" role="alert" hidden></p>
     </form>
     <p class="supported">youtube · medium · substack · web · pdf</p>
   </div>
@@ -321,11 +321,11 @@
 </dialog>
 
 <!-- ============ CREATE GOAL ============ -->
-<dialog class="sheet goal-dialog">
-  <button class="sheet-close" aria-label="Close">×</button>
+<dialog class="sheet goal-dialog" aria-labelledby="goalDialogTitle">
+  <button class="sheet-close" aria-label="Close Create goal dialog">×</button>
   <div class="sheet-step" data-step="ask">
     <p class="kicker">Create a goal</p>
-    <h2>Name it, and say what<br>you want to learn.</h2>
+    <h2 id="goalDialogTitle">Name it, and say what<br>you want to learn.</h2>
     <form id="goalForm">
       <label class="field-label" for="goalName">Goal name</label>
       <input id="goalName" type="text" placeholder="AI-native product design" required />
@@ -350,8 +350,8 @@
 </dialog>
 
 <!-- ============ RESOURCE DETAIL ============ -->
-<dialog class="sheet detail-dialog">
-  <button class="sheet-close" aria-label="Close">×</button>
+<dialog class="sheet detail-dialog" aria-labelledby="detailTitle">
+  <button class="sheet-close" aria-label="Close resource detail">×</button>
   <div class="sheet-step detail-scroll">
 
     <!-- 1. Identity: type tag · source, title, meta -->
@@ -399,11 +399,11 @@
 </dialog>
 
 <!-- ============ WELCOME ============ -->
-<dialog class="welcome-dialog">
-  <div class="welcome-art"><i></i><i></i><i></i></div>
+<dialog class="welcome-dialog" aria-labelledby="welcomeHeading">
+  <div class="welcome-art" aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="welcome-copy">
     <p class="kicker">Learning Engine</p>
-    <h2>Start with something<br>you're already learning.</h2>
+    <h2 id="welcomeHeading">Start with something<br>you're already learning.</h2>
     <p>Save a video, an article, a newsletter, a PDF. As the archive grows, the patterns, the direction and the next thing to learn come into focus.</p>
     <button class="btn-primary wide" data-welcome-add>Add your first resource</button>
     <button class="welcome-secondary" data-welcome-dismiss>Look around first</button>
@@ -413,7 +413,7 @@
 
 <!-- ============ SETTINGS ============ -->
 <dialog class="sheet settings-dialog">
-  <button class="sheet-close" aria-label="Close">×</button>
+  <button class="sheet-close" aria-label="Close Settings">×</button>
   <div class="sheet-step settings-step">
     <div class="settings-profile">
       <span class="avatar settings-avatar">AS</span>
@@ -470,6 +470,7 @@
   </div>
 </dialog>
 
+<div class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 <script src="./app.js"></script>
 </body>
 </html>

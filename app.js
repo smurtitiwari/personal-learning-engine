@@ -81,7 +81,7 @@ const registerCard = (obj) => { CARD_INDEX.push(obj); return CARD_INDEX.length -
 /* ---------- processing skeleton card ---------- */
 function processingCard(idx) {
   return `
-    <article class="res-card res-card--processing" data-card="${idx}"
+    <article class="res-card res-card--processing" tabindex="-1" aria-hidden="true" data-card="${idx}"
              role="status" aria-label="Processing resource">
       <div class="rc-media rc-media--skel" aria-hidden="true"></div>
       <div class="rc-body">
@@ -188,6 +188,10 @@ async function loadResources() {
     grid.innerHTML = cards.length
       ? cards.map((r) => card(r)).join('')
       : '';
+    if (cards.length === 0) {
+      const emptyEl = $('#emptyNote');
+      if (emptyEl) { emptyEl.textContent = 'Your library is empty — paste a link above to add your first resource.'; emptyEl.hidden = false; }
+    }
     applyFilters();
     // Scroll to and pulse newly added card
     if (_highlightResourceId) {
@@ -249,6 +253,8 @@ async function loadDiscover() {
   } catch (err) {
     $('#discoverSkeleton')?.remove();
     console.warn('loadDiscover failed:', err.message);
+    const aiGrid = $('#aiRecGrid');
+    if (aiGrid) aiGrid.innerHTML = '<p class="empty-note" style="display:block;padding:16px 0">Recommendations unavailable — try refreshing.</p>';
   }
 }
 
@@ -498,8 +504,9 @@ function applyFilters(){
 $('#search').addEventListener('input', applyFilters);
 $$('[data-filter-set] .chip').forEach((chip) => chip.addEventListener('click', () => {
   const set = chip.closest('[data-filter-set]');
-  $$('.chip', set).forEach((c) => c.classList.remove('on'));
+  $$('.chip', set).forEach((c) => { c.classList.remove('on'); c.setAttribute('aria-pressed', 'false'); });
   chip.classList.add('on');
+  chip.setAttribute('aria-pressed', 'true');
   if (set.dataset.filterSet === 'type') fType = chip.dataset.type;
   else fTopic = chip.dataset.topic;
   applyFilters();
@@ -521,8 +528,10 @@ function setView(name){
   $$('.nav a').forEach((a) => {
     const active = a.dataset.view === name || (name === 'goal' && a.dataset.view === 'discover');
     a.classList.toggle('active', active);
-    a.toggleAttribute('aria-current', active);
+    if (active) { a.setAttribute('aria-current', 'page'); } else { a.removeAttribute('aria-current'); }
   });
+  const titles = { learning: 'Learning — Learning Engine', discover: 'Discover — Learning Engine', goal: 'Goal — Learning Engine' };
+  document.title = titles[name] || 'Learning Engine';
   if (location.hash.slice(1) !== name) history.replaceState(null, '', '#' + name);
   window.scrollTo({ top: 0 });
   if (!document.querySelector('dialog[open]')) $('#main').focus({ preventScroll: true });
@@ -681,16 +690,16 @@ $('#aiRecsSelect')?.addEventListener('change', async () => {
 
 $('#settingsSignout')?.addEventListener('click', () => {
   settingsDialog.close();
-  toast('Signed out — single user mode, nothing to clear');
+  toast('You are in single-user mode — no sign out needed.');
 });
 
 /* ---------- toast ---------- */
 let toastT;
 function toast(msg){
   let n = $('.toast');
-  if (!n) { n = document.createElement('div'); n.className = 'toast'; n.setAttribute('role', 'status'); document.body.append(n); }
+  if (!n) { n = document.createElement('div'); n.className = 'toast'; n.setAttribute('role', 'status'); n.setAttribute('aria-live', 'polite'); n.setAttribute('aria-atomic', 'true'); document.body.append(n); }
   n.textContent = msg; n.classList.add('show');
-  clearTimeout(toastT); toastT = setTimeout(() => n.classList.remove('show'), 2200);
+  clearTimeout(toastT); toastT = setTimeout(() => n.classList.remove('show'), Math.max(3000, msg.length * 60));
 }
 
 /* ---------- Ask AI (persistent panel, conversation model) ---------- */
@@ -1128,6 +1137,7 @@ function goalCardHTML(g, i){
 }
 
 async function loadGoals() {
+  const goalsList = $('#goalsList');
   try {
     const { data } = await apiFetch('/api/goals');
     _liveGoals = data;
@@ -1135,6 +1145,7 @@ async function loadGoals() {
     renderSuggestions();
   } catch (err) {
     console.warn('loadGoals failed:', err.message);
+    if (goalsList) goalsList.innerHTML = '<p class="goals-empty" style="grid-column:1/-1">Could not load goals — try refreshing.</p>';
   }
 }
 
@@ -1428,6 +1439,7 @@ detailDialog.addEventListener('close', () => {
 const welcome = $('.welcome-dialog');
 function dismissWelcome(){ try { localStorage.setItem('le-welcomed', '1'); } catch {} if (welcome.open) welcome.close(); }
 $('[data-welcome-dismiss]').addEventListener('click', dismissWelcome);
+if (welcome) welcome.addEventListener('click', e => { if (e.target === welcome) dismissWelcome(); });
 let welcomed;
 try { welcomed = localStorage.getItem('le-welcomed'); } catch {}
 if (!welcomed) welcome.showModal();

@@ -169,7 +169,7 @@ html[data-ui="mario"] body.dark .brand-mark {
 
 html[data-ui="mario"] .brand-word {
   font-family: 'Press Start 2P', monospace !important;
-  font-size: 6px;
+  font-size: 10px;
   letter-spacing: .06em;
   color: var(--mario-sb-text);
   line-height: 1.6;
@@ -295,7 +295,7 @@ html[data-ui="mario"] .theme-switch {
 }
 html[data-ui="mario"] .theme-switch button {
   font-family: 'Press Start 2P', monospace !important;
-  font-size: 6px;
+  font-size: 10px;
   border: none !important;
   border-radius: 0 !important;
   background: transparent;
@@ -319,12 +319,12 @@ html[data-ui="mario"] .avatar {
   background: var(--mario-blue);
   border: 2px solid var(--mario-sb-text);
   font-family: 'Press Start 2P', monospace !important;
-  font-size: 6px;
+  font-size: 10px;
   color: #fff;
 }
 html[data-ui="mario"] .account-name {
   font-family: 'Press Start 2P', monospace !important;
-  font-size: 6px;
+  font-size: 10px;
   color: var(--mario-sb-text);
 }
 html[data-ui="mario"] .account-caret { color: var(--mario-sb-text); }
@@ -350,7 +350,7 @@ html[data-ui="mario"] .mario-xp-bar {
 }
 html[data-ui="mario"] .mario-xp-label {
   font-family: 'Press Start 2P', monospace !important;
-  font-size: 6px;
+  font-size: 10px;
   color: var(--mario-gold);
   margin-bottom: 4px;
   display: flex;
@@ -374,7 +374,7 @@ html[data-ui="mario"] body.dark .mario-xp-label { color: #e8751a; }
 html[data-ui="mario"] .mario-coins {
   display: flex; gap: 5px; padding: 2px 4px;
   font-family: 'Press Start 2P', monospace !important;
-  font-size: 7px;
+  font-size: 10px;
   color: var(--mario-gold);
 }
 html[data-ui="mario"] body.dark .mario-coins { color: #e8751a; }
@@ -512,7 +512,7 @@ html[data-ui="mario"] .btn-ghost {
 html[data-ui="mario"] .btn-ghost:hover { color: var(--ink); background: transparent; }
 
 html[data-ui="mario"] .linkish {
-  font-size: 6px;
+  font-size: 11px;
   align-self: flex-start;
   width: auto;
   color: #0492c4 !important;
@@ -654,13 +654,13 @@ html[data-ui="mario"] .rc-title {
 }
 html[data-ui="mario"] .rc-src {
   font-family: 'Press Start 2P', monospace !important;
-  font-size: 5px;
+  font-size: 10px;
   letter-spacing: 2px;
   color: var(--ink-2);
 }
 html[data-ui="mario"] .rc-chip {
   font-family: 'Press Start 2P', monospace !important;
-  font-size: 5px;
+  font-size: 10px;
   border: 2px solid #c8b89a !important;    /* taupe — matches reference */
   border-radius: 0 !important;
   background: #faf8f0 !important;
@@ -679,7 +679,7 @@ html[data-ui="mario"] body.dark .rc-chip {
 }
 html[data-ui="mario"] .rc-ask {
   font-family: 'Press Start 2P', monospace !important;
-  font-size: 5.5px;
+  font-size: 10px;
   color: var(--mario-blue);
 }
 
