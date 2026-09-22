@@ -183,7 +183,7 @@ html[data-ui="mario"] .add-btn {
   border-radius: 0 !important;
   box-shadow: 3px 3px 0 var(--mario-sb-text);
   font-family: 'Press Start 2P', monospace !important;
-  font-size: 9px;
+  font-size: 13px;
   letter-spacing: .5px;
   transition: transform .1s, box-shadow .1s;
   height: 40px;
