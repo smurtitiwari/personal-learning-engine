@@ -26,7 +26,7 @@ const MAX_CONTENT_CHARS = 7000;
 function getDeepSeekConfig() {
   const apiKey = process.env.DEEPSEEK_API_KEY;
   const baseUrl = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com';
-  const model   = process.env.DEEPSEEK_MODEL    || 'deepseek-flash';  // default to flash
+  const model   = process.env.DEEPSEEK_MODEL    || 'deepseek-chat';
   return { apiKey, baseUrl, model };
 }
 
@@ -145,7 +145,7 @@ Return ONLY a valid JSON object. No explanation, no markdown, just the JSON.
   "creator_name": "YouTube channel name or primary creator",
   "author_name": "Article/newsletter author name",
   "source": "Platform or publication name (e.g. YouTube, Medium, Vercel Blog, Anthropic)",
-  "ai_summary": "2-3 sentences. Do NOT just describe what the content covers. Explain what is practically useful for someone learning about ${userInterests}. Connect it to real decisions they might face.",
+  "ai_summary": "2-3 clear sentences explaining what this content is about, its central idea, and the most useful thing the learner will take from it. For a video, summarize the actual video rather than its title or metadata.",
   "ai_key_takeaways": ["Specific actionable takeaway", "Another concrete insight", "Third distinct point"],
   "topics": ["Pick 1-3 from this exact list: ${KNOWN_TOPICS.join(', ')}"],
   "duration_seconds": null,
@@ -154,7 +154,7 @@ Return ONLY a valid JSON object. No explanation, no markdown, just the JSON.
 
 Rules:
 - topics must only contain values from the provided list
-- ai_summary must be personalised and useful, not just a description
+- ai_summary must accurately describe the content before explaining why it is useful
 - ai_key_takeaways should be specific and concrete
 - duration_seconds: only for video/audio (integer seconds)
 - reading_time_minutes: only for text content (integer minutes)

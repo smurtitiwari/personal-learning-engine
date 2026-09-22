@@ -79,7 +79,7 @@ if (!process.env.VERCEL) {
     console.log(`  Server:   http://localhost:${PORT}`);
     console.log(`  Health:   http://localhost:${PORT}/api/health`);
     console.log(`  Supabase: ${process.env.SUPABASE_URL ?? '⚠  SUPABASE_URL not set'}`);
-    console.log(`  DeepSeek: ${process.env.DEEPSEEK_MODEL ?? 'deepseek-flash'}`);
+    console.log(`  DeepSeek: ${process.env.DEEPSEEK_MODEL ?? 'deepseek-chat'}`);
     console.log(`  Embed:    ${process.env.OPENAI_API_KEY ? '✓ OpenAI configured' : '⚠  OPENAI_API_KEY not set (using fallback)'}`);
     if (process.env.SUPABASE_DEV_USER_ID) {
       console.log(`  Dev user: ${process.env.SUPABASE_DEV_USER_ID}`);

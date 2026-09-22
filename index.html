@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Press+Start+2P&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./styles.css?v=22" />
-<link rel="stylesheet" href="./styles-mario.css?v=10" />
+<link rel="stylesheet" href="./styles.css?v=23" />
+<link rel="stylesheet" href="./styles-mario.css?v=11" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -358,6 +358,11 @@
     <h2 class="detail-title" id="detailTitle"></h2>
     <p class="detail-meta" id="detailMeta"></p>
 
+    <div class="detail-thumbnail" id="detailThumbnail" hidden>
+      <img id="detailThumbnailImage" alt="" />
+      <span class="detail-thumbnail-play" aria-hidden="true">▶</span>
+    </div>
+
     <!-- 2. Summary — always shown, loading state if not ready -->
     <div class="detail-summary-block" id="detailSummaryBlock">
       <p class="detail-summary-label">Summary</p>
@@ -470,6 +475,6 @@
 </dialog>
 
 <div class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-<script src="./app.js"></script>
+<script src="./app.js?v=2"></script>
 </body>
 </html>

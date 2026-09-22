@@ -15,6 +15,25 @@ import { processWithAI } from '../services/ai-processor.js';
 
 const router = Router();
 
+function buildFallbackSummary(extracted) {
+  const raw = extracted.description || extracted.transcript || extracted.content_text || '';
+  const clean = raw.replace(/\s+/g, ' ').trim();
+  if (!clean) return null;
+
+  const sentences = clean.match(/[^.!?]+[.!?]+|[^.!?]+$/g) ?? [];
+  const selected = [];
+  let length = 0;
+  for (const sentence of sentences) {
+    const text = sentence.trim();
+    if (!text) continue;
+    if (selected.length > 0 && length + text.length > 600) break;
+    selected.push(text);
+    length += text.length + 1;
+    if (selected.length === 3 || length >= 280) break;
+  }
+  return selected.join(' ').slice(0, 700) || clean.slice(0, 700);
+}
+
 // Simple secret to prevent public access
 const INTERNAL_SECRET = process.env.INTERNAL_SECRET || 'learning-engine-internal';
 
@@ -73,7 +92,7 @@ router.post('/', async (req, res) => {
         || (dbSourceType === 'video' ? (() => { const vid = extractYouTubeId(resource.url); return vid ? `https://img.youtube.com/vi/${vid}/hqdefault.jpg` : null; })() : null),
       duration_seconds: extracted.duration_seconds || null,
       reading_time_minutes: extracted.reading_time_minutes || null,
-      ai_summary: aiResult?.ai_summary || extracted.description || null,
+      ai_summary: aiResult?.ai_summary || buildFallbackSummary(extracted),
       ai_key_takeaways: aiResult?.ai_key_takeaways ?? [],
       content_text: extracted.content_text?.slice(0, 10000) || null,
     };

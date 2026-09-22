@@ -189,7 +189,7 @@ function apiToCard(r) {
     topics,
     url: r.url || '',
     thumbnail: r.thumbnail || '',
-    summary: r.ai_summary || r.description || '',
+    summary: r.summary || r.ai_summary || r.description || '',
     covers: Array.isArray(r.ai_key_takeaways) ? r.ai_key_takeaways : [],
     status: r.status,
   };
@@ -363,6 +363,18 @@ function renderDetailDialog(obj) {
   if (obj.date) metaParts.push(obj.date);
   $('#detailMeta').textContent = metaParts.join(' · ');
 
+  const thumbnail = $('#detailThumbnail');
+  const thumbnailImage = $('#detailThumbnailImage');
+  if (obj.type === 'youtube' && obj.thumbnail) {
+    thumbnailImage.src = obj.thumbnail;
+    thumbnailImage.alt = `Thumbnail for ${obj.title || 'video'}`;
+    thumbnail.hidden = false;
+  } else {
+    thumbnail.hidden = true;
+    thumbnailImage.removeAttribute('src');
+    thumbnailImage.alt = '';
+  }
+
   // AI Summary — always visible; loading state while generating
   const summaryEl = $('#detailSummary');
   const summary = obj.summary || obj.ai_summary || '';
@@ -390,10 +402,11 @@ function renderDetailDialog(obj) {
     coversBlock.hidden = true;
   }
 
-  // Topics — always show at least the source/creator as a tag
+  // Tags include the content type, platform/format, creator, and AI topics.
   const topics = obj.topics || [];
   const byTags = obj.by ? obj.by.split(' · ') : [];
-  const allTags = [...new Set([...byTags, ...topics])];
+  const sourceTags = [TYPE_LABEL[obj.type], platformName(obj), ...byTags];
+  const allTags = [...new Set([...sourceTags, ...topics].filter(Boolean))];
   const topicsEl = $('#detailTopics');
   topicsEl.innerHTML = allTags.map(t => `<span>${t}</span>`).join('');
   topicsEl.hidden = allTags.length === 0;
@@ -436,10 +449,18 @@ async function openDetail(obj) {
     const { data } = await apiFetch(`/api/resources/${obj._id}`);
 
     // Update summary — prefer ai_summary, fall back to description
-    const freshSummary = data.ai_summary || data.description || '';
+    const freshSummary = data.summary || data.ai_summary || data.description || '';
     if (freshSummary) {
       $('#detailSummary').textContent = freshSummary;
       $('#detailSummary').classList.remove('detail-summary--loading');
+    }
+
+    if (data.thumbnail && obj.type === 'youtube') {
+      obj.thumbnail = data.thumbnail;
+      const thumbnailImage = $('#detailThumbnailImage');
+      thumbnailImage.src = data.thumbnail;
+      thumbnailImage.alt = `Thumbnail for ${obj.title || 'video'}`;
+      $('#detailThumbnail').hidden = false;
     }
 
     // Show related resources

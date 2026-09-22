@@ -653,6 +653,18 @@ body.dark .sheet::backdrop,body.dark .welcome-dialog::backdrop{background:rgba(4
   margin:0 0 var(--s5);
 }
 
+.detail-thumbnail{
+  position:relative;overflow:hidden;aspect-ratio:16/9;
+  margin:0 0 var(--s5);border-radius:var(--r-sm);background:var(--line);
+}
+.detail-thumbnail[hidden]{display:none}
+.detail-thumbnail img{display:block;width:100%;height:100%;object-fit:cover}
+.detail-thumbnail-play{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  display:grid;place-items:center;width:48px;height:48px;border-radius:50%;
+  background:rgba(0,0,0,.76);color:#fff;font-size:18px;padding-left:3px;
+}
+
 /* 4. Summary block — label + body, no card box */
 .detail-summary-block{
   border-top:1px solid var(--line);
@@ -711,23 +723,23 @@ body.dark .sheet::backdrop,body.dark .welcome-dialog::backdrop{background:rgba(4
   display:flex;align-items:center;justify-content:center;text-align:center;
   min-height:44px;padding:10px var(--s3);border-radius:var(--r-sm);
   font:500 13px/1 var(--sans);
-  color:var(--ai);
-  border:1.5px solid color-mix(in srgb, var(--ai) 35%, transparent);
-  background:var(--ai-weak);
+  color:var(--ink);
+  border:1.5px solid var(--ink);
+  background:transparent;
   transition:background var(--m-fast),border-color var(--m-fast);
 }
 .detail-ask-btn:hover{
-  background:color-mix(in srgb,var(--ai-weak) 80%,var(--ai));
-  border-color:color-mix(in srgb,var(--ai) 55%,transparent);
+  background:var(--bg-2);
+  border-color:var(--ink);
 }
 
 /* 9. Destructive action */
 .detail-delete-btn{
   display:block;width:100%;text-align:center;
-  font:400 11px/1 var(--mono);color:var(--ink-3);
+  font:400 13px/1 var(--mono);color:#d94f4f;
   padding:var(--s3) 0;letter-spacing:.04em;margin-bottom:var(--s5);
 }
-.detail-delete-btn:hover{color:#d94f4f}
+.detail-delete-btn:hover{color:#b92e2e}
 .detail-delete-btn[hidden]{display:none}
 
 /* Detail progress bar */
