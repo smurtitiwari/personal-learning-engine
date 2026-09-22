@@ -210,6 +210,7 @@ async function loadResources() {
     if (cards.length === 0) {
       const emptyEl = $('#emptyNote');
       if (emptyEl) { emptyEl.textContent = 'Your library is empty — paste a link above to add your first resource.'; emptyEl.hidden = false; }
+      maybeShowFirstDay();
     }
     applyFilters();
     // Scroll to and pulse newly added card
@@ -828,8 +829,8 @@ $('#aiRecsSelect')?.addEventListener('change', async () => {
 });
 
 $('#settingsSignout')?.addEventListener('click', () => {
-  settingsDialog.close();
-  toast('You are in single-user mode — no sign out needed.');
+  apiFetch('/api/auth/signout', { method: 'POST' })
+    .finally(() => { window.location.assign('/#learning'); });
 });
 
 /* ---------- toast ---------- */
@@ -1606,12 +1607,15 @@ detailDialog.addEventListener('close', () => {
 
 /* ---------- welcome ---------- */
 const welcome = $('.welcome-dialog');
-function dismissWelcome(){ try { localStorage.setItem('le-welcomed', '1'); } catch {} if (welcome.open) welcome.close(); }
+function onboardingStorageKey(){ return `le-onboarding-dismissed:${_currentUser?.id || 'local'}`; }
+function dismissWelcome(){ try { localStorage.setItem(onboardingStorageKey(), '1'); } catch {} if (welcome.open) welcome.close(); }
+function maybeShowFirstDay(){
+  if (!welcome || welcome.open || RESOURCES.length > 0) return;
+  try { if (localStorage.getItem(onboardingStorageKey())) return; } catch {}
+  welcome.showModal();
+}
 $('[data-welcome-dismiss]').addEventListener('click', dismissWelcome);
 if (welcome) welcome.addEventListener('click', e => { if (e.target === welcome) dismissWelcome(); });
-let welcomed;
-try { welcomed = localStorage.getItem('le-welcomed'); } catch {}
-if (!welcomed) welcome.showModal();
 
 /* ---------- analytics ---------- */
 
@@ -1673,10 +1677,44 @@ async function loadAnalytics() {
   }
 }
 
-/* ---------- boot ---------- */
-setView(location.hash.slice(1) || 'learning');
-// Load preferences first so _prefs is available for weekly focus
-apiFetch('/api/preferences').then(({ data }) => { _prefs = data; }).catch(() => {});
-loadResources();
-loadAnalytics();
-loadGoals();
+/* ---------- Account + boot ---------- */
+let _currentUser = null;
+const authDialog = $('.auth-dialog');
+
+function setAccountName(name) {
+  $$('.account-name').forEach((el) => { el.textContent = name || 'Learner'; });
+}
+
+async function initializeAccount() {
+  try {
+    const { data } = await apiFetch('/api/auth/session');
+    _currentUser = data.user || null;
+    if (_currentUser) setAccountName(_currentUser.name);
+    if (data.require_auth && !_currentUser) {
+      authDialog?.showModal();
+      return false;
+    }
+    return true;
+  } catch {
+    authDialog?.showModal();
+    return false;
+  }
+}
+
+$$('[data-google-signin]').forEach((button) => button.addEventListener('click', () => {
+  window.location.assign('/api/auth/google');
+}));
+
+async function boot() {
+  setView(location.hash.slice(1) || 'learning');
+  const ready = await initializeAccount();
+  if (!ready) return;
+  apiFetch('/api/preferences').then(({ data }) => { _prefs = data; }).catch(() => {});
+  loadResources();
+  loadAnalytics();
+  loadGoals();
+  if (new URLSearchParams(location.search).get('welcome') === '1') {
+    history.replaceState(null, '', location.pathname + location.hash);
+  }
+}
+boot();

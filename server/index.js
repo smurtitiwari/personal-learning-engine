@@ -17,6 +17,7 @@ import recommendationsRouter from './routes/recommendations.js';
 import trendsRouter from './routes/trends.js';
 import askRouter from './routes/ask.js';
 import processResourceRouter from './routes/process-resource.js';
+import authRouter from './routes/auth.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3001;
@@ -27,6 +28,8 @@ const app = express();
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use('/api/auth', authRouter);
 
 // ── Static frontend files ───────────────────────────────────
 const root = join(__dirname, '..');
