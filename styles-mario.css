@@ -1794,9 +1794,10 @@ html[data-ui="mario"] .add-btn {
   height: 44px !important;
 }
 
-/* 14. Ensure h2 in sheets also gets pixel font at right size */
+/* 14. Ensure h2 in sheets also gets pixel font at right size — no red shadow on dialogs */
 html[data-ui="mario"] .sheet-step > h2 {
-  text-shadow: 2px 2px 0 var(--accent);
+  text-shadow: none;
+  color: var(--ink);
 }
 
 /* 15. Card title hover — no color change, card border signals hover */
