@@ -18,9 +18,9 @@ export function notFound(_req, res) {
   res.status(404).json({ error: true, message: 'Not found' });
 }
 
-export function createError(status, message, detail) {
+export function createError(message, status, detail) {
   const err = new Error(message);
-  err.status = status;
+  err.status = typeof status === 'number' ? status : 500;
   if (detail) err.detail = detail;
   return err;
 }

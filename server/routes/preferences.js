@@ -7,7 +7,8 @@ const router = Router();
 async function ensurePrefs(userId) {
   const { data } = await supabase.from('user_preferences').select('*').eq('user_id', userId).single();
   if (data) return data;
-  const { data: created } = await supabase.from('user_preferences').insert({ user_id: userId }).select().single();
+  const { data: created, error } = await supabase.from('user_preferences').insert({ user_id: userId }).select().single();
+  if (error || !created) throw createError(`Failed to create preferences: ${error?.message ?? 'unknown'}`, 500);
   return created;
 }
 
