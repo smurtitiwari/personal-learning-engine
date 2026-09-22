@@ -304,8 +304,11 @@ function renderDiscover() {
   const aiGrid = $('#aiRecGrid');
   const aiSummary = $('#aiRecSummary');
 
+  const searchTerm = ($('#discoverSearch')?.value || '').trim().toLowerCase();
   const top6 = _allRecs
     .filter(r => _discoverTypeFilter === 'all' || (_typeMapForFilter(r.source_type) === _discoverTypeFilter))
+    .filter(r => !searchTerm || [r.title, r.creator_name, r.description, r.reason, ...(Array.isArray(r.topics) ? r.topics : [])]
+      .filter(Boolean).join(' ').toLowerCase().includes(searchTerm))
     .slice(0, 6)
     .map(recToCard);
 
@@ -353,10 +356,12 @@ $$('[data-discover-filter]').forEach((button) => button.addEventListener('click'
   $$('[data-discover-filter]').forEach((filter) => {
     const selected = filter === button;
     filter.classList.toggle('active', selected);
+    filter.classList.toggle('on', selected);
     filter.setAttribute('aria-pressed', String(selected));
   });
   renderDiscover();
 }));
+$('#discoverSearch')?.addEventListener('input', renderDiscover);
 
 /* ---------- card detail ---------- */
 const detailDialog = $('.detail-dialog');
@@ -610,6 +615,8 @@ function applyFilters(){
 $('#search').addEventListener('input', applyFilters);
 $$('[data-filter-set] .chip').forEach((chip) => chip.addEventListener('click', () => {
   const set = chip.closest('[data-filter-set]');
+  // Discover uses the shared visual filter component but owns its state above.
+  if (!chip.dataset.type && !chip.dataset.topic) return;
   $$('.chip', set).forEach((c) => { c.classList.remove('on'); c.setAttribute('aria-pressed', 'false'); });
   chip.classList.add('on');
   chip.setAttribute('aria-pressed', 'true');

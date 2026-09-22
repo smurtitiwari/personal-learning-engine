@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Press+Start+2P&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./styles.css?v=29" />
-<link rel="stylesheet" href="./styles-mario.css?v=25" />
+<link rel="stylesheet" href="./styles.css?v=30" />
+<link rel="stylesheet" href="./styles-mario.css?v=26" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -220,12 +220,18 @@
             <p class="kicker"><span class="ai-tag">AI</span> Recommended for you</p>
             <p class="ai-rec-summary" id="aiRecSummary"></p>
           </div>
-          <div class="discover-filters" role="group" aria-label="Filter recommendations by type">
-            <button class="chip active" data-discover-filter="all" aria-pressed="true">All</button>
+          <div class="learn-controls discover-controls">
+            <label class="search" for="discoverSearch">
+              <span aria-hidden="true">⌕</span>
+              <input id="discoverSearch" type="search" placeholder="Search suggestions" aria-label="Search suggested resources" />
+            </label>
+            <div class="chips discover-filters" data-filter-set="type" role="group" aria-label="Filter recommendations by type">
+            <button class="chip on active" data-discover-filter="all" aria-pressed="true">All</button>
             <button class="chip" data-discover-filter="youtube" aria-pressed="false">Video</button>
             <button class="chip" data-discover-filter="article" aria-pressed="false">Article</button>
             <button class="chip" data-discover-filter="substack" aria-pressed="false">Newsletter</button>
             <button class="chip" data-discover-filter="pdf" aria-pressed="false">PDF</button>
+            </div>
           </div>
           <div class="card-grid" id="aiRecGrid"></div>
           <button class="linkish" data-ask-q="Why are you recommending these?" data-ask>Ask AI why these</button>
@@ -486,6 +492,6 @@
 </dialog>
 
 <div class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-<script src="./app.js?v=8"></script>
+<script src="./app.js?v=9"></script>
 </body>
 </html>

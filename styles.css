@@ -476,7 +476,7 @@ body.dark .why strong{color:#a9b8ff}
 .goal-list-tab:hover{color:var(--ink)}
 .goal-list-tab.active{color:var(--ink)}
 .goal-list-tab.active::after{content:"";position:absolute;right:14px;bottom:-1px;left:14px;height:2px;background:var(--accent)}
-.discover-filters{display:flex;flex-wrap:wrap;gap:6px;margin:var(--s4) 0}
+.discover-controls .discover-filters{margin:0;gap:0}
 .goals-monthly-note{margin:0 0 var(--s3);font:400 12px/1.4 var(--sans);color:var(--ink-3)}
 .suggest-card{
   display:flex;flex-direction:column;gap:8px;padding:var(--s5);
