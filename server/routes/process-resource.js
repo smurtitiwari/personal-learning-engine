@@ -10,7 +10,7 @@
 
 import { Router } from 'express';
 import { supabase } from '../db/supabase.js';
-import { extractContent, detectSourceType } from '../services/content-extractor.js';
+import { extractContent, detectSourceType, extractYouTubeId } from '../services/content-extractor.js';
 import { processWithAI } from '../services/ai-processor.js';
 
 const router = Router();
@@ -69,7 +69,8 @@ router.post('/', async (req, res) => {
       title: aiResult?.title || extracted.title || resource.url,
       creator_name: aiResult?.creator_name || extracted.creator_name || null,
       source_type: dbSourceType,
-      thumbnail_url: extracted.thumbnail_url || null,
+      thumbnail_url: extracted.thumbnail_url || extracted.thumbnail
+        || (dbSourceType === 'video' ? (() => { const vid = extractYouTubeId(resource.url); return vid ? `https://img.youtube.com/vi/${vid}/hqdefault.jpg` : null; })() : null),
       duration_seconds: extracted.duration_seconds || null,
       reading_time_minutes: extracted.reading_time_minutes || null,
       ai_summary: aiResult?.ai_summary || extracted.description || null,
