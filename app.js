@@ -254,6 +254,7 @@ function recToCard(r) {
 
 let _allRecs = [];
 let _allTrends = [];
+let _discoverTypeFilter = 'all';
 
 async function loadDiscover() {
   // Show skeleton while loading
@@ -286,7 +287,10 @@ function renderDiscover() {
   const aiGrid = $('#aiRecGrid');
   const aiSummary = $('#aiRecSummary');
 
-  const top6 = _allRecs.slice(0, 6).map(recToCard);
+  const top6 = _allRecs
+    .filter(r => _discoverTypeFilter === 'all' || (_typeMapForFilter(r.source_type) === _discoverTypeFilter))
+    .slice(0, 6)
+    .map(recToCard);
 
   if (top6.length > 0 && aiGrid) {
     // Generate a human-readable summary of why these are being surfaced
@@ -322,6 +326,20 @@ function renderDiscover() {
     emergingBlock.hidden = false;
   }
 }
+
+function _typeMapForFilter(type) {
+  return ({ video: 'youtube', newsletter: 'substack', other: 'article' })[type] || type || 'article';
+}
+
+$$('[data-discover-filter]').forEach((button) => button.addEventListener('click', () => {
+  _discoverTypeFilter = button.dataset.discoverFilter || 'all';
+  $$('[data-discover-filter]').forEach((filter) => {
+    const selected = filter === button;
+    filter.classList.toggle('active', selected);
+    filter.setAttribute('aria-pressed', String(selected));
+  });
+  renderDiscover();
+}));
 
 /* ---------- card detail ---------- */
 const detailDialog = $('.detail-dialog');
@@ -416,8 +434,8 @@ function renderDetailDialog(obj) {
   // Tags include the content type, platform/format, creator, and AI topics.
   const topics = obj.topics || [];
   const byTags = obj.by ? obj.by.split(' · ') : [];
-  const sourceTags = [TYPE_LABEL[obj.type], platformName(obj), ...byTags];
-  const allTags = [...new Set([...sourceTags, ...topics].filter(Boolean))];
+  const sourceTags = [TYPE_LABEL[obj.type], platformName(obj)];
+  const allTags = [...new Set([...sourceTags, ...topics.slice(0, 1)].filter(Boolean))].slice(0, 3);
   const topicsEl = $('#detailTopics');
   topicsEl.innerHTML = allTags.map(t => `<span>${t}</span>`).join('');
   topicsEl.hidden = allTags.length === 0;
@@ -1230,23 +1248,12 @@ function goalMetrics(areas){
 /* ── Render goal list from API data ── */
 function goalCardHTML(g, i){
   const areas = g.areas || [];
-  const chips = areas.slice(0, 4).map((a) => `<span>${a}</span>`).join('')
-    + (areas.length > 4 ? `<span>+${areas.length - 4}</span>` : '');
-  const recCount = _allRecs.filter(r => {
-    const topics = Array.isArray(r.topics) ? r.topics : [];
-    return topics.some(t => areas.includes(t));
-  }).length;
-  const recCountText = recCount > 0
-    ? `${recCount} resource${recCount !== 1 ? 's' : ''} recommended for this goal`
-    : _allRecs.length ? 'No matches found yet' : 'Loading recommendations…';
+  const chips = areas.slice(0, 2).map((a) => `<span>${a}</span>`).join('');
   return `
-    <button class="goal-card" data-goal-id="${g.id}" style="--h:${hueFor(areas, 'article')};--hl:${hueLightFor(areas, 'article')}">
+    <button class="goal-card" data-goal-id="${g.id}">
       <div class="gc-head"><h3>${g.title}</h3></div>
-      ${g.reason ? `<p class="gc-why">${g.reason}</p>` : ''}
       <div class="gc-areas">${chips}</div>
       <div class="gc-ai-recs">
-        <span class="gc-ai-label"><span class="ai-tag">AI</span> Suggested learning</span>
-        <span class="gc-ai-count">${recCountText}</span>
         <span class="gc-ai-cta">View resources</span>
       </div>
     </button>`;
@@ -1256,7 +1263,13 @@ async function loadGoals() {
   const goalsList = $('#goalsList');
   try {
     const { data } = await apiFetch('/api/goals');
-    _liveGoals = data;
+    const seenTitles = new Set();
+    _liveGoals = (data || []).filter((goal) => {
+      const key = goal.title.trim().toLowerCase();
+      if (seenTitles.has(key)) return false;
+      seenTitles.add(key);
+      return true;
+    });
     renderGoals();
     renderSuggestions();
   } catch (err) {
@@ -1338,6 +1351,7 @@ function renderSuggestions(){
     (s) => !dismissedSuggestions.has(s.title) && !goalTitles.has(s.title)
   );
   const live = candidates.length ? [candidates[new Date(`${monthKey}-01T00:00:00Z`).getUTCMonth() % candidates.length]] : [];
+  $('#allGoalsSection').hidden = live.length === 0;
   suggestWrap.hidden = live.length === 0;
   suggestWrap.querySelectorAll('.suggest-card').forEach((c) => c.remove());
   suggestWrap.insertAdjacentHTML('beforeend', live.map((s) => {
@@ -1347,10 +1361,8 @@ function renderSuggestions(){
         <p class="kicker"><span class="ai-tag">AI</span> Monthly goal suggestion</p>
         <h3>${s.title}</h3>
         <p class="sc-why">${s.why}</p>
-        <p class="gc-line">${m.resources} of your saves fit${m.topArea ? ` · most on <strong>${m.topArea}</strong>` : ''}</p>
         <div class="btn-row">
-          <button class="btn-primary" data-make-goal="${s.title}">Make this your goal</button>
-          <button class="btn-ghost" data-skip-goal="${s.title}">Not now</button>
+          <button class="btn-primary" data-make-goal="${s.title}">Add to your goals</button>
         </div>
       </div>`;
   }).join(''));

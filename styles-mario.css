@@ -3834,6 +3834,23 @@ html[data-ui="mario"] body.dark .gc-areas span {
 html[data-ui="mario"] .gc-ai-cta { color: #0077a3 !important; }
 html[data-ui="mario"] .goal-linked-list { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
 
+/* Keep goal cards quiet: cream tags, blue action, one neutral card treatment. */
+html[data-ui="mario"] .goal-card,
+html[data-ui="mario"] .goal-card:hover {
+  border-color: var(--mario-border) !important;
+  box-shadow: 4px 4px 0 var(--mario-shadow) !important;
+  transform: none !important;
+}
+html[data-ui="mario"] .goal-card:hover { border-color: #0077a3 !important; }
+html[data-ui="mario"] .gc-areas { border-top: 2px solid var(--mario-border) !important; }
+html[data-ui="mario"] .gc-ai-recs { border-top: 0 !important; padding-top: 0 !important; }
+html[data-ui="mario"] .goals-monthly-note {
+  font-family: 'Geist', 'Inter', sans-serif !important;
+  font-size: 14px !important;
+  color: var(--ink-3) !important;
+}
+html[data-ui="mario"] dialog.detail-dialog:not([open]) { display: none !important; }
+
 /* Resource detail: fixed desktop frame with actions always in view. */
 html[data-ui="mario"] .detail-dialog {
   width: min(920px, calc(100vw - 48px)) !important;

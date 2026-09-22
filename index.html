@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Press+Start+2P&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./styles.css?v=26" />
-<link rel="stylesheet" href="./styles-mario.css?v=22" />
+<link rel="stylesheet" href="./styles.css?v=27" />
+<link rel="stylesheet" href="./styles-mario.css?v=23" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -220,6 +220,13 @@
             <p class="kicker"><span class="ai-tag">AI</span> Recommended for you</p>
             <p class="ai-rec-summary" id="aiRecSummary"></p>
           </div>
+          <div class="discover-filters" role="group" aria-label="Filter recommendations by type">
+            <button class="chip active" data-discover-filter="all" aria-pressed="true">All</button>
+            <button class="chip" data-discover-filter="youtube" aria-pressed="false">Video</button>
+            <button class="chip" data-discover-filter="article" aria-pressed="false">Article</button>
+            <button class="chip" data-discover-filter="substack" aria-pressed="false">Newsletter</button>
+            <button class="chip" data-discover-filter="pdf" aria-pressed="false">PDF</button>
+          </div>
           <div class="card-grid" id="aiRecGrid"></div>
           <button class="linkish" data-ask-q="Why are you recommending these?" data-ask>Ask AI why these</button>
         </section>
@@ -233,7 +240,13 @@
 
       <!-- Goals tab -->
       <div class="discover-tab-panel" data-tab-panel="goals" id="tabGoals" role="tabpanel" aria-labelledby="tabBtnGoals" hidden>
-<div class="goal-suggestions" id="goalSuggestions" hidden></div>
+        <section class="goals-list-section" id="allGoalsSection">
+          <div class="goals-list-header">
+            <p class="kicker goals-heading">All goals</p>
+            <p class="goals-monthly-note">AI suggestions refresh monthly.</p>
+          </div>
+          <div class="goal-suggestions" id="goalSuggestions" hidden></div>
+        </section>
 
         <div class="goals-list-section">
           <div class="goals-list-header">
@@ -475,6 +488,6 @@
 </dialog>
 
 <div class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-<script src="./app.js?v=5"></script>
+<script src="./app.js?v=6"></script>
 </body>
 </html>

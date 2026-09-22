@@ -471,6 +471,8 @@ body.dark .why strong{color:#a9b8ff}
    GOALS — AI-suggested patterns + your goals, as cards
    ============================================================ */
 .goal-suggestions{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--s4);margin-bottom:var(--s7)}
+.discover-filters{display:flex;flex-wrap:wrap;gap:6px;margin:var(--s4) 0}
+.goals-monthly-note{margin:0 0 var(--s3);font:400 12px/1.4 var(--sans);color:var(--ink-3)}
 .suggest-card{
   display:flex;flex-direction:column;gap:8px;padding:var(--s5);
   border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface);
@@ -506,6 +508,8 @@ body.dark .goal-card:hover{box-shadow:0 0 0 1px var(--accent), 0 18px 44px -16px
 .gc-ai-label{display:flex;align-items:center;gap:5px;font:600 11.5px/1 var(--sans);color:var(--ink-2)}
 .gc-ai-count{font:400 11.5px/1.4 var(--sans);color:var(--ink-3)}
 .gc-ai-cta{font:600 11.5px/1 var(--sans);color:#0077a3}
+
+dialog.detail-dialog:not([open]){display:none!important}
 
 /* ============================================================
    GOAL DETAIL
