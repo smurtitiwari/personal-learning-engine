@@ -560,7 +560,7 @@ body.dark .ac-swatch{background:linear-gradient(150deg,hsl(var(--h) 62% 56%),hsl
    SHEETS / DIALOGS
    ============================================================ */
 .sheet{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--elev);color:var(--ink);
-  padding:0;width:min(540px,calc(100% - 32px));box-shadow:var(--shadow-lg)}
+  padding:0;width:min(640px,calc(100% - 32px));box-shadow:var(--shadow-lg)}
 .sheet::backdrop,.welcome-dialog::backdrop{background:rgba(23,21,15,.32);backdrop-filter:blur(3px)}
 dialog.sheet[open]{animation:sheet-rise var(--m) var(--ease)}
 @keyframes sheet-rise{from{opacity:0;transform:translateY(12px) scale(.982)}to{opacity:1;transform:none}}
@@ -633,13 +633,14 @@ body.dark .sheet::backdrop,body.dark .welcome-dialog::backdrop{background:rgba(4
 /* 1. Type tag — "VIDEO · CODEX COMMUNITY" */
 .detail-type-tag{
   font:600 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
-  color:var(--ink-3);margin:0 0 var(--s3);
+  color:var(--ink-3);margin:0 0 var(--s3);padding-right:52px;
 }
 
-/* 2. Title */
+/* 2. Title — padded right so it never slides under the close button */
 .detail-title{
   font:600 var(--t-h2)/1.2 var(--sans);letter-spacing:-.025em;
   margin:0 0 var(--s2);color:var(--ink);
+  padding-right:52px;
 }
 
 /* 3. Meta — duration · date */
@@ -653,6 +654,7 @@ body.dark .sheet::backdrop,body.dark .welcome-dialog::backdrop{background:rgba(4
   border-top:1px solid var(--line);
   padding:var(--s4) 0 var(--s5);
   margin-bottom:var(--s4);
+  padding-left:0;
 }
 .detail-summary-label{
   font:600 10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
@@ -695,9 +697,9 @@ body.dark .sheet::backdrop,body.dark .welcome-dialog::backdrop{background:rgba(4
 .detail-open-btn{
   display:flex;align-items:center;justify-content:center;
   text-decoration:none;text-align:center;
-  min-height:44px;padding:10px var(--s3);border-radius:var(--r-sm);
+  min-height:48px;padding:12px var(--s3);border-radius:var(--r-sm);
   background:var(--accent);color:var(--accent-ink);
-  font:500 13px/1 var(--sans);
+  font:600 15px/1 var(--sans);
   transition:filter var(--m-fast);
 }
 .detail-open-btn:hover{filter:brightness(1.08)}
