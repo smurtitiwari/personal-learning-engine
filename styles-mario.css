@@ -431,7 +431,8 @@ html[data-ui="mario"] .kicker {
    MAIN CONTENT — page headers, headings
    ══════════════════════════════════════════════ */
 html[data-ui="mario"] .view-head h1,
-html[data-ui="mario"] .goal-head h1 {
+html[data-ui="mario"] .goal-head h1,
+html[data-ui="mario"] #goalTitle {
   font-size: clamp(2rem, 1.4rem + 3vw, 3.2rem) !important;
   font-weight: 400 !important;
   letter-spacing: 0 !important;
@@ -3711,4 +3712,20 @@ html[data-ui="mario"] .detail-summary {
 }
 html[data-ui="mario"] body.dark .detail-summary {
   color: #e8e1d7 !important;
+}
+
+/* One consistent page-title scale across Learning, Discover, and Goals. */
+html[data-ui="mario"] .view-head h1,
+html[data-ui="mario"] .goal-head h1,
+html[data-ui="mario"] #goalTitle {
+  font-size: 22px !important;
+  line-height: 1.45 !important;
+  margin-bottom: 10px !important;
+}
+@media (max-width: 700px) {
+  html[data-ui="mario"] .view-head h1,
+  html[data-ui="mario"] .goal-head h1,
+  html[data-ui="mario"] #goalTitle {
+    font-size: 19px !important;
+  }
 }
