@@ -7,12 +7,13 @@
 
 import { supabase } from '../db/supabase.js';
 
-const MAX_TOKENS = 1024;
+const MAX_TOKENS = 350;
+const MAX_HISTORY_MESSAGES = 6;
 
 function getDeepSeekConfig() {
   const apiKey  = process.env.DEEPSEEK_API_KEY;
   const baseUrl = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com';
-  const model   = process.env.DEEPSEEK_MODEL    || 'deepseek-flash';   // default to flash
+  const model   = process.env.DEEPSEEK_MODEL    || 'deepseek-chat';
   return { apiKey, baseUrl, model };
 }
 
@@ -30,7 +31,10 @@ async function callDeepSeek(systemPrompt, messages) {
     max_tokens: MAX_TOKENS,
     messages: [
       { role: 'system', content: systemPrompt },
-      ...messages.map(m => ({ role: m.role, content: m.content })),
+      ...messages.slice(-MAX_HISTORY_MESSAGES).map(m => ({
+        role: m.role,
+        content: String(m.content).slice(0, 1200),
+      })),
     ],
   };
 
@@ -153,7 +157,7 @@ RULES:
 - Never invent resources, topics, or progress
 - Be specific — reference their actual topics and goals by name
 - If you lack data to answer accurately, say so honestly
-- Keep answers concise and actionable`,
+- Keep answers concise and actionable, normally under 120 words`,
   ];
 
   if (contextResource) {

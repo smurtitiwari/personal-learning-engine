@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { supabase, getUserId, invokeFunction } from '../db/supabase.js';
+import { supabase, getUserId } from '../db/supabase.js';
 import { createError } from '../middleware/error.js';
+import { analyzeGoalLimited } from '../services/limited-ai.js';
 
 const router = Router();
 
@@ -110,24 +111,31 @@ router.post('/', async (req, res, next) => {
     const { title, reason, areas } = req.body;
     if (!title?.trim()) throw createError('title is required', 400);
 
-    const authHeader = req.headers.authorization;
-    let result;
+    // Use AI goal analysis at most once per month. Manual areas never require AI.
+    const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const { data: recentAiGoal } = await supabase.from('goals').select('id')
+      .eq('user_id', userId).not('ai_rationale', 'is', null).gte('created_at', monthAgo).limit(1).maybeSingle();
+    let aiAnalysis = { topics: [], rationale: '' };
+    if (!recentAiGoal) {
+      try { aiAnalysis = await analyzeGoalLimited(title.trim()); }
+      catch (err) { console.warn('[goals] limited AI analysis failed:', err.message); }
+    }
 
-    try {
-      // Prefer Edge Function (uses AI to identify topics)
-      result = await invokeFunction('create-goal', { title: title.trim(), description: reason }, authHeader?.slice(7));
-    } catch (fnErr) {
-      console.warn('[goals] Edge function failed, falling back to direct insert:', fnErr.message);
-      // Fallback: direct insert without AI
       const { data: goal, error } = await supabase
         .from('goals')
-        .insert({ user_id: userId, title: title.trim(), status: 'active' })
+        .insert({
+          user_id: userId,
+          title: title.trim(),
+          description: reason?.trim() || null,
+          ai_rationale: aiAnalysis.rationale || null,
+          status: 'active',
+        })
         .select().single();
       if (error || !goal) throw createError(error?.message ?? 'Failed to create goal', 500);
 
       // If areas provided manually, upsert topics
       const manualAreas = areas ?? (typeof req.body.areas === 'string' ? JSON.parse(req.body.areas) : []);
-      const topicNames = manualAreas.length > 0 ? manualAreas : [];
+      const topicNames = manualAreas.length > 0 ? manualAreas : aiAnalysis.topics;
       if (topicNames.length > 0) {
         const { data: topics } = await supabase
           .from('topics')
@@ -141,10 +149,7 @@ router.post('/', async (req, res, next) => {
         }
       }
       const metrics = await buildGoalMetrics(goal.id, userId);
-      result = { data: mapGoal(goal, metrics) };
-    }
-
-    res.status(201).json(result);
+      res.status(201).json({ data: mapGoal(goal, metrics) });
   } catch (err) { next(err); }
 });
 

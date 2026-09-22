@@ -96,7 +96,7 @@ export async function processWithAI(extracted, userProfile = {}) {
   try {
     const raw = await callDeepSeek(
       [{ role: 'user', content: prompt }],
-      1024,
+      420,
     );
     if (!raw) return null;
     return parseAIResponse(raw, extracted);

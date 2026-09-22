@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { supabase, getUserId, invokeFunction } from '../db/supabase.js';
+import { supabase, getUserId } from '../db/supabase.js';
 import { createError } from '../middleware/error.js';
+import { generateWeeklyRecommendations } from '../services/limited-ai.js';
 
 const router = Router();
 
@@ -44,15 +45,16 @@ router.get('/', async (req, res, next) => {
     const { data: recs, error } = await query;
     if (error) throw createError(error.message, 500);
 
-    // Auto-generate if empty
-    if (!recs?.length) {
-      const authHeader = req.headers.authorization;
-      const url = goal_id ? `?goal_id=${goal_id}` : '';
+    const newest = recs?.[0]?.generated_at ? new Date(recs[0].generated_at).getTime() : 0;
+    const weeklyRefreshDue = Date.now() - newest >= 7 * 24 * 60 * 60 * 1000;
+
+    // Generate at most once per week; all page loads reuse the stored set.
+    if (!recs?.length || weeklyRefreshDue) {
       try {
-        await invokeFunction(`generate-recommendations${url}`, {}, authHeader?.slice(7));
+        await generateWeeklyRecommendations(userId, goal_id || null);
       } catch (genErr) {
         console.warn('[recommendations] auto-generate failed:', genErr.message);
-        return res.json({ data: [] });
+        return res.json({ data: (recs ?? []).map(mapRec) });
       }
       // Fetch newly generated
       const { data: fresh } = await query;
@@ -68,11 +70,17 @@ router.post('/refresh', async (req, res, next) => {
   try {
     const userId = await getUserId(req);
     const { goal_id } = req.body ?? {};
-    const authHeader = req.headers.authorization;
-    const urlSuffix = goal_id ? `?goal_id=${goal_id}` : '';
-
+    let existingQuery = supabase.from('recommendations').select('*')
+      .eq('user_id', userId).eq('status', 'active')
+      .order('generated_at', { ascending: false }).limit(12);
+    existingQuery = goal_id ? existingQuery.eq('goal_id', goal_id) : existingQuery.is('goal_id', null);
+    const { data: existing } = await existingQuery;
+    const newest = existing?.[0]?.generated_at ? new Date(existing[0].generated_at).getTime() : 0;
+    if (existing?.length && Date.now() - newest < 7 * 24 * 60 * 60 * 1000) {
+      return res.json({ data: existing.map(mapRec), next_refresh_at: new Date(newest + 7 * 24 * 60 * 60 * 1000).toISOString() });
+    }
     try {
-      await invokeFunction(`generate-recommendations${urlSuffix}`, {}, authHeader?.slice(7));
+      await generateWeeklyRecommendations(userId, goal_id || null);
     } catch (fnErr) {
       throw createError(`Refresh failed: ${fnErr.message}`, 500);
     }
