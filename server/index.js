@@ -57,7 +57,7 @@ app.get('/api/health', (_req, res) => {
     backend: 'supabase',
     timestamp: new Date().toISOString(),
     supabase_url: process.env.SUPABASE_URL ? '✓ configured' : '✗ missing SUPABASE_URL',
-    anthropic: process.env.ANTHROPIC_API_KEY ? '✓ configured' : '✗ missing ANTHROPIC_API_KEY',
+    deepseek: process.env.DEEPSEEK_API_KEY ? '✓ configured' : '✗ missing DEEPSEEK_API_KEY',
     embeddings: process.env.OPENAI_API_KEY ? '✓ openai' : '⚠ fallback (no OPENAI_API_KEY)',
   });
 });

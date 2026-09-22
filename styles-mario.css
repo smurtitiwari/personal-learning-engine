@@ -179,7 +179,7 @@ html[data-ui="mario"] .brand-word {
 /* Add button */
 html[data-ui="mario"] .add-btn {
   background: var(--accent);
-  color: #fff;
+  color: #1c0e04;
   border: 3px solid var(--mario-sb-text) !important;
   border-radius: 0 !important;
   box-shadow: 3px 3px 0 var(--mario-sb-text);
@@ -435,8 +435,8 @@ html[data-ui="mario"] .goal-head h1 {
   font-weight: 400 !important;
   letter-spacing: 0 !important;
   line-height: 1.3 !important;
-  color: #1c0e04 !important;
-  text-shadow: 3px 3px 0 #e52521 !important;  /* red shadow — matches reference */
+  color: #E52521 !important;
+  text-shadow: 3px 3px 0 #1c0e04 !important;  /* dark shadow on red text */
 }
 
 html[data-ui="mario"] .view-head .lede {
@@ -1231,7 +1231,7 @@ html[data-ui="mario"] .setting-ui-mode button {
 }
 html[data-ui="mario"] .setting-ui-mode button.on {
   background: var(--accent);
-  color: #fff;
+  color: #1c0e04;
   opacity: 1;
   box-shadow: none;
 }
@@ -1621,13 +1621,13 @@ html[data-ui="mario"] body.dark .ai-link { color: #e8751a !important; }
    PIXEL-PERFECT FIXES — based on reference screenshot
    ══════════════════════════════════════════════ */
 
-/* 1. Page title — red pixel shadow, matches reference */
+/* 1. Page title — red text with dark shadow */
 html[data-ui="mario"] .view-head h1,
 html[data-ui="mario"] .goal-head h1 {
   font-size: clamp(2rem, 1.4rem + 3vw, 3.2rem) !important;
-  text-shadow: 3px 3px 0 #e52521 !important;  /* exact red shadow — matches reference */
+  text-shadow: 3px 3px 0 #1c0e04 !important;
   line-height: 1.3 !important;
-  color: #1c0e04 !important;
+  color: #E52521 !important;
 }
 html[data-ui="mario"] body.dark .view-head h1,
 html[data-ui="mario"] body.dark .goal-head h1 {
@@ -1926,8 +1926,8 @@ html[data-ui="mario"] .goal-head h1 {
   font-size: 24px !important;
   line-height: 1.3 !important;
   margin-bottom: 10px !important;
-  text-shadow: 3px 3px 0 #e52521 !important;
-  color: #1c0e04 !important;
+  text-shadow: 3px 3px 0 #1c0e04 !important;
+  color: #E52521 !important;
 }
 html[data-ui="mario"] body.dark .view-head h1,
 html[data-ui="mario"] body.dark .goal-head h1 {
@@ -2693,14 +2693,16 @@ html[data-ui="mario"] body.dark .settings-section {
   border-top-color: #332a1c !important;
 }
 
-/* h1 text shadow — subtler (2px not 3px) */
+/* h1 — red text, dark shadow */
 html[data-ui="mario"] .view-head h1,
 html[data-ui="mario"] .goal-head h1 {
-  text-shadow: 2px 2px 0 var(--accent) !important;
+  color: #E52521 !important;
+  text-shadow: 3px 3px 0 #1c0e04 !important;
 }
 html[data-ui="mario"] body.dark .view-head h1,
 html[data-ui="mario"] body.dark .goal-head h1 {
-  text-shadow: 2px 2px 0 #e8751a !important;
+  color: #ff6b68 !important;
+  text-shadow: 3px 3px 0 #0e0c08 !important;
 }
 
 /* ── Detail dialog — Mario overrides ──────────────────────── */
@@ -3650,4 +3652,24 @@ html[data-ui="mario"] body.dark .rc-retry-btn {
   color: #0e0c08 !important;
   border-color: #f5efe6 !important;
   box-shadow: 2px 2px 0 #000 !important;
+}
+
+/* ── 6. H1 titles: RED text, dark shadow — absolute last-word override ── */
+html[data-ui="mario"] .view-head h1,
+html[data-ui="mario"] .goal-head h1 {
+  color: #E52521 !important;
+  text-shadow: 3px 3px 0 #1c0e04 !important;
+}
+html[data-ui="mario"] body.dark .view-head h1,
+html[data-ui="mario"] body.dark .goal-head h1 {
+  color: #ff6b68 !important;
+  text-shadow: 3px 3px 0 #0e0c08 !important;
+}
+
+/* ── 7. Yellow CTA: always dark text, never white ── */
+html[data-ui="mario"] .add-btn {
+  color: #1c0e04 !important;
+}
+html[data-ui="mario"] .setting-ui-mode button.on {
+  color: #1c0e04 !important;
 }
