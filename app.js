@@ -248,8 +248,25 @@ function recToCard(r) {
     url: r.url || '',
     score: r.score || 0,
     reason_detail: r.reason_detail || '',
-    thumbnail: r.thumbnail || r.thumbnail_url || '',
+    thumbnail: r.thumbnail || r.thumbnail_url || recommendationThumbnail(r),
   };
+}
+
+/* External suggestions always receive a visual cover instead of an empty
+   placeholder. The image reflects the suggested subject when the source has
+   not provided its own thumbnail. */
+function recommendationThumbnail(r) {
+  const topic = (Array.isArray(r.topics) ? r.topics.join(' ').toLowerCase() : '');
+  if ((r.source_type || '').toLowerCase() === 'youtube') {
+    return 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80';
+  }
+  if (topic.includes('design') || topic.includes('ux')) {
+    return 'https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=1200&q=80';
+  }
+  if (topic.includes('agent') || topic.includes('evaluation')) {
+    return 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80';
+  }
+  return 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80';
 }
 
 let _allRecs = [];
@@ -1225,6 +1242,7 @@ const startedGoalIds = new Set((() => { try { return JSON.parse(localStorage.get
 
 let _liveGoals = []; // populated from API
 let _currentGoalId = null;
+let _goalListTab = 'all';
 
 /* Save dismissed suggestions to localStorage so they persist across sessions */
 function persistDismissed() {
@@ -1350,6 +1368,22 @@ function renderGoals(){
   });
 }
 
+function setGoalListTab(tab) {
+  _goalListTab = tab === 'your' ? 'your' : 'all';
+  $$('[data-goal-list-tab]').forEach((button) => {
+    const selected = button.dataset.goalListTab === _goalListTab;
+    button.classList.toggle('active', selected);
+    button.setAttribute('aria-selected', String(selected));
+    button.tabIndex = selected ? 0 : -1;
+  });
+  $('#allGoalsSection').hidden = _goalListTab !== 'all';
+  $('#yourGoalsSection').hidden = _goalListTab !== 'your';
+}
+
+$$('[data-goal-list-tab]').forEach((button) => {
+  button.addEventListener('click', () => setGoalListTab(button.dataset.goalListTab));
+});
+
 function renderSuggestions(){
   const live = SUGGESTED_GOALS.filter((suggestion) => {
     const existing = _liveGoals.find(goal => goal.title === suggestion.title);
@@ -1389,6 +1423,7 @@ async function createGoalFromData(g) {
     persistStartedGoals();
     renderGoals();
     renderSuggestions();
+    setGoalListTab('your');
     openGoalDetail(data.id);
     toast('Goal created');
   } catch (err) {
@@ -1410,46 +1445,26 @@ async function openGoalDetail(goalId) {
     $('#goalWhy').textContent = g.reason || g.description || '';
     $('#goalDeleteBtn').hidden = false;
 
-    // Count line — describe the evidence, not the linking action
-    const resCount = g.resource_count || 0;
-    const topArea = Object.entries(g.topic_coverage || {}).sort((a,b)=>b[1]-a[1])[0]?.[0];
-    $('#goalCount').textContent = resCount > 0
-      ? `${resCount} saved resource${resCount !== 1 ? 's' : ''} in your library relate to this goal${topArea ? ` — most on ${topArea}` : ''}.`
-      : 'Not enough learning activity yet to show evidence.';
-
-    // Linked resources section (only show resources with topics matching goal areas)
-    const apiLinked = (g.resources || []).filter(r => areas.length === 0 || (r.topics || []).some(t => areas.includes(t))).map(apiToCard);
-    const libraryLinked = RESOURCES.filter(r => areas.length === 0 || r.topics.some(t => areas.includes(t)));
-    const linked = apiLinked.length ? apiLinked : libraryLinked;
-    const linkedSection = $('#goalLinkedSection');
-    const linkedList = $('#goalLinkedList');
-    if (linked.length > 0) {
-      linkedList.innerHTML = linked.map(r => card(r)).join('');
-      linkedSection.hidden = false;
-    } else {
-      linkedSection.hidden = true;
-    }
+    $('#goalCount').textContent = 'A focused set of AI-suggested videos and articles for this learning direction.';
 
     // Recommendations for this goal — fetch if not yet loaded
     const recsSection = $('#goalRecsSection');
     const recsGrid = $('#goalRecsGrid');
     if (recsSection && recsGrid) {
-      if (!_allRecs.length) {
-        try {
-          const { data: recs } = await apiFetch('/api/recommendations');
-          _allRecs = recs || [];
-          if (!_discoverLoaded) { _discoverLoaded = true; }
-        } catch (_) { /* recs unavailable */ }
-      }
-      const goalRecs = _allRecs
+      let goalRecommendationData = [];
+      try {
+        const { data: recs } = await apiFetch(`/api/recommendations?goal_id=${encodeURIComponent(goalId)}`);
+        goalRecommendationData = recs || [];
+      } catch (_) { /* suggestions are unavailable until AI is configured */ }
+      const goalRecs = goalRecommendationData
         .map(recToCard)
-        .filter(r => areas.length === 0 || r.topics.some(t => areas.includes(t)))
         .slice(0, 6);
       if (goalRecs.length > 0) {
         recsGrid.innerHTML = goalRecs.map(r => card(r, { rec: true })).join('');
         recsSection.hidden = false;
       } else {
-        recsSection.hidden = true;
+        recsGrid.innerHTML = '<p class="goals-empty">Suggested resources are being prepared for this goal.</p>';
+        recsSection.hidden = false;
       }
     }
   } catch (err) {
@@ -1484,6 +1499,7 @@ document.addEventListener('click', async (e) => {
       persistStartedGoals();
       renderGoals();
       renderSuggestions();
+      setGoalListTab('your');
       openGoalDetail(existing.id);
     } else {
       const suggestion = SUGGESTED_GOALS.find(goal => goal.title === start.dataset.startGoal);

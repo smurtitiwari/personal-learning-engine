@@ -471,6 +471,11 @@ body.dark .why strong{color:#a9b8ff}
    GOALS — AI-suggested patterns + your goals, as cards
    ============================================================ */
 .goal-suggestions{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--s4);margin-bottom:var(--s7)}
+.goal-list-tabs{display:flex;gap:4px;margin:var(--s5) 0 0;border-bottom:1px solid var(--line)}
+.goal-list-tab{position:relative;padding:10px 14px;color:var(--ink-3);font:600 13px/1 var(--sans)}
+.goal-list-tab:hover{color:var(--ink)}
+.goal-list-tab.active{color:var(--ink)}
+.goal-list-tab.active::after{content:"";position:absolute;right:14px;bottom:-1px;left:14px;height:2px;background:var(--accent)}
 .discover-filters{display:flex;flex-wrap:wrap;gap:6px;margin:var(--s4) 0}
 .goals-monthly-note{margin:0 0 var(--s3);font:400 12px/1.4 var(--sans);color:var(--ink-3)}
 .suggest-card{

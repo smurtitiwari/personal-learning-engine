@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Press+Start+2P&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./styles.css?v=28" />
-<link rel="stylesheet" href="./styles-mario.css?v=24" />
+<link rel="stylesheet" href="./styles.css?v=29" />
+<link rel="stylesheet" href="./styles-mario.css?v=25" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -240,14 +240,18 @@
 
       <!-- Goals tab -->
       <div class="discover-tab-panel" data-tab-panel="goals" id="tabGoals" role="tabpanel" aria-labelledby="tabBtnGoals" hidden>
-        <section class="goals-list-section" id="allGoalsSection">
+        <div class="goal-list-tabs" role="tablist" aria-label="Goals">
+          <button class="goal-list-tab active" id="allGoalsTab" type="button" role="tab" aria-selected="true" aria-controls="allGoalsSection" data-goal-list-tab="all">All goals</button>
+          <button class="goal-list-tab" id="yourGoalsTab" type="button" role="tab" aria-selected="false" aria-controls="yourGoalsSection" data-goal-list-tab="your">Your goals</button>
+        </div>
+        <section class="goals-list-section" id="allGoalsSection" role="tabpanel" aria-labelledby="allGoalsTab">
           <div class="goals-list-header">
             <p class="kicker goals-heading">All goals</p>
           </div>
           <div class="goal-suggestions" id="goalSuggestions" hidden></div>
         </section>
 
-        <div class="goals-list-section">
+        <section class="goals-list-section" id="yourGoalsSection" role="tabpanel" aria-labelledby="yourGoalsTab" hidden>
           <div class="goals-list-header">
             <p class="kicker goals-heading">Your goals</p>
             <button class="btn-outline btn-sm" data-create-goal><span aria-hidden="true">+</span> New goal</button>
@@ -255,7 +259,7 @@
           <div class="goals-list" id="goalsList">
             <p class="goals-empty" id="goalsEmpty">Start a goal above or create your own direction.</p>
           </div>
-        </div>
+        </section>
       </div>
     </section>
 
@@ -278,13 +282,8 @@
 
       <p class="goal-count" id="goalCount"></p>
 
-      <section class="block" id="goalLinkedSection" hidden>
-        <p class="kicker">Saved resources for this goal</p>
-        <div class="card-grid goal-linked-list" id="goalLinkedList"></div>
-      </section>
-
       <section class="block" id="goalRecsSection" hidden>
-        <p class="kicker"><span class="ai-tag">AI</span> Recommended for this goal</p>
+        <p class="kicker"><span class="ai-tag">AI</span> Suggested resources for this goal</p>
         <div class="card-grid" id="goalRecsGrid"></div>
         <button class="linkish" data-ask-q="How do these recommendations connect to my goal?" data-ask>Ask AI about these</button>
       </section>
@@ -487,6 +486,6 @@
 </dialog>
 
 <div class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-<script src="./app.js?v=7"></script>
+<script src="./app.js?v=8"></script>
 </body>
 </html>

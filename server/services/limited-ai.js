@@ -66,7 +66,7 @@ export async function generateWeeklyRecommendations(userId, goalId = null) {
   if (!context.recent_resources.length && !context.goals.length) return [];
 
   const raw = await complete(
-    'Return only a JSON array with at most 5 items: [{"title":"learning topic","topics":["topic"],"score":0.8,"reason":"one short sentence"}]. Recommend focused learning areas based only on the supplied library and goals.',
+    'Return only a JSON array with at most 5 items: [{"title":"specific resource search","type":"video or article","creator":"publisher or channel","topics":["topic"],"score":0.8,"reason":"one short sentence"}]. Recommend a balanced mix of videos and articles. Each item must be a concrete resource search, never a broad learning topic. Base every recommendation only on the supplied library and goals.',
     JSON.stringify(context),
     450,
   );
@@ -85,7 +85,13 @@ export async function generateWeeklyRecommendations(userId, goalId = null) {
     user_id: userId,
     goal_id: goalId,
     title: String(r.title).slice(0, 200),
-    source_type: 'article',
+    source_type: String(r.type).toLowerCase() === 'video' ? 'youtube' : 'article',
+    creator_name: String(r.creator || '').slice(0, 120) || null,
+    // These are external, suggested resources. A search destination remains useful
+    // even when a source has not supplied a canonical page URL.
+    url: String(r.type).toLowerCase() === 'video'
+      ? `https://www.youtube.com/results?search_query=${encodeURIComponent(String(r.title).slice(0, 200))}`
+      : `https://www.google.com/search?q=${encodeURIComponent(String(r.title).slice(0, 200))}`,
     topics: Array.isArray(r.topics) ? r.topics.filter(t => typeof t === 'string').slice(0, 3) : [],
     score: Math.min(1, Math.max(0, Number(r.score) || 0.5)),
     reason: String(r.reason || '').slice(0, 300),

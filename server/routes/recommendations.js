@@ -48,9 +48,12 @@ router.get('/', async (req, res, next) => {
 
     const newest = recs?.[0]?.generated_at ? new Date(recs[0].generated_at).getTime() : 0;
     const weeklyRefreshDue = Date.now() - newest >= 7 * 24 * 60 * 60 * 1000;
+    // Older goal records were topic-only. Regenerate them once as concrete
+    // resource suggestions so the goal page can show a type, destination and cover.
+    const needsResourceUpgrade = Boolean(goal_id && recs?.some(rec => !rec.url));
 
     // Generate at most once per week; all page loads reuse the stored set.
-    if (!recs?.length || weeklyRefreshDue) {
+    if (!recs?.length || weeklyRefreshDue || needsResourceUpgrade) {
       try {
         await generateWeeklyRecommendations(userId, goal_id || null);
       } catch (genErr) {
