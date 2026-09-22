@@ -4071,6 +4071,10 @@ html[data-ui="mario"] .mario-svg {
   height: 54px !important;
   animation: none !important;
 }
+/* The sprite is decorative, so compact rails give its space back to navigation. */
+@media (max-width:960px), (max-height:760px) {
+  html[data-ui="mario"] .mario-sprite { display: none !important; }
+}
 @media (max-width:720px) {
   html[data-ui="mario"] .ask-btn {
     width: 54px !important;
