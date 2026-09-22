@@ -781,10 +781,8 @@ html[data-ui="mario"] .url-row input {
   font-family: 'Press Start 2P', monospace !important;
   font-size: 7px;
 }
-html[data-ui="mario"] .url-row .btn-primary {
-  width: auto !important;
-  padding: 10px 14px !important;
-  font-size: 6px !important;
+html[data-ui="mario"] #addSubmitBtn {
+  margin-top: 12px;
 }
 
 html[data-ui="mario"] #goalForm input {
