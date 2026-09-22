@@ -4020,6 +4020,73 @@ html[data-ui="mario"] .rc-ask { color: #005f86 !important; opacity: 1 !important
 html[data-ui="mario"] .rc-ask:hover { color: #003f5a !important; }
 html[data-ui="mario"] body.dark .rc-ask { color: #8ddfff !important; }
 
+/* Rail Ask AI: a compact utility control with a single robot icon and label. */
+html[data-ui="mario"] .ask-btn {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  padding: 0 12px !important;
+  border: 3px solid #0077a3 !important;
+  border-radius: 0 !important;
+  background: #1c0e04 !important;
+  box-shadow: 3px 3px 0 #004a67 !important;
+  color: #24bdec !important;
+}
+html[data-ui="mario"] .ask-btn:hover,
+html[data-ui="mario"] .ask-btn.active {
+  transform: translate(1px, 1px) !important;
+  background: #1c0e04 !important;
+  box-shadow: 2px 2px 0 #004a67 !important;
+  color: #5bd5f6 !important;
+}
+html[data-ui="mario"] .ask-btn .ask-icon {
+  display: grid !important;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  font-size: 16px !important;
+  line-height: 1;
+}
+html[data-ui="mario"] .ask-btn .ask-text {
+  font-family: 'Press Start 2P', monospace !important;
+  font-size: 10px !important;
+  line-height: 1 !important;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* Keep the character as a small, static standing sprite in the rail. */
+html[data-ui="mario"] .mario-sprite {
+  min-height: 112px;
+  padding: 18px 0 12px;
+  align-items: center;
+  animation: none !important;
+}
+html[data-ui="mario"] .mario-svg {
+  width: 48px !important;
+  height: 54px !important;
+  animation: none !important;
+}
+@media (max-width:720px) {
+  html[data-ui="mario"] .ask-btn {
+    width: 54px !important;
+    height: 54px !important;
+    min-height: 54px !important;
+    padding: 0 !important;
+    justify-content: center;
+    background: #0077a3 !important;
+    border: 3px solid #1c0e04 !important;
+    box-shadow: 3px 3px 0 #000 !important;
+    color: #fff !important;
+  }
+  html[data-ui="mario"] .ask-btn .ask-icon { font-size: 20px !important; }
+  html[data-ui="mario"] .ask-btn .ask-text { display: none !important; }
+  html[data-ui="mario"] .mario-sprite { display: none !important; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html[data-ui="mario"] *,
   html[data-ui="mario"] *::before,

@@ -1306,7 +1306,7 @@ body.dark .discover-tab.active { border-bottom-color: var(--accent); }
   .nav a.active::before{height:3px}
 
   .ask-btn{position:fixed;right:16px;bottom:82px;z-index:45;display:flex;justify-content:center;width:54px;height:54px !important;padding:0 !important;border:1px solid var(--line);border-radius:50%;background:var(--surface);box-shadow:0 8px 20px -8px rgba(17,17,17,.42)}
-  .ask-btn .ai-tag{display:block}
+  .ask-btn .ask-icon{display:grid}
   .ask-btn .ask-text{display:none}
   .ask-btn.active{background:var(--ai-weak)}
 
@@ -1328,6 +1328,30 @@ body.dark .discover-tab.active { border-bottom-color: var(--accent); }
   .sheet-step{padding:24px 18px}
   .sheet-step h2{font-size:clamp(1.55rem,7vw,2rem)}
   .app.ask-open .ask-panel{display:flex;inset:auto 8px calc(72px + env(safe-area-inset-bottom)) 8px;width:auto;height:min(72dvh,620px);z-index:60;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-lg)}
+}
+
+/* The rail action is a compact, labelled entry point; its icon remains visible
+   when the control becomes the mobile floating action. */
+.ask-btn{
+  border:1px solid #00658f;
+  border-left:1px solid #00658f;
+  border-radius:var(--r-sm);
+  color:#005a7d;
+  font-weight:600;
+}
+.ask-btn:hover,
+.ask-btn.active{background:#e6f5fb;color:#003f5a}
+.ask-icon{
+  display:grid;
+  place-items:center;
+  width:18px;
+  height:18px;
+  flex:0 0 18px;
+  font-size:15px;
+  line-height:1;
+}
+@media (max-width:720px){
+  .ask-btn .ask-icon{font-size:20px}
 }
 
 /* Account entry is deliberately separate from the product shell. */
