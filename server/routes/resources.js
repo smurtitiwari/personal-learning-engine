@@ -1,8 +1,6 @@
 import { Router } from 'express';
 import { supabase, getUserId } from '../db/supabase.js';
 import { createError } from '../middleware/error.js';
-import { extractContent, detectSourceType } from '../services/content-extractor.js';
-import { processWithAI } from '../services/ai-processor.js';
 
 const router = Router();
 
@@ -191,85 +189,23 @@ router.post('/', async (req, res, next) => {
       },
     });
 
-    // Process in background — Vercel Fluid Compute keeps the function alive after res.json()
-    (async () => {
-      try {
-        const sourceType = detectSourceType(normalizedUrl);
-        const extracted = await extractContent(normalizedUrl, sourceType);
+    // Trigger processing as a separate Vercel invocation (fire-and-forget HTTP call).
+    // Each request on Vercel is an independent function instance, so this one runs
+    // to completion on its own — the current function can exit safely.
+    const proto = req.headers['x-forwarded-proto'] || 'http';
+    const host  = req.headers['x-forwarded-host'] || req.headers.host || 'localhost:3001';
+    const baseUrl = `${proto}://${host}`;
+    const INTERNAL_SECRET = process.env.INTERNAL_SECRET || 'learning-engine-internal';
 
-        // Fetch user profile for personalised AI summary
-        const { data: prefs } = await supabase
-          .from('user_preferences')
-          .select('interests')
-          .eq('user_id', userId)
-          .single();
-
-        const aiResult = await processWithAI(extracted, prefs ?? {});
-
-        // Map content-extractor source types to DB enum values
-        const sourceTypeMap = { youtube: 'video', medium: 'article', substack: 'newsletter', pdf: 'pdf', article: 'article' };
-        const dbSourceType = sourceTypeMap[extracted.source_type ?? sourceType] ?? 'article';
-
-        const updatePayload = {
-          processing_status: 'ready',
-          title: aiResult?.title || extracted.title || normalizedUrl,
-          creator_name: aiResult?.creator_name || extracted.creator_name || null,
-          source_type: dbSourceType,
-          thumbnail_url: extracted.thumbnail_url || null,
-          duration_seconds: extracted.duration_seconds || null,
-          reading_time_minutes: extracted.reading_time_minutes || null,
-          ai_summary: aiResult?.ai_summary || extracted.description || null,
-          ai_key_takeaways: aiResult?.ai_key_takeaways || null,
-          content_text: extracted.content_text?.slice(0, 10000) || null,
-        };
-
-        const { error: updateError } = await supabase
-          .from('resources')
-          .update(updatePayload)
-          .eq('id', resource.id);
-
-        if (updateError) {
-          console.error('[resources] update failed:', updateError.message);
-          throw updateError;
-        }
-
-        // Upsert topics
-        const topics = aiResult?.topics ?? extracted.topics ?? [];
-        if (topics.length > 0) {
-          for (const topicName of topics) {
-            // Get or create topic
-            let { data: topic } = await supabase
-              .from('topics')
-              .select('id')
-              .eq('name', topicName)
-              .single();
-
-            if (!topic) {
-              const { data: newTopic } = await supabase
-                .from('topics')
-                .insert({ name: topicName })
-                .select('id')
-                .single();
-              topic = newTopic;
-            }
-
-            if (topic) {
-              await supabase
-                .from('resource_topics')
-                .upsert({ resource_id: resource.id, topic_id: topic.id }, { onConflict: 'resource_id,topic_id' });
-            }
-          }
-        }
-
-        console.log(`[resources] processed ${resource.id} (${dbSourceType}) — topics: ${topics.length}`);
-      } catch (err) {
-        console.error('[resources] background processing failed:', err.message);
-        await supabase
-          .from('resources')
-          .update({ processing_status: 'failed', processing_error: err.message?.slice(0, 500) })
-          .eq('id', resource.id);
-      }
-    })();
+    fetch(`${baseUrl}/api/process-resource`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-internal-secret': INTERNAL_SECRET,
+      },
+      body: JSON.stringify({ resource_id: resource.id }),
+    }).catch(err => console.error('[resources] failed to trigger processor:', err.message));
+    // intentionally NOT awaited
   } catch (err) { next(err); }
 });
 

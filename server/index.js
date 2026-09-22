@@ -16,6 +16,7 @@ import goalsRouter from './routes/goals.js';
 import recommendationsRouter from './routes/recommendations.js';
 import trendsRouter from './routes/trends.js';
 import askRouter from './routes/ask.js';
+import processResourceRouter from './routes/process-resource.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3001;
@@ -47,6 +48,7 @@ app.use('/api/goals', goalsRouter);
 app.use('/api/recommendations', recommendationsRouter);
 app.use('/api/trends', trendsRouter);
 app.use('/api/ask', askRouter);
+app.use('/api/process-resource', processResourceRouter);
 
 // ── Health check ────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
