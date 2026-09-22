@@ -82,6 +82,35 @@ function mapGoal(goal, metrics = {}) {
   };
 }
 
+async function getGoalResources(goalId, userId) {
+  const { data: topicRows } = await supabase
+    .from('goal_topics').select('topics(name)').eq('goal_id', goalId);
+  const areas = (topicRows ?? []).map(row => row.topics?.name).filter(Boolean);
+  if (!areas.length) return [];
+
+  const { data: topics } = await supabase.from('topics').select('id').in('name', areas);
+  const topicIds = (topics ?? []).map(topic => topic.id);
+  if (!topicIds.length) return [];
+
+  const { data: rows } = await supabase
+    .from('resource_topics')
+    .select('resource_id, topics(name), resources!inner(id, url, source_type, source, creator_name, thumbnail_url, duration_seconds, reading_time_minutes, page_count, saved_at, ai_summary, ai_key_takeaways, processing_status, completed_at, user_id, deleted_at)')
+    .in('topic_id', topicIds)
+    .eq('resources.user_id', userId)
+    .is('resources.deleted_at', null)
+    .eq('resources.processing_status', 'ready');
+
+  const byId = new Map();
+  for (const row of rows ?? []) {
+    const resource = row.resources;
+    if (!resource) continue;
+    const existing = byId.get(resource.id) ?? { ...resource, thumbnail: resource.thumbnail_url ?? null, topics: [] };
+    if (row.topics?.name && !existing.topics.includes(row.topics.name)) existing.topics.push(row.topics.name);
+    byId.set(resource.id, existing);
+  }
+  return [...byId.values()].sort((a, b) => new Date(b.saved_at) - new Date(a.saved_at));
+}
+
 // GET /api/goals
 router.get('/', async (req, res, next) => {
   try {
@@ -108,15 +137,16 @@ router.get('/', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     const userId = await getUserId(req);
-    const { title, reason, areas } = req.body;
+    const { title, reason, areas, ai_suggested: aiSuggested } = req.body;
     if (!title?.trim()) throw createError('title is required', 400);
 
-    // Use AI goal analysis at most once per month. Manual areas never require AI.
+    // Only custom goals without areas need AI topic analysis, capped at one call per month.
     const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
     const { data: recentAiGoal } = await supabase.from('goals').select('id')
       .eq('user_id', userId).not('ai_rationale', 'is', null).gte('created_at', monthAgo).limit(1).maybeSingle();
     let aiAnalysis = { topics: [], rationale: '' };
-    if (!recentAiGoal) {
+    const needsAiAnalysis = !aiSuggested && (!Array.isArray(areas) || areas.length === 0);
+    if (needsAiAnalysis && !recentAiGoal) {
       try { aiAnalysis = await analyzeGoalLimited(title.trim()); }
       catch (err) { console.warn('[goals] limited AI analysis failed:', err.message); }
     }
@@ -166,7 +196,8 @@ router.get('/:id', async (req, res, next) => {
 
     if (error || !goal) throw createError('Goal not found', 404);
     const metrics = await buildGoalMetrics(goal.id, userId);
-    res.json({ data: mapGoal(goal, metrics) });
+    const resources = await getGoalResources(goal.id, userId);
+    res.json({ data: { ...mapGoal(goal, metrics), resources } });
   } catch (err) { next(err); }
 });
 

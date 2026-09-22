@@ -499,13 +499,13 @@ body.dark .goal-card:hover{box-shadow:0 0 0 1px var(--accent), 0 18px 44px -16px
   border:1px solid var(--line);border-radius:999px;padding:4px 8px}
 .gc-why{font:400 12.5px/1.5 var(--sans);color:var(--ink-2)}
 .gc-areas{display:flex;flex-wrap:wrap;gap:5px;padding:var(--s3) 0;border-top:1px solid var(--line)}
-.gc-areas span{font:400 10px/1 var(--mono);color:var(--ink-3);border:1px solid var(--line);border-radius:4px;padding:3px 7px}
+.gc-areas span{font:400 10px/1 var(--mono);color:hsl(var(--hl) 52% 30%);border:1px solid hsl(var(--hl) 42% 70%);border-radius:4px;padding:3px 7px;background:hsl(var(--hl) 50% 94%)}
 .gc-line{margin-top:auto;font:400 11.5px/1.5 var(--sans);color:var(--ink-3)}
 .gc-line strong{color:var(--ink-2);font-weight:600}
 .gc-ai-recs{margin-top:auto;display:flex;flex-direction:column;gap:3px;padding-top:var(--s3);border-top:1px solid var(--line)}
 .gc-ai-label{display:flex;align-items:center;gap:5px;font:600 11.5px/1 var(--sans);color:var(--ink-2)}
 .gc-ai-count{font:400 11.5px/1.4 var(--sans);color:var(--ink-3)}
-.gc-ai-cta{font:600 11.5px/1 var(--sans);color:var(--accent)}
+.gc-ai-cta{font:600 11.5px/1 var(--sans);color:#0077a3}
 
 /* ============================================================
    GOAL DETAIL

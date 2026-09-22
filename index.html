@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Press+Start+2P&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./styles.css?v=25" />
-<link rel="stylesheet" href="./styles-mario.css?v=20" />
+<link rel="stylesheet" href="./styles.css?v=26" />
+<link rel="stylesheet" href="./styles-mario.css?v=21" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -205,7 +205,6 @@
           <h1>Discover</h1>
           <p class="lede">What to learn next, and where you want to go.</p>
         </div>
-        <button class="btn-outline" data-create-goal>New goal</button>
       </header>
 
       <!-- Sub-tab bar -->
@@ -239,7 +238,7 @@
         <div class="goals-list-section">
           <div class="goals-list-header">
             <p class="kicker goals-heading">Your goals</p>
-            <button class="btn-outline btn-sm" data-create-goal>New goal</button>
+            <button class="btn-outline btn-sm" data-create-goal><span aria-hidden="true">+</span> New goal</button>
           </div>
           <div class="goals-list" id="goalsList">
             <p class="goals-empty" id="goalsEmpty">No goals yet — accept a pattern above, or create your own direction to focus around.</p>
@@ -269,7 +268,7 @@
 
       <section class="block" id="goalLinkedSection" hidden>
         <p class="kicker">Saved resources for this goal</p>
-        <div class="goal-linked-list" id="goalLinkedList"></div>
+        <div class="card-grid goal-linked-list" id="goalLinkedList"></div>
       </section>
 
       <section class="block" id="goalRecsSection" hidden>
@@ -476,6 +475,6 @@
 </dialog>
 
 <div class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-<script src="./app.js?v=4"></script>
+<script src="./app.js?v=5"></script>
 </body>
 </html>

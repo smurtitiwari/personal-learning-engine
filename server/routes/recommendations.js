@@ -12,6 +12,7 @@ function mapRec(r) {
     url: r.url ?? null,
     source_type: r.source_type ?? 'article',
     creator_name: r.creator_name ?? null,
+    thumbnail: r.thumbnail_url ?? null,
     description: r.reason_detail ?? r.reason ?? r.description ?? '',
     topics: Array.isArray(r.topics) ? r.topics : [],
     score: Number(r.score ?? 0),

@@ -119,15 +119,15 @@ function card(r, { rec = false } = {}){
   const hueL = hueLightFor(r.topics, r.type);
   const cls = ['res-card', `rc-${r.type}`, rec ? 'res-card--rec' : ''].filter(Boolean).join(' ');
   const topic = (r.topics && r.topics[0]) || '';
-  const hasThumbnail = r.type === 'youtube' && r.thumbnail;
-  const media = r.type === 'youtube'
-    ? hasThumbnail
-      ? `<div class="rc-media rc-media--video rc-media--thumb"
+  const hasThumbnail = Boolean(r.thumbnail);
+  const media = hasThumbnail
+    ? `<div class="rc-media ${r.type === 'youtube' ? 'rc-media--video ' : ''}rc-media--thumb"
               style="background-image:url('${r.thumbnail}')" aria-hidden="true">
-           <span class="rc-play-overlay" aria-hidden="true">▶</span>
-           ${r.meta ? `<span class="rc-dur">${r.meta}</span>` : ''}
-         </div>`
-      : `<div class="rc-media rc-media--video">
+         ${r.type === 'youtube' ? '<span class="rc-play-overlay" aria-hidden="true">▶</span>' : ''}
+         ${r.type === 'youtube' && r.meta ? `<span class="rc-dur">${r.meta}</span>` : ''}
+       </div>`
+    : r.type === 'youtube'
+      ? `<div class="rc-media rc-media--video">
            <span class="rc-ghost">${r.word || (r.by || '').slice(0, 6).toUpperCase()}</span>
            <span class="rc-play" aria-hidden="true">▶</span>
            ${r.meta ? `<span class="rc-dur">${r.meta}</span>` : ''}
@@ -248,6 +248,7 @@ function recToCard(r) {
     url: r.url || '',
     score: r.score || 0,
     reason_detail: r.reason_detail || '',
+    thumbnail: r.thumbnail || r.thumbnail_url || '',
   };
 }
 
@@ -375,7 +376,7 @@ function renderDetailDialog(obj) {
 
   const thumbnail = $('#detailThumbnail');
   const thumbnailImage = $('#detailThumbnailImage');
-  if (obj.type === 'youtube' && obj.thumbnail) {
+  if (obj.thumbnail) {
     thumbnailImage.src = obj.thumbnail;
     thumbnailImage.alt = `Thumbnail for ${obj.title || 'video'}`;
     thumbnail.hidden = false;
@@ -465,7 +466,7 @@ async function openDetail(obj) {
       $('#detailSummary').classList.remove('detail-summary--loading');
     }
 
-    if (data.thumbnail && obj.type === 'youtube') {
+    if (data.thumbnail) {
       obj.thumbnail = data.thumbnail;
       const thumbnailImage = $('#detailThumbnailImage');
       thumbnailImage.src = data.thumbnail;
@@ -1239,14 +1240,14 @@ function goalCardHTML(g, i){
     ? `${recCount} resource${recCount !== 1 ? 's' : ''} recommended for this goal`
     : _allRecs.length ? 'No matches found yet' : 'Loading recommendations…';
   return `
-    <button class="goal-card" data-goal-id="${g.id}">
+    <button class="goal-card" data-goal-id="${g.id}" style="--h:${hueFor(areas, 'article')};--hl:${hueLightFor(areas, 'article')}">
       <div class="gc-head"><h3>${g.title}</h3></div>
       ${g.reason ? `<p class="gc-why">${g.reason}</p>` : ''}
       <div class="gc-areas">${chips}</div>
       <div class="gc-ai-recs">
         <span class="gc-ai-label"><span class="ai-tag">AI</span> Suggested learning</span>
         <span class="gc-ai-count">${recCountText}</span>
-        <span class="gc-ai-cta">View resources →</span>
+        <span class="gc-ai-cta">View resources</span>
       </div>
     </button>`;
 }
@@ -1332,21 +1333,23 @@ function renderGoals(){
 
 function renderSuggestions(){
   const goalTitles = new Set(_liveGoals.map(g => g.title));
-  const live = SUGGESTED_GOALS.filter(
+  const monthKey = new Date().toISOString().slice(0, 7);
+  const candidates = SUGGESTED_GOALS.filter(
     (s) => !dismissedSuggestions.has(s.title) && !goalTitles.has(s.title)
   );
+  const live = candidates.length ? [candidates[new Date(`${monthKey}-01T00:00:00Z`).getUTCMonth() % candidates.length]] : [];
   suggestWrap.hidden = live.length === 0;
   suggestWrap.querySelectorAll('.suggest-card').forEach((c) => c.remove());
   suggestWrap.insertAdjacentHTML('beforeend', live.map((s) => {
     const m = goalMetrics(s.areas);
     return `
       <div class="suggest-card">
-        <p class="kicker"><span class="ai-tag">AI</span> Pattern in your learning</p>
+        <p class="kicker"><span class="ai-tag">AI</span> Monthly goal suggestion</p>
         <h3>${s.title}</h3>
         <p class="sc-why">${s.why}</p>
         <p class="gc-line">${m.resources} of your saves fit${m.topArea ? ` · most on <strong>${m.topArea}</strong>` : ''}</p>
         <div class="btn-row">
-          <button class="btn-primary" data-make-goal="${s.title}">Make this a goal</button>
+          <button class="btn-primary" data-make-goal="${s.title}">Make this your goal</button>
           <button class="btn-ghost" data-skip-goal="${s.title}">Not now</button>
         </div>
       </div>`;
@@ -1357,10 +1360,11 @@ async function createGoalFromData(g) {
   try {
     const { data } = await apiFetch('/api/goals', {
       method: 'POST',
-      body: JSON.stringify({
+          body: JSON.stringify({
         title: g.title,
         reason: g.why || g.reason || '',
         areas: g.areas || [],
+        ai_suggested: true,
       }),
     });
     if (goalDialog.open) goalDialog.close();
@@ -1398,16 +1402,7 @@ async function openGoalDetail(goalId) {
     const linkedSection = $('#goalLinkedSection');
     const linkedList = $('#goalLinkedList');
     if (linked.length > 0) {
-      linkedList.innerHTML = linked.map(r => {
-        const c = apiToCard(r);
-        const done = r.completed_at ? ' ✓' : '';
-        return `
-          <button class="gl-res" data-card="${registerCard(c)}">
-            <span class="gl-type">${TYPE_LABEL[r.source_type] || 'Resource'}</span>
-            <span class="gl-title">${r.title || 'Untitled'}${done}</span>
-            <span class="gl-by">${r.creator_name || ''}</span>
-          </button>`;
-      }).join('');
+      linkedList.innerHTML = linked.map(r => card(apiToCard(r))).join('');
       linkedSection.hidden = false;
     } else {
       linkedSection.hidden = true;

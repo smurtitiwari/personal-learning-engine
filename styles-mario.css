@@ -3812,6 +3812,28 @@ html[data-ui="mario"] body.dark :is(a, button, input, select, [tabindex]):focus-
   outline-color: #ffd600 !important;
 }
 
+/* Goals use the same topic colour language and resource cards as Learning. */
+html[data-ui="mario"] .goal-card {
+  border-color: hsl(var(--hl) 38% 66%) !important;
+  box-shadow: 4px 4px 0 hsl(var(--hl) 34% 44%) !important;
+}
+html[data-ui="mario"] .goal-card:hover {
+  border-color: #0077a3 !important;
+  box-shadow: 4px 4px 0 #0077a3 !important;
+}
+html[data-ui="mario"] .gc-areas span {
+  color: hsl(var(--hl) 52% 30%) !important;
+  background: hsl(var(--hl) 50% 94%) !important;
+  border-color: hsl(var(--hl) 42% 70%) !important;
+}
+html[data-ui="mario"] body.dark .gc-areas span {
+  color: #f5efe6 !important;
+  background: hsl(var(--h) 42% 22%) !important;
+  border-color: hsl(var(--h) 55% 44%) !important;
+}
+html[data-ui="mario"] .gc-ai-cta { color: #0077a3 !important; }
+html[data-ui="mario"] .goal-linked-list { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+
 /* Resource detail: fixed desktop frame with actions always in view. */
 html[data-ui="mario"] .detail-dialog {
   width: min(920px, calc(100vw - 48px)) !important;
