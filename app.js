@@ -1380,6 +1380,7 @@ function setGoalListTab(tab) {
   $$('[data-goal-list-tab]').forEach((button) => {
     const selected = button.dataset.goalListTab === _goalListTab;
     button.classList.toggle('active', selected);
+    button.classList.toggle('on', selected);
     button.setAttribute('aria-selected', String(selected));
     button.tabIndex = selected ? 0 : -1;
   });
@@ -1413,7 +1414,7 @@ function renderSuggestions(){
   }).join(''));
 }
 
-async function createGoalFromData(g) {
+async function createGoalFromData(g, { openDetail = true, message = 'Goal created' } = {}) {
   try {
     const { data } = await apiFetch('/api/goals', {
       method: 'POST',
@@ -1430,9 +1431,11 @@ async function createGoalFromData(g) {
     persistStartedGoals();
     renderGoals();
     renderSuggestions();
-    setGoalListTab('your');
-    openGoalDetail(data.id);
-    toast('Goal created');
+    if (openDetail) {
+      setGoalListTab('your');
+      openGoalDetail(data.id);
+    }
+    toast(message);
   } catch (err) {
     toast('Could not create goal — try again');
   }
@@ -1506,11 +1509,10 @@ document.addEventListener('click', async (e) => {
       persistStartedGoals();
       renderGoals();
       renderSuggestions();
-      setGoalListTab('your');
-      openGoalDetail(existing.id);
+      toast('Added to Your goals.');
     } else {
       const suggestion = SUGGESTED_GOALS.find(goal => goal.title === start.dataset.startGoal);
-      if (suggestion) await createGoalFromData(suggestion);
+      if (suggestion) await createGoalFromData(suggestion, { openDetail: false, message: 'Added to Your goals.' });
     }
     return;
   }

@@ -471,11 +471,11 @@ body.dark .why strong{color:#a9b8ff}
    GOALS — AI-suggested patterns + your goals, as cards
    ============================================================ */
 .goal-suggestions{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--s4);margin-bottom:var(--s7)}
-.goal-list-tabs{display:flex;gap:4px;margin:var(--s5) 0 0;border-bottom:1px solid var(--line)}
-.goal-list-tab{position:relative;padding:10px 14px;color:var(--ink-3);font:600 13px/1 var(--sans)}
+.goal-list-tabs{display:flex;width:max-content;gap:0;margin:var(--s5) 0 0;padding:2px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface)}
+.goal-list-tab{height:36px;padding:0 12px;border-radius:5px;color:var(--ink-2);font:500 12px/1 var(--sans);transition:background-color var(--m-fast),color var(--m-fast)}
 .goal-list-tab:hover{color:var(--ink)}
-.goal-list-tab.active{color:var(--ink)}
-.goal-list-tab.active::after{content:"";position:absolute;right:14px;bottom:-1px;left:14px;height:2px;background:var(--accent)}
+.goal-list-tab.active{background:var(--ink);color:var(--bg)}
+body.dark .goal-list-tab.active{background:var(--accent);color:var(--accent-ink)}
 .discover-controls .discover-filters{margin:0;gap:0}
 .goals-monthly-note{margin:0 0 var(--s3);font:400 12px/1.4 var(--sans);color:var(--ink-3)}
 .suggest-card{

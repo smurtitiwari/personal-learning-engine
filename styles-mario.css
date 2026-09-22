@@ -3835,15 +3835,23 @@ html[data-ui="mario"] .gc-ai-cta { color: #0077a3 !important; }
 html[data-ui="mario"] .goal-linked-list { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
 
 /* Keep goal cards quiet: cream tags, blue action, one neutral card treatment. */
-html[data-ui="mario"] .goal-list-tabs { border-bottom: 2px solid var(--mario-border) !important; gap: 10px; }
-html[data-ui="mario"] .goal-list-tab {
-  font-family: 'Press Start 2P', monospace !important;
-  font-size: 7px !important;
-  color: #7a6248 !important;
-  padding: 12px 10px !important;
+html[data-ui="mario"] .goal-list-tabs {
+  border: 2px solid var(--mario-border) !important;
+  border-radius: 0 !important;
+  background: var(--surface) !important;
+  gap: 0;
+  padding: 0;
 }
-html[data-ui="mario"] .goal-list-tab.active { color: var(--mario-border) !important; }
-html[data-ui="mario"] .goal-list-tab.active::after { height: 3px !important; background: #0077a3 !important; }
+html[data-ui="mario"] .goal-list-tab {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 13px !important;
+  color: #7a6248 !important;
+  padding: 9px 12px !important;
+  height: auto;
+  border-radius: 0 !important;
+}
+html[data-ui="mario"] .goal-list-tab.active { background: var(--mario-border) !important; color: var(--bg) !important; }
+html[data-ui="mario"] .goal-list-tab.active::after { display: none !important; }
 html[data-ui="mario"] .goal-card,
 html[data-ui="mario"] .goal-card:hover {
   border-color: var(--mario-border) !important;
