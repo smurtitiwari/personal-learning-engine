@@ -80,7 +80,7 @@ Schema (respond with ONLY this JSON, no prose, no markdown):
 - concepts: specific ideas in the resource — max 10
 - keywords: useful search terms — max 10`;
 
-  const text = content.length > 8000 ? content.slice(0, 8000) + '…' : content;
+  const text = content.length > 4000 ? content.slice(0, 4000) + '…' : content;
   const raw = await callAI(
     [{ role: 'user', content: `Title: ${title}\nSource: ${source}\nContent:\n${text}` }],
     system,

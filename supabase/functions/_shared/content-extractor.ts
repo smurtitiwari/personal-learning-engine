@@ -27,18 +27,16 @@ async function extractYouTube(url: string): Promise<Partial<ExtractedContent>> {
   const videoId = extractYouTubeId(url);
   if (!videoId) throw new Error(`Could not parse YouTube video ID from: ${url}`);
 
-  // oEmbed for title and thumbnail
-  const oembed = await fetchJSON<{ title?: string; thumbnail_url?: string; author_name?: string }>(
-    `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`,
-  );
-
-  // Try to fetch auto-generated transcript via timedtext API
-  let transcript: string | undefined;
-  try {
-    transcript = await fetchYouTubeTranscript(videoId);
-  } catch (e) {
-    console.warn('[content-extractor] transcript fetch failed:', e);
-  }
+  // Fetch oEmbed and transcript in parallel to save time
+  const [oembed, transcript] = await Promise.all([
+    fetchJSON<{ title?: string; thumbnail_url?: string; author_name?: string }>(
+      `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`,
+    ),
+    fetchYouTubeTranscript(videoId).catch((e) => {
+      console.warn('[content-extractor] transcript fetch failed:', e);
+      return undefined;
+    }),
+  ]);
 
   return {
     title: oembed.title,
@@ -63,9 +61,10 @@ function extractYouTubeId(url: string): string | null {
 }
 
 async function fetchYouTubeTranscript(videoId: string): Promise<string> {
-  // Fetch the video page to find the timedtext URL
+  // Fetch the video page to find the timedtext URL (8s timeout)
   const pageResp = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
     headers: { 'User-Agent': 'Mozilla/5.0', 'Accept-Language': 'en-US,en;q=0.9' },
+    signal: AbortSignal.timeout(8_000),
   });
   const html = await pageResp.text();
 
