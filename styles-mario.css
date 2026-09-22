@@ -141,7 +141,7 @@ html[data-ui="mario"] :focus-visible {
    ══════════════════════════════════════════════ */
 html[data-ui="mario"] .rail {
   background: var(--mario-sb-bg) !important;
-  border-right: 4px solid var(--accent) !important;  /* red light / orange dark */
+  border-right: 4px solid #E52521 !important;
   color: var(--mario-sb-text);
   transition: none;
 }
@@ -229,9 +229,9 @@ html[data-ui="mario"] .nav a:hover {
 }
 html[data-ui="mario"] .nav a.active {
   background: var(--mario-nav-active-bg) !important;
-  border-left: 4px solid var(--mario-gold) !important;
+  border-left: 4px solid #E52521 !important;
   border-color: transparent;
-  border-left-color: var(--mario-gold) !important;
+  border-left-color: #E52521 !important;
   box-shadow: 3px 3px 0 rgba(0,0,0,.5);
   color: var(--mario-gold) !important;
   font-weight: 400;
@@ -1708,9 +1708,9 @@ html[data-ui="mario"] .nav .nav-ico {
   opacity: 1 !important;
 }
 
-/* 7. Sidebar right border — red in light, orange in dark */
+/* 7. Sidebar right border — always red */
 html[data-ui="mario"] .rail {
-  border-right: 4px solid var(--accent) !important;
+  border-right: 4px solid #E52521 !important;
 }
 html[data-ui="mario"] body.dark .rail {
   border-right-color: #e8751a !important;
@@ -3675,5 +3675,22 @@ html[data-ui="mario"] .add-btn {
   color: #1c0e04 !important;
 }
 html[data-ui="mario"] .setting-ui-mode button.on {
+  color: #1c0e04 !important;
+}
+
+/* ── 8. Red accents: sidebar border + active nav indicator ── */
+html[data-ui="mario"] .rail {
+  border-right: 4px solid #E52521 !important;
+}
+html[data-ui="mario"] .nav a.active {
+  border-left: 4px solid #E52521 !important;
+  border-left-color: #E52521 !important;
+}
+
+/* ── 9. Add-btn: dark text + Pixelify Sans — never white ── */
+html[data-ui="mario"] .add-btn {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
   color: #1c0e04 !important;
 }
