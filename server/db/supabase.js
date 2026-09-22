@@ -18,9 +18,12 @@ export const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
+// Single owner of this personal app — used when no JWT and no env override
+const OWNER_USER_ID = process.env.SUPABASE_DEV_USER_ID || '246112b2-7020-4b8c-a201-fd7c517c6c05';
+
 // Extract user_id from request
 // In production: parse JWT from Authorization header
-// In dev (no auth header): use SUPABASE_DEV_USER_ID env var
+// Fallback: use OWNER_USER_ID (personal single-user app)
 export async function getUserId(req) {
   const authHeader = req.headers.authorization;
   if (authHeader?.startsWith('Bearer ')) {
@@ -30,11 +33,7 @@ export async function getUserId(req) {
     return user.id;
   }
 
-  // Dev fallback
-  const devUserId = process.env.SUPABASE_DEV_USER_ID;
-  if (devUserId) return devUserId;
-
-  throw Object.assign(new Error('Authentication required'), { status: 401 });
+  return OWNER_USER_ID;
 }
 
 // Invoke a Supabase Edge Function from the Express server
