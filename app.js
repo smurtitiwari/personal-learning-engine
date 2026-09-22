@@ -611,6 +611,7 @@ function setDiscoverTab(tab) {
     const isActive = b.dataset.discoverTab === tab;
     b.classList.toggle('active', isActive);
     b.setAttribute('aria-selected', String(isActive));
+    b.tabIndex = isActive ? 0 : -1;
   });
   $$('[data-tab-panel]').forEach(p => {
     p.hidden = p.dataset.tabPanel !== tab;
@@ -629,6 +630,17 @@ function setDiscoverTab(tab) {
 
 $$('[data-discover-tab]').forEach(b => {
   b.addEventListener('click', () => setDiscoverTab(b.dataset.discoverTab));
+  b.addEventListener('keydown', (event) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const tabs = $$('[data-discover-tab]');
+    const current = tabs.indexOf(b);
+    const next = event.key === 'Home' ? 0
+      : event.key === 'End' ? tabs.length - 1
+      : (current + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+    setDiscoverTab(tabs[next].dataset.discoverTab);
+    tabs[next].focus();
+  });
 });
 $$('[data-view]').forEach((el) => {
   if (el.tagName === 'A') return;
@@ -651,7 +663,9 @@ function setTheme(mode) {
     // Settings picker (light/system/dark): highlight the stored mode
     // Rail switch (light/dark only): highlight the effective mode
     const inSettings = !!b.closest('.setting-theme');
-    b.classList.toggle('on', inSettings ? b.dataset.themeSet === mode : b.dataset.themeSet === effectiveMode);
+    const selected = inSettings ? b.dataset.themeSet === mode : b.dataset.themeSet === effectiveMode;
+    b.classList.toggle('on', selected);
+    b.setAttribute('aria-pressed', String(selected));
   });
 }
 let _storedTheme;
@@ -671,7 +685,11 @@ function _applyUiMode(mode) {
   if (classic) classic.hidden = isMario;
   if (mario) mario.hidden = !isMario;
   // Sync buttons
-  $$('[data-ui-set]').forEach(b => b.classList.toggle('on', b.dataset.uiSet === (isMario ? 'mario' : 'classic')));
+  $$('[data-ui-set]').forEach(b => {
+    const selected = b.dataset.uiSet === (isMario ? 'mario' : 'classic');
+    b.classList.toggle('on', selected);
+    b.setAttribute('aria-pressed', String(selected));
+  });
 }
 
 function setUiMode(mode) {
@@ -713,10 +731,18 @@ async function openSettings() {
     if (aiSel) aiSel.value = String(data.ai_recommendations_enabled ?? 1);
     // Sync theme buttons inside settings
     const currentMode = localStorage.getItem('le-theme') || 'system';
-    $$('[data-theme-set]').forEach(b => b.classList.toggle('on', b.dataset.themeSet === currentMode));
+    $$('[data-theme-set]').forEach(b => {
+      const selected = b.dataset.themeSet === currentMode;
+      b.classList.toggle('on', selected);
+      b.setAttribute('aria-pressed', String(selected));
+    });
     // Sync UI mode buttons
     const currentUiMode = localStorage.getItem('le-ui-mode') || 'mario';
-    $$('[data-ui-set]').forEach(b => b.classList.toggle('on', b.dataset.uiSet === currentUiMode));
+    $$('[data-ui-set]').forEach(b => {
+      const selected = b.dataset.uiSet === currentUiMode;
+      b.classList.toggle('on', selected);
+      b.setAttribute('aria-pressed', String(selected));
+    });
   } catch {}
   settingsDialog.showModal();
 }
@@ -885,8 +911,13 @@ function _resourceSuggests(type) {
 
 function _setPanelOpen(open) {
   document.querySelector('.app').classList.toggle('ask-open', open);
-  document.querySelector('.ask-btn')?.classList.toggle('active', open);
+  const trigger = document.querySelector('.ask-btn');
+  trigger?.classList.toggle('active', open);
+  trigger?.setAttribute('aria-expanded', String(open));
+  askPanel?.setAttribute('aria-hidden', String(!open));
+  if ('inert' in HTMLElement.prototype && askPanel) askPanel.inert = !open;
 }
+_setPanelOpen(false);
 
 function openAsk(q, resource) {
   _setPanelOpen(true);

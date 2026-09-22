@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Press+Start+2P&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="./styles.css?v=23" />
-<link rel="stylesheet" href="./styles-mario.css?v=15" />
+<link rel="stylesheet" href="./styles-mario.css?v=16" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -18,7 +18,7 @@
   <aside class="rail">
     <a class="brand" href="#learning"><span class="brand-mark"><span class="brand-mark-classic">Le</span><span class="brand-mark-mario" hidden>⭐</span></span><span class="brand-word">Learning<br>Engine</span></a>
 
-    <button class="add-btn" data-add><b>+</b> <span class="add-text">Add learning</span></button>
+    <button class="add-btn" data-add type="button"><b aria-hidden="true">+</b> <span class="add-text">Add learning</span></button>
 
     <nav class="nav" aria-label="Primary">
       <a href="#learning" data-view="learning"><span class="nav-ico">📚</span> <span class="nav-label">Learning</span></a>
@@ -87,11 +87,11 @@
         </svg>
       </div>
 
-      <button class="ask-btn" data-ask><span class="ai-tag">AI</span> <span class="ask-text">Ask AI</span></button>
+      <button class="ask-btn" data-ask type="button" aria-controls="askPanel" aria-expanded="false"><span class="ai-tag">AI</span> <span class="ask-text">Ask AI</span></button>
 
       <div class="theme-switch" role="group" aria-label="Theme">
-        <button data-theme-set="light">Light</button>
-        <button data-theme-set="dark">Dark</button>
+        <button data-theme-set="light" type="button" aria-pressed="false">Light</button>
+        <button data-theme-set="dark" type="button" aria-pressed="false">Dark</button>
       </div>
 
       <div class="account-wrap">
@@ -123,6 +123,7 @@
         <button data-ask-q="What areas have I not explored much?">Knowledge gaps?</button>
       </div>
       <form id="askHomeForm" class="ask-input">
+        <label class="sr-only" for="askHomeInput">Ask AI a question</label>
         <input id="askHomeInput" type="text" placeholder="Ask something…" autocomplete="off" />
         <button type="submit" aria-label="Send">→</button>
       </form>
@@ -141,6 +142,7 @@
         <button data-ask-q="What should I learn next from this?">What next?</button>
       </div>
       <form id="askForm" class="ask-input">
+        <label class="sr-only" for="askInput">Ask about your learning</label>
         <input id="askInput" type="text" placeholder="Ask about your learning" autocomplete="off" />
         <button type="submit" aria-label="Send">→</button>
       </form>
@@ -176,19 +178,19 @@
           <input id="search" type="search" placeholder="Search your learning" aria-label="Search your learning" />
         </div>
         <div class="chips" data-filter-set="type" role="group" aria-label="Filter by source">
-          <button class="chip on" data-type="all">All</button>
-          <button class="chip" data-type="youtube">Video</button>
-          <button class="chip" data-type="article">Article</button>
-          <button class="chip" data-type="substack">Newsletter</button>
-          <button class="chip" data-type="pdf">PDF</button>
+          <button class="chip on" data-type="all" aria-pressed="true">All</button>
+          <button class="chip" data-type="youtube" aria-pressed="false">Video</button>
+          <button class="chip" data-type="article" aria-pressed="false">Article</button>
+          <button class="chip" data-type="substack" aria-pressed="false">Newsletter</button>
+          <button class="chip" data-type="pdf" aria-pressed="false">PDF</button>
         </div>
         <div class="chips subtle" data-filter-set="topic" role="group" aria-label="Filter by topic">
-          <button class="chip on" data-topic="all">All topics</button>
-          <button class="chip" data-topic="AI UX">AI UX</button>
-          <button class="chip" data-topic="AI agents">AI agents</button>
-          <button class="chip" data-topic="AI evaluation">AI evaluation</button>
-          <button class="chip" data-topic="AI prototyping">AI prototyping</button>
-          <button class="chip" data-topic="Product design">Product design</button>
+          <button class="chip on" data-topic="all" aria-pressed="true">All topics</button>
+          <button class="chip" data-topic="AI UX" aria-pressed="false">AI UX</button>
+          <button class="chip" data-topic="AI agents" aria-pressed="false">AI agents</button>
+          <button class="chip" data-topic="AI evaluation" aria-pressed="false">AI evaluation</button>
+          <button class="chip" data-topic="AI prototyping" aria-pressed="false">AI prototyping</button>
+          <button class="chip" data-topic="Product design" aria-pressed="false">Product design</button>
         </div>
       </div>
 
@@ -208,8 +210,8 @@
 
       <!-- Sub-tab bar -->
       <div class="discover-tabs" role="tablist" aria-label="Discover sections">
-        <button class="discover-tab active" data-discover-tab="foryou" role="tab" id="tabBtnForyou" aria-controls="tabForyou" aria-selected="true">For you</button>
-        <button class="discover-tab" data-discover-tab="goals" role="tab" id="tabBtnGoals" aria-controls="tabGoals" aria-selected="false">Goals</button>
+        <button class="discover-tab active" data-discover-tab="foryou" role="tab" id="tabBtnForyou" aria-controls="tabForyou" aria-selected="true" tabindex="0">For you</button>
+        <button class="discover-tab" data-discover-tab="goals" role="tab" id="tabBtnGoals" aria-controls="tabGoals" aria-selected="false" tabindex="-1">Goals</button>
       </div>
 
       <!-- For You tab -->
@@ -416,7 +418,7 @@
 </dialog>
 
 <!-- ============ SETTINGS ============ -->
-<dialog class="sheet settings-dialog">
+<dialog class="sheet settings-dialog" aria-label="Settings">
   <button class="sheet-close" aria-label="Close Settings">×</button>
   <div class="sheet-step settings-step">
     <div class="settings-profile">
@@ -452,16 +454,16 @@
       <div class="setting-group">
         <p class="setting-label">Theme</p>
         <div class="setting-theme" role="group" aria-label="Theme">
-          <button data-theme-set="light">Light</button>
-          <button data-theme-set="system">System</button>
-          <button data-theme-set="dark">Dark</button>
+          <button data-theme-set="light" type="button" aria-pressed="false">Light</button>
+          <button data-theme-set="system" type="button" aria-pressed="false">System</button>
+          <button data-theme-set="dark" type="button" aria-pressed="false">Dark</button>
         </div>
       </div>
       <div class="setting-group">
         <p class="setting-label">Interface style</p>
         <div class="setting-ui-mode" role="group" aria-label="UI style">
-          <button data-ui-set="classic">Classic</button>
-          <button data-ui-set="mario">Mario ★</button>
+          <button data-ui-set="classic" type="button" aria-pressed="false">Classic</button>
+          <button data-ui-set="mario" type="button" aria-pressed="false">Mario ★</button>
         </div>
         <p class="setting-hint">Mario mode uses a pixel-retro aesthetic throughout.</p>
       </div>
@@ -475,6 +477,6 @@
 </dialog>
 
 <div class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-<script src="./app.js?v=2"></script>
+<script src="./app.js?v=3"></script>
 </body>
 </html>

@@ -3729,3 +3729,93 @@ html[data-ui="mario"] #goalTitle {
     font-size: 19px !important;
   }
 }
+
+/* Final UI audit: consistent controls, readable content, and keyboard access. */
+html[data-ui="mario"] .add-btn,
+html[data-ui="mario"] .nav a,
+html[data-ui="mario"] .ask-btn {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 13px !important;
+  min-height: 44px !important;
+}
+html[data-ui="mario"] .ask-btn {
+  color: #f5efe6 !important;
+}
+html[data-ui="mario"] .ask-btn.active {
+  color: #ffffff !important;
+}
+html[data-ui="mario"] .theme-switch button {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 12px !important;
+  min-height: 34px !important;
+  padding: 7px 8px !important;
+}
+html[data-ui="mario"] .chip,
+html[data-ui="mario"] .discover-tab,
+html[data-ui="mario"] .btn-outline,
+html[data-ui="mario"] .btn-primary,
+html[data-ui="mario"] .btn-ghost {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 13px !important;
+  min-height: 34px;
+}
+html[data-ui="mario"] .search input {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 14px !important;
+  min-height: 44px;
+}
+html[data-ui="mario"] .kicker,
+html[data-ui="mario"] .ai-tag {
+  font-size: 10px !important;
+  line-height: 1.5 !important;
+}
+html[data-ui="mario"] .view-head .lede,
+html[data-ui="mario"] .ai-rec-summary,
+html[data-ui="mario"] .goal-why,
+html[data-ui="mario"] .gc-why,
+html[data-ui="mario"] .detail-why-text,
+html[data-ui="mario"] .sheet-lede,
+html[data-ui="mario"] .setting-hint,
+html[data-ui="mario"] .empty-note,
+html[data-ui="mario"] .goals-empty {
+  font-family: 'Geist', 'Inter', sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  letter-spacing: 0 !important;
+}
+html[data-ui="mario"] :is(a, button, input, select, [tabindex]):focus-visible {
+  outline: 3px solid #0077a3 !important;
+  outline-offset: 3px !important;
+  box-shadow: none;
+}
+html[data-ui="mario"] body.dark :is(a, button, input, select, [tabindex]):focus-visible {
+  outline-color: #ffd600 !important;
+}
+@media (max-width: 720px) {
+  html[data-ui="mario"] main {
+    padding: 78px 20px 84px !important;
+  }
+  html[data-ui="mario"] .rail {
+    border-right: 0 !important;
+    border-bottom: 4px solid #e52521 !important;
+  }
+  html[data-ui="mario"] .nav a {
+    min-height: 56px !important;
+    padding: 0 !important;
+  }
+  html[data-ui="mario"] .add-btn,
+  html[data-ui="mario"] .ask-btn {
+    min-height: 36px !important;
+    height: 36px !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-ui="mario"] *,
+  html[data-ui="mario"] *::before,
+  html[data-ui="mario"] *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
