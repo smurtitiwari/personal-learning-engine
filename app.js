@@ -613,7 +613,7 @@ function setUiMode(mode) {
 // Init on load
 let _storedUiMode;
 try { _storedUiMode = localStorage.getItem('le-ui-mode'); } catch {}
-_applyUiMode(_storedUiMode || 'classic');
+_applyUiMode(_storedUiMode || 'mario');
 
 // Toggle handler — reloads page so all CSS is cleanly applied
 document.addEventListener('click', (e) => {
