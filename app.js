@@ -52,7 +52,7 @@ const SUGGESTED_GOALS = [
 ];
 
 /* ---------- helpers ---------- */
-const TYPE_LABEL = { youtube:'Video', article:'Article', substack:'Newsletter', pdf:'PDF' };
+const TYPE_LABEL = { youtube:'Video', video:'Video', article:'Article', substack:'Newsletter', newsletter:'Newsletter', pdf:'PDF', other:'Resource' };
 /* dark = warm (crimson → red → orange → amber → magenta, n8n family) */
 const HUE = { 'AI UX':20, 'AI agents':352, 'AI evaluation':34, 'AI prototyping':8,
               'Product design':340, 'AI strategy':26, 'Product':14, 'AI fundamentals':18,
@@ -160,9 +160,10 @@ function apiToCard(r) {
   const watchedMins = (pct > 0 && mins > 0) ? Math.round((pct / 100) * mins) : 0;
   const topics = Array.isArray(r.topics) ? r.topics : [];
 
+  const _typeMap = { video: 'youtube', newsletter: 'substack', other: 'article' };
   return {
     _id: r.id,
-    type: r.source_type || 'article',
+    type: _typeMap[r.source_type] || r.source_type || 'article',
     by: r.creator_name || r.author_name || r.source || '',
     title: r.title || '(Processing…)',
     meta,
@@ -217,9 +218,10 @@ async function loadResources() {
 
 /* ---------- recommendation grids (Discover) ---------- */
 function recToCard(r) {
+  const _typeMap = { video: 'youtube', newsletter: 'substack', other: 'article' };
   return {
     _recId: r.id,
-    type: r.source_type || 'article',
+    type: _typeMap[r.source_type] || r.source_type || 'article',
     by: r.creator_name || '',
     title: r.title || 'Untitled',
     summary: r.description || '',
