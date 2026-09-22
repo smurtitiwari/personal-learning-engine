@@ -1,6 +1,8 @@
 import { Router } from 'express';
-import { supabase, getUserId, invokeFunction } from '../db/supabase.js';
+import { supabase, getUserId } from '../db/supabase.js';
 import { createError } from '../middleware/error.js';
+import { extractContent, detectSourceType } from '../services/content-extractor.js';
+import { processWithAI } from '../services/ai-processor.js';
 
 const router = Router();
 
@@ -180,13 +182,7 @@ router.post('/', async (req, res, next) => {
 
     if (error || !resource) throw createError(error?.message ?? 'Failed to create resource', 500);
 
-    // Invoke process-resource Edge Function in the background (non-blocking)
-    const authHeader = req.headers.authorization;
-    setImmediate(() => {
-      invokeFunction('process-resource', { resource_id: resource.id }, authHeader?.slice(7))
-        .catch(err => console.error('[resources] process-resource failed:', err.message));
-    });
-
+    // Respond immediately so the client can start polling
     res.status(201).json({
       data: {
         id: resource.id,
@@ -194,6 +190,86 @@ router.post('/', async (req, res, next) => {
         source_type: resource.source_type,
       },
     });
+
+    // Process in background — Vercel Fluid Compute keeps the function alive after res.json()
+    (async () => {
+      try {
+        const sourceType = detectSourceType(normalizedUrl);
+        const extracted = await extractContent(normalizedUrl, sourceType);
+
+        // Fetch user profile for personalised AI summary
+        const { data: prefs } = await supabase
+          .from('user_preferences')
+          .select('interests')
+          .eq('user_id', userId)
+          .single();
+
+        const aiResult = await processWithAI(extracted, prefs ?? {});
+
+        // Map content-extractor source types to DB enum values
+        const sourceTypeMap = { youtube: 'video', medium: 'article', substack: 'newsletter', pdf: 'pdf', article: 'article' };
+        const dbSourceType = sourceTypeMap[extracted.source_type ?? sourceType] ?? 'article';
+
+        const updatePayload = {
+          processing_status: 'ready',
+          title: aiResult?.title || extracted.title || normalizedUrl,
+          creator_name: aiResult?.creator_name || extracted.creator_name || null,
+          source_type: dbSourceType,
+          thumbnail_url: extracted.thumbnail_url || null,
+          duration_seconds: extracted.duration_seconds || null,
+          reading_time_minutes: extracted.reading_time_minutes || null,
+          ai_summary: aiResult?.ai_summary || extracted.description || null,
+          ai_key_takeaways: aiResult?.ai_key_takeaways || null,
+          content_text: extracted.content_text?.slice(0, 10000) || null,
+        };
+
+        const { error: updateError } = await supabase
+          .from('resources')
+          .update(updatePayload)
+          .eq('id', resource.id);
+
+        if (updateError) {
+          console.error('[resources] update failed:', updateError.message);
+          throw updateError;
+        }
+
+        // Upsert topics
+        const topics = aiResult?.topics ?? extracted.topics ?? [];
+        if (topics.length > 0) {
+          for (const topicName of topics) {
+            // Get or create topic
+            let { data: topic } = await supabase
+              .from('topics')
+              .select('id')
+              .eq('name', topicName)
+              .single();
+
+            if (!topic) {
+              const { data: newTopic } = await supabase
+                .from('topics')
+                .insert({ name: topicName })
+                .select('id')
+                .single();
+              topic = newTopic;
+            }
+
+            if (topic) {
+              await supabase
+                .from('resource_topics')
+                .upsert({ resource_id: resource.id, topic_id: topic.id }, { onConflict: 'resource_id,topic_id' });
+            }
+          }
+        }
+
+        console.log(`[resources] processed ${resource.id} (${dbSourceType}) — topics: ${topics.length}`);
+      } catch (err) {
+        console.error('[resources] background processing failed:', err.message);
+        await supabase
+          .from('resources')
+          .update({ processing_status: 'failed', processing_error: err.message?.slice(0, 500) })
+          .eq('id', resource.id);
+      }
+    })();
   } catch (err) { next(err); }
 });
 
