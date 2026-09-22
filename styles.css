@@ -1342,3 +1342,10 @@ body.dark .discover-tab.active { border-bottom-color: var(--accent); }
 .google-signin:hover{border-color:var(--ink-3);background:var(--sunk)}
 .auth-dialog small{display:block;margin-top:var(--s4);color:var(--ink-3);font-size:11px;line-height:1.5}
 @media(max-width:720px){.auth-dialog{padding:32px 24px}.auth-dialog h1{font-size:2.2rem}}
+
+/* Card-level AI actions remain secondary, but must be readable without hover. */
+.rc-ask{color:#005f86;opacity:1;font-weight:600;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.rc-ask:hover{color:#003f5a}
+.rc-ask:focus-visible{outline:2px solid #005f86;outline-offset:3px;border-radius:2px}
+body.dark .rc-ask{color:#8ddfff}
+body.dark .rc-ask:hover{color:#c8f1ff}

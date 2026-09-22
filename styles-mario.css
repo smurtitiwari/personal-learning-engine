@@ -4015,6 +4015,11 @@ html[data-ui="mario"] .auth-dialog p:not(.kicker),
 html[data-ui="mario"] .auth-dialog small { font-family: 'Pixelify Sans', sans-serif !important; font-size: 14px !important; }
 html[data-ui="mario"] .google-signin { border: 3px solid #1c0e04 !important; border-radius: 0 !important; box-shadow: 3px 3px 0 #1c0e04 !important; }
 
+/* Card Ask AI stays a readable blue tertiary action in every state. */
+html[data-ui="mario"] .rc-ask { color: #005f86 !important; opacity: 1 !important; }
+html[data-ui="mario"] .rc-ask:hover { color: #003f5a !important; }
+html[data-ui="mario"] body.dark .rc-ask { color: #8ddfff !important; }
+
 @media (prefers-reduced-motion: reduce) {
   html[data-ui="mario"] *,
   html[data-ui="mario"] *::before,
