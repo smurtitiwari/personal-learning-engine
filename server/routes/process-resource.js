@@ -31,7 +31,16 @@ function buildFallbackSummary(extracted) {
     length += text.length + 1;
     if (selected.length === 3 || length >= 280) break;
   }
-  return selected.join(' ').slice(0, 700) || clean.slice(0, 700);
+  const excerpt = (selected.join(' ') || clean)
+    .replace(/\bI\b/gi, 'the creator')
+    .replace(/\bmy\b/gi, "the creator's")
+    .replace(/\bwe\b/gi, 'the content')
+    .replace(/\bour\b/gi, "the content's")
+    .replace(/\byou\b/gi, 'the audience')
+    .replace(/\byour\b/gi, "the audience's")
+    .slice(0, 520);
+  const title = extracted.title?.trim();
+  return title ? `${title} explores its subject through practical examples. ${excerpt}` : excerpt;
 }
 
 // Simple secret to prevent public access

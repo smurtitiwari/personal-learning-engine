@@ -145,7 +145,7 @@ Return ONLY a valid JSON object. No explanation, no markdown, just the JSON.
   "creator_name": "YouTube channel name or primary creator",
   "author_name": "Article/newsletter author name",
   "source": "Platform or publication name (e.g. YouTube, Medium, Vercel Blog, Anthropic)",
-  "ai_summary": "2-3 clear sentences explaining what this content is about, its central idea, and the most useful thing the learner will take from it. For a video, summarize the actual video rather than its title or metadata.",
+  "ai_summary": "2-3 objective, third-person sentences explaining the actual subject, central argument, and concrete examples or lessons in the content. State what the video, article, or blog post teaches. Do not copy transcript wording, quote the creator, use first-person language, address the reader, or begin with phrases such as 'I want to show you', 'this video talks about', or 'the creator discusses'.",
   "ai_key_takeaways": ["Specific actionable takeaway", "Another concrete insight", "Third distinct point"],
   "topics": ["Pick 1-3 from this exact list: ${KNOWN_TOPICS.join(', ')}"],
   "duration_seconds": null,
@@ -154,7 +154,9 @@ Return ONLY a valid JSON object. No explanation, no markdown, just the JSON.
 
 Rules:
 - topics must only contain values from the provided list
-- ai_summary must accurately describe the content before explaining why it is useful
+- ai_summary must be a synthesized editorial summary, not an extract or lightly edited transcript
+- write in neutral third person; never use I, we, you, my, our, or your
+- name the specific ideas, examples, techniques, or conclusions covered
 - ai_key_takeaways should be specific and concrete
 - duration_seconds: only for video/audio (integer seconds)
 - reading_time_minutes: only for text content (integer minutes)
@@ -174,6 +176,12 @@ function parseAIResponse(text, extracted) {
 
   const result = {};
 
+  const conciseSummary = (value) => {
+    const clean = value.trim().replace(/\s+/g, ' ');
+    const sentences = clean.match(/[^.!?]+[.!?]+|[^.!?]+$/g) ?? [clean];
+    return sentences.slice(0, 3).join(' ').trim().slice(0, 700);
+  };
+
   if (parsed.title && typeof parsed.title === 'string')
     result.title = parsed.title.trim().slice(0, 300);
   if (parsed.creator_name && typeof parsed.creator_name === 'string')
@@ -183,7 +191,7 @@ function parseAIResponse(text, extracted) {
   if (parsed.source && typeof parsed.source === 'string')
     result.source = parsed.source.trim().slice(0, 100);
   if (parsed.ai_summary && typeof parsed.ai_summary === 'string')
-    result.ai_summary = parsed.ai_summary.trim().slice(0, 1000);
+    result.ai_summary = conciseSummary(parsed.ai_summary);
   if (Array.isArray(parsed.ai_key_takeaways)) {
     result.ai_key_takeaways = parsed.ai_key_takeaways
       .filter(t => typeof t === 'string' && t.trim().length > 0)
