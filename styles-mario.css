@@ -784,7 +784,7 @@ html[data-ui="mario"] .url-row input {
 html[data-ui="mario"] .url-row button {
   font-family: 'Press Start 2P', monospace !important;
   font-size: 6px;
-  color: var(--accent);
+  color: var(--ink);
 }
 
 html[data-ui="mario"] #goalForm input {
