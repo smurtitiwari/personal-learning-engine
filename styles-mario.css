@@ -3822,14 +3822,14 @@ html[data-ui="mario"] .goal-card:hover {
   box-shadow: 4px 4px 0 #0077a3 !important;
 }
 html[data-ui="mario"] .gc-areas span {
-  color: hsl(var(--hl) 52% 30%) !important;
-  background: hsl(var(--hl) 50% 94%) !important;
-  border-color: hsl(var(--hl) 42% 70%) !important;
+  color: #7a6248 !important;
+  background: #faf8f0 !important;
+  border-color: #c8b89a !important;
 }
 html[data-ui="mario"] body.dark .gc-areas span {
-  color: #f5efe6 !important;
-  background: hsl(var(--h) 42% 22%) !important;
-  border-color: hsl(var(--h) 55% 44%) !important;
+  color: #9a8878 !important;
+  background: #14110a !important;
+  border-color: #332a1c !important;
 }
 html[data-ui="mario"] .gc-ai-cta { color: #0077a3 !important; }
 html[data-ui="mario"] .goal-linked-list { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
