@@ -33,9 +33,9 @@ html[data-ui="mario"] {
   --ink-3:     #7a6040;
   --line:      #1c0e04;   /* dark espresso border */
   --line-2:    #1c0e04;
-  --accent:    #e52521;   /* Mario red CTA */
-  --accent-ink:#ffffff;
-  --accent-weak:#ffe8e8;
+  --accent:    #fbd000;   /* Mario yellow CTA */
+  --accent-ink:#1c0e04;  /* black text on yellow */
+  --accent-weak:#fff7c0;  /* yellow tint for hover/weak states */
   --ai:        #0492c4;   /* Mario blue — exact reference value */
   --ai-weak:   #ebe6ff;   /* AI card bg */
 
@@ -448,8 +448,8 @@ html[data-ui="mario"] .view-head .lede {
 
 /* ── BUTTONS ── */
 html[data-ui="mario"] .btn-primary {
-  background: #0492c4 !important;     /* blue in light */
-  color: #fff !important;
+  background: #fbd000 !important;
+  color: #1c0e04 !important;
   border: 3px solid #1c0e04 !important;
   border-radius: 0 !important;
   box-shadow: 3px 3px 0 #1c0e04 !important;
