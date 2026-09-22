@@ -620,7 +620,7 @@ document.addEventListener('click', (e) => {
   const btn = e.target.closest('[data-ui-set]');
   if (!btn) return;
   const mode = btn.dataset.uiSet;
-  const current = localStorage.getItem('le-ui-mode') || 'classic';
+  const current = localStorage.getItem('le-ui-mode') || 'mario';
   if (mode === current) return;
   setUiMode(mode);
   // Small delay so the user sees the button activate before reload
@@ -646,7 +646,7 @@ async function openSettings() {
     const currentMode = localStorage.getItem('le-theme') || 'system';
     $$('[data-theme-set]').forEach(b => b.classList.toggle('on', b.dataset.themeSet === currentMode));
     // Sync UI mode buttons
-    const currentUiMode = localStorage.getItem('le-ui-mode') || 'classic';
+    const currentUiMode = localStorage.getItem('le-ui-mode') || 'mario';
     $$('[data-ui-set]').forEach(b => b.classList.toggle('on', b.dataset.uiSet === currentUiMode));
   } catch {}
   settingsDialog.showModal();
