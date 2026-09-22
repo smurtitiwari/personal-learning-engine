@@ -3698,3 +3698,17 @@ html[data-ui="mario"] .add-btn {
   font-weight: 600 !important;
   color: #111111 !important;
 }
+
+/* Summary is long-form reading content, so use the UI's clear text face. */
+html[data-ui="mario"] .detail-summary {
+  font-family: 'Geist', 'Inter', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  line-height: 1.65 !important;
+  letter-spacing: 0 !important;
+  color: #342d27 !important;
+  max-width: 72ch;
+}
+html[data-ui="mario"] body.dark .detail-summary {
+  color: #e8e1d7 !important;
+}
