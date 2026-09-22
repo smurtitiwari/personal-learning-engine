@@ -14,6 +14,7 @@ import { extractContent, detectSourceType, extractYouTubeId } from '../services/
 import { processWithAI } from '../services/ai-processor.js';
 
 const router = Router();
+const MAX_SUMMARY_CHARS = 360;
 
 function buildFallbackSummary(extracted) {
   const raw = extracted.description || extracted.transcript || extracted.content_text || '';
@@ -26,10 +27,10 @@ function buildFallbackSummary(extracted) {
   for (const sentence of sentences) {
     const text = sentence.trim();
     if (!text) continue;
-    if (selected.length > 0 && length + text.length > 600) break;
+    if (selected.length > 0 && length + text.length > MAX_SUMMARY_CHARS) break;
     selected.push(text);
     length += text.length + 1;
-    if (selected.length === 3 || length >= 280) break;
+    if (selected.length === 2 || length >= 240) break;
   }
   const excerpt = (selected.join(' ') || clean)
     .replace(/\bI\b/gi, 'the creator')
@@ -38,9 +39,10 @@ function buildFallbackSummary(extracted) {
     .replace(/\bour\b/gi, "the content's")
     .replace(/\byou\b/gi, 'the audience')
     .replace(/\byour\b/gi, "the audience's")
-    .slice(0, 520);
+    .slice(0, MAX_SUMMARY_CHARS);
   const title = extracted.title?.trim();
-  return title ? `${title} explores its subject through practical examples. ${excerpt}` : excerpt;
+  return (title ? `${title} explores its subject through practical examples. ${excerpt}` : excerpt)
+    .slice(0, MAX_SUMMARY_CHARS);
 }
 
 // Simple secret to prevent public access

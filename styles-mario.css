@@ -3811,6 +3811,57 @@ html[data-ui="mario"] :is(a, button, input, select, [tabindex]):focus-visible {
 html[data-ui="mario"] body.dark :is(a, button, input, select, [tabindex]):focus-visible {
   outline-color: #ffd600 !important;
 }
+
+/* Resource detail: fixed desktop frame with actions always in view. */
+html[data-ui="mario"] .detail-dialog {
+  width: min(920px, calc(100vw - 48px)) !important;
+  height: min(780px, calc(100dvh - 48px)) !important;
+  max-height: min(780px, calc(100dvh - 48px)) !important;
+  box-sizing: border-box !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important;
+}
+html[data-ui="mario"] .detail-dialog .detail-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none !important;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 28px 34px 16px !important;
+}
+html[data-ui="mario"] .detail-dialog .detail-thumbnail {
+  height: clamp(180px, 28dvh, 270px) !important;
+  aspect-ratio: auto !important;
+  margin-bottom: 16px !important;
+}
+html[data-ui="mario"] .detail-dialog .detail-actions {
+  flex: 0 0 auto;
+  margin: 0 !important;
+  padding: 16px 34px 22px !important;
+  border-top: 2px solid #d8cebc;
+  background: #fbfaf6;
+}
+html[data-ui="mario"] body.dark .detail-dialog .detail-actions {
+  background: #141210;
+  border-top-color: #332a1c;
+}
+@media (max-width: 720px) {
+  html[data-ui="mario"] .detail-dialog {
+    width: calc(100vw - 24px) !important;
+    height: calc(100dvh - 24px) !important;
+    max-height: calc(100dvh - 24px) !important;
+  }
+  html[data-ui="mario"] .detail-dialog .detail-scroll {
+    padding: 22px 18px 12px !important;
+  }
+  html[data-ui="mario"] .detail-dialog .detail-actions {
+    padding: 12px 18px 16px !important;
+  }
+  html[data-ui="mario"] .detail-dialog .detail-thumbnail {
+    height: min(220px, 26dvh) !important;
+  }
+}
 @media (max-width: 720px) {
   html[data-ui="mario"] main {
     padding: 78px 20px 84px !important;

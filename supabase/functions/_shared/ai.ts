@@ -6,6 +6,7 @@ import type { AIAnalysisResult, AIGoalAnalysis, ChatMessage } from './types.ts';
 
 const DEFAULT_BASE_URL = 'https://api.deepseek.com';
 const DEFAULT_MODEL    = 'deepseek-flash';
+const MAX_SUMMARY_CHARS = 360;
 
 function getApiKey(): string {
   const key = Deno.env.get('DEEPSEEK_API_KEY');
@@ -66,6 +67,14 @@ function parseJSON<T>(raw: string): T {
   return JSON.parse(clean) as T;
 }
 
+function conciseSummary(value: string): string {
+  const text = value.replace(/\s+/g, ' ').trim();
+  if (text.length <= MAX_SUMMARY_CHARS) return text;
+  const excerpt = text.slice(0, MAX_SUMMARY_CHARS - 1);
+  const sentenceEnd = Math.max(excerpt.lastIndexOf('.'), excerpt.lastIndexOf('!'), excerpt.lastIndexOf('?'));
+  return sentenceEnd >= 220 ? excerpt.slice(0, sentenceEnd + 1) : `${excerpt.trimEnd()}…`;
+}
+
 // ── Resource Analysis ─────────────────────────────────────────
 
 export async function analyzeResource(
@@ -75,7 +84,7 @@ export async function analyzeResource(
 ): Promise<AIAnalysisResult> {
   const system = `You analyze learning resources and return structured JSON only.
 Schema (respond with ONLY this JSON, no prose, no markdown):
-{"summary":"2-3 sentence summary","topics":["topic1"],"concepts":["concept1"],"keywords":["kw1"]}
+{"summary":"1-2 sentence summary, maximum 360 characters","topics":["topic1"],"concepts":["concept1"],"keywords":["kw1"]}
 - topics: broad learning areas (e.g. "AI UX", "Machine Learning", "Product Strategy") — max 8
 - concepts: specific ideas in the resource — max 10
 - keywords: useful search terms — max 10`;
@@ -97,7 +106,7 @@ Schema (respond with ONLY this JSON, no prose, no markdown):
     throw new Error(`Invalid AI analysis structure: ${raw.slice(0, 200)}`);
   }
   return {
-    summary:  parsed.summary as string,
+    summary:  conciseSummary(parsed.summary as string),
     topics:   (parsed.topics   as unknown[]).filter(t => typeof t === 'string').slice(0, 8)  as string[],
     concepts: (parsed.concepts as unknown[]).filter(t => typeof t === 'string').slice(0, 10) as string[],
     keywords: (parsed.keywords as unknown[]).filter(t => typeof t === 'string').slice(0, 10) as string[],

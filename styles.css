@@ -634,7 +634,14 @@ body.dark .sheet::backdrop,body.dark .welcome-dialog::backdrop{background:rgba(4
 .dr-by{font:10px/1 var(--mono);color:var(--ink-3)}
 
 /* ── Resource detail modal ─────────────────────────────────── */
-.detail-scroll{overflow-y:auto;max-height:82vh}
+.detail-dialog{
+  width:min(920px,calc(100vw - 48px));height:min(780px,calc(100dvh - 48px));max-height:min(780px,calc(100dvh - 48px));
+  box-sizing:border-box;display:flex;flex-direction:column;overflow:hidden;
+}
+.detail-dialog .detail-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;max-height:none;overscroll-behavior:contain;padding:28px 34px 16px}
+.detail-dialog .detail-thumbnail{height:clamp(180px,28dvh,270px);aspect-ratio:auto;margin-bottom:16px}
+.detail-dialog .detail-actions{flex:0 0 auto;margin:0;padding:16px 34px 22px;border-top:1px solid var(--line);background:var(--elev)}
+body.dark .detail-dialog .detail-actions{background:var(--elev)}
 
 /* 1. Type tag — "VIDEO · CODEX COMMUNITY" */
 .detail-type-tag{
@@ -1226,6 +1233,10 @@ body.dark .discover-tab.active { border-bottom-color: var(--accent); }
   .welcome-art::before{font-size:70px;bottom:8px}
   .welcome-copy{padding:var(--s6) var(--s5)}
   .sheet-step{padding:var(--s6) var(--s5)}
+  .detail-dialog{width:calc(100vw - 24px);height:calc(100dvh - 24px);max-height:calc(100dvh - 24px)}
+  .detail-dialog .detail-scroll{padding:22px 18px 12px}
+  .detail-dialog .detail-actions{padding:12px 18px 16px}
+  .detail-dialog .detail-thumbnail{height:min(220px,26dvh)}
 }
 
 /* ── Processing skeleton card ── */

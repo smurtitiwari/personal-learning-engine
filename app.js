@@ -327,6 +327,16 @@ const detailDialog = $('.detail-dialog');
 let _currentDetailResource = null;
 let _sessionStart = null;      // when current detail was opened
 const MIN_SESSION_SECS = 10;   // ignore accidental taps under 10 s
+const DETAIL_SUMMARY_MAX_CHARS = 360;
+
+function conciseDetailSummary(value) {
+  const summary = String(value || '').replace(/\s+/g, ' ').trim();
+  if (summary.length <= DETAIL_SUMMARY_MAX_CHARS) return summary;
+
+  const excerpt = summary.slice(0, DETAIL_SUMMARY_MAX_CHARS - 1);
+  const sentenceEnd = Math.max(excerpt.lastIndexOf('.'), excerpt.lastIndexOf('!'), excerpt.lastIndexOf('?'));
+  return `${(sentenceEnd >= 220 ? excerpt.slice(0, sentenceEnd + 1) : excerpt.trimEnd())}…`;
+}
 
 /** Call when a resource detail closes — reports actual elapsed time */
 async function flushSessionTime() {
@@ -378,7 +388,7 @@ function renderDetailDialog(obj) {
   // AI Summary — always visible; loading state while generating
   const summaryEl = $('#detailSummary');
   const summary = obj.summary || obj.ai_summary || '';
-  summaryEl.textContent = summary || 'Generating summary…';
+  summaryEl.textContent = conciseDetailSummary(summary) || 'Generating summary…';
   summaryEl.classList.toggle('detail-summary--loading', !summary);
 
   // Why AI recommended this (rec cards only)
@@ -451,7 +461,7 @@ async function openDetail(obj) {
     // Update summary — prefer ai_summary, fall back to description
     const freshSummary = data.summary || data.ai_summary || data.description || '';
     if (freshSummary) {
-      $('#detailSummary').textContent = freshSummary;
+      $('#detailSummary').textContent = conciseDetailSummary(freshSummary);
       $('#detailSummary').classList.remove('detail-summary--loading');
     }
 

@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Press+Start+2P&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./styles.css?v=24" />
-<link rel="stylesheet" href="./styles-mario.css?v=19" />
+<link rel="stylesheet" href="./styles.css?v=25" />
+<link rel="stylesheet" href="./styles-mario.css?v=20" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -386,21 +386,20 @@
       <ul class="detail-covers" id="detailCovers"></ul>
     </div>
 
-    <!-- 6. Two equal CTAs: primary open + secondary ask AI -->
-    <div class="detail-actions">
-      <a class="detail-open-btn" id="detailOpen" href="#" target="_blank" rel="noopener noreferrer">Open source</a>
-      <button class="detail-ask-btn" id="detailAskBtn">Ask AI about this</button>
-    </div>
-
-    <!-- 7. Destructive action -->
+    <!-- 6. Destructive action -->
     <button class="detail-delete-btn" id="detailDelete" hidden>Delete this resource</button>
 
-    <!-- 8. Related in library -->
+    <!-- 7. Related in library -->
     <div id="detailRelatedWrap" hidden>
       <p class="kicker detail-related-kicker">Related in your library</p>
       <div class="detail-related-list" id="detailRelatedList"></div>
     </div>
 
+  </div>
+  <!-- Persistent action footer: never hidden below the scroll area. -->
+  <div class="detail-actions">
+    <a class="detail-open-btn" id="detailOpen" href="#" target="_blank" rel="noopener noreferrer">Open source</a>
+    <button class="detail-ask-btn" id="detailAskBtn">Ask AI about this</button>
   </div>
 </dialog>
 
