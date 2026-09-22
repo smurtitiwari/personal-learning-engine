@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Press+Start+2P&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./styles.css?v=32" />
-<link rel="stylesheet" href="./styles-mario.css?v=28" />
+<link rel="stylesheet" href="./styles.css?v=33" />
+<link rel="stylesheet" href="./styles-mario.css?v=29" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -345,12 +345,12 @@
     <h2 id="goalDialogTitle">Name it, and say what<br>you want to learn.</h2>
     <form id="goalForm">
       <label class="field-label" for="goalName">Goal name</label>
-      <input id="goalName" type="text" placeholder="AI-native product design" required />
+      <input id="goalName" type="text" placeholder="e.g. Designing reliable AI agents" required />
       <label class="field-label" for="goalKeywords">What do you want to learn? A few keywords.</label>
-      <input id="goalKeywords" type="text" placeholder="evaluation, agents, prototyping" />
+      <input id="goalKeywords" type="text" placeholder="e.g. evaluation, testing, observability" />
       <button class="btn-primary wide" type="submit">Continue</button>
     </form>
-    <p class="sheet-lede">AI matches your keywords to what's already in your library, then suggests areas and real resources to start from.</p>
+    <p class="sheet-lede">AI turns your keywords into a focused learning direction and suggested resources.</p>
   </div>
   <div class="sheet-step" data-step="structure" hidden>
     <p class="kicker"><span class="ai-tag">AI</span> Suggested structure</p>
@@ -492,6 +492,6 @@
 </dialog>
 
 <div class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-<script src="./app.js?v=12"></script>
+<script src="./app.js?v=13"></script>
 </body>
 </html>

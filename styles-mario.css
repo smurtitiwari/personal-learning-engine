@@ -3867,6 +3867,20 @@ html[data-ui="mario"] .gc-remove {
   font-size: 12px !important;
 }
 html[data-ui="mario"] .gc-remove:hover { color: #1c0e04 !important; }
+
+/* Goal creation starts blank. Examples should read as hints, not entered data. */
+html[data-ui="mario"] #goalForm input {
+  height: 46px !important;
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 14px !important;
+}
+html[data-ui="mario"] #goalForm input::placeholder {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 12px !important;
+  color: #8f775d !important;
+  font-style: italic;
+  opacity: 1;
+}
 html[data-ui="mario"] .goals-monthly-note {
   font-family: 'Geist', 'Inter', sans-serif !important;
   font-size: 14px !important;
