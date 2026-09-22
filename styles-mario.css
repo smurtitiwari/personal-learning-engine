@@ -3861,6 +3861,12 @@ html[data-ui="mario"] .goal-card:hover {
 html[data-ui="mario"] .goal-card:hover { border-color: #0077a3 !important; }
 html[data-ui="mario"] .gc-areas { border-top: 2px solid var(--mario-border) !important; }
 html[data-ui="mario"] .gc-ai-recs { border-top: 0 !important; padding-top: 0 !important; }
+html[data-ui="mario"] .gc-remove {
+  color: #7a6248 !important;
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 12px !important;
+}
+html[data-ui="mario"] .gc-remove:hover { color: #1c0e04 !important; }
 html[data-ui="mario"] .goals-monthly-note {
   font-family: 'Geist', 'Inter', sans-serif !important;
   font-size: 14px !important;

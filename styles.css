@@ -513,6 +513,9 @@ body.dark .goal-card:hover{box-shadow:0 0 0 1px var(--accent), 0 18px 44px -16px
 .gc-ai-label{display:flex;align-items:center;gap:5px;font:600 11.5px/1 var(--sans);color:var(--ink-2)}
 .gc-ai-count{font:400 11.5px/1.4 var(--sans);color:var(--ink-3)}
 .gc-ai-cta{font:600 11.5px/1 var(--sans);color:#0077a3}
+.gc-remove{align-self:flex-start;margin-top:5px;padding:0;color:var(--ink-3);font:500 11.5px/1 var(--sans);text-decoration:underline;text-underline-offset:3px}
+.gc-remove:hover{color:var(--ink)}
+.gc-remove:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
 dialog.detail-dialog:not([open]){display:none!important}
 

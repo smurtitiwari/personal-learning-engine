@@ -1278,14 +1278,16 @@ function goalMetrics(areas){
 function goalCardHTML(g, i){
   const areas = g.areas || [];
   const chips = areas.slice(0, 2).map((a) => `<span>${a}</span>`).join('');
+  const isSuggestedGoal = SUGGESTED_GOALS.some((goal) => goal.title === g.title);
   return `
-    <button class="goal-card" data-goal-id="${g.id}">
+    <article class="goal-card" data-goal-id="${g.id}" role="button" tabindex="0" aria-label="Open ${g.title}">
       <div class="gc-head"><h3>${g.title}</h3></div>
       <div class="gc-areas">${chips}</div>
       <div class="gc-ai-recs">
         <span class="gc-ai-cta">View resources</span>
+        ${isSuggestedGoal ? `<button class="gc-remove" type="button" data-remove-goal="${g.id}">Remove goal</button>` : ''}
       </div>
-    </button>`;
+    </article>`;
 }
 
 async function loadGoals() {
@@ -1371,7 +1373,27 @@ function renderGoals(){
   goalsList.querySelectorAll('.goal-card').forEach((c) => c.remove());
   goalsList.insertAdjacentHTML('beforeend', userGoals.map(goalCardHTML).join(''));
   goalsList.querySelectorAll('[data-goal-id]').forEach((b) => {
-    b.addEventListener('click', () => openGoalDetail(b.dataset.goalId));
+    const open = () => openGoalDetail(b.dataset.goalId);
+    b.addEventListener('click', (event) => {
+      if (!event.target.closest('[data-remove-goal]')) open();
+    });
+    b.addEventListener('keydown', (event) => {
+      if ((event.key === 'Enter' || event.key === ' ') && !event.target.closest('[data-remove-goal]')) {
+        event.preventDefault();
+        open();
+      }
+    });
+  });
+  goalsList.querySelectorAll('[data-remove-goal]').forEach((button) => {
+    button.addEventListener('click', (event) => {
+      event.stopPropagation();
+      startedGoalIds.delete(button.dataset.removeGoal);
+      persistStartedGoals();
+      renderGoals();
+      renderSuggestions();
+      setGoalListTab('all');
+      toast('Returned to All goals.');
+    });
   });
 }
 
