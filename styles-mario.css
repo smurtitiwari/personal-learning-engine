@@ -3956,6 +3956,54 @@ html[data-ui="mario"] body.dark .detail-dialog .detail-actions {
     height: 36px !important;
   }
 }
+/* Mobile navigation keeps the three primary destinations within thumb reach. */
+@media (max-width:720px) {
+  html[data-ui="mario"] .rail {
+    height: 56px !important;
+    padding: 0 16px !important;
+    border-bottom: 3px solid #e52521 !important;
+  }
+  html[data-ui="mario"] .nav {
+    height: 64px !important;
+    background: #1c0e04 !important;
+    border-top: 3px solid #1c0e04 !important;
+  }
+  html[data-ui="mario"] .nav a {
+    color: #f5efe6 !important;
+    min-height: 60px !important;
+  }
+  html[data-ui="mario"] .nav a.active {
+    background: #3a1d08 !important;
+    border-left: 0 !important;
+    border-top: 3px solid #ffd600 !important;
+  }
+  html[data-ui="mario"] .ask-btn {
+    width: 86px !important;
+    height: 52px !important;
+    min-height: 52px !important;
+    background: #0077a3 !important;
+    border: 3px solid #1c0e04 !important;
+    border-radius: 0 !important;
+    box-shadow: 3px 3px 0 #000 !important;
+    color: #fff !important;
+  }
+  html[data-ui="mario"] .ask-btn.active { background: #005d80 !important; }
+  html[data-ui="mario"] .ask-btn .ask-text { font-size: 12px !important; }
+  html[data-ui="mario"] .add-btn {
+    width: 54px !important;
+    height: 54px !important;
+    min-height: 54px !important;
+    border: 3px solid #1c0e04 !important;
+    border-radius: 0 !important;
+    box-shadow: 3px 3px 0 #1c0e04 !important;
+  }
+  html[data-ui="mario"] .app.ask-open .ask-panel {
+    border: 3px solid #1c0e04 !important;
+    border-radius: 0 !important;
+    box-shadow: 4px 4px 0 #1c0e04 !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html[data-ui="mario"] *,
   html[data-ui="mario"] *::before,
