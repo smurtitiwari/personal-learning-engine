@@ -27,11 +27,9 @@ router.post('/', async (req, res) => {
   const { resource_id } = req.body;
   if (!resource_id) return res.status(400).json({ error: 'resource_id required' });
 
-  // Respond immediately so the caller can move on
-  res.status(202).json({ ok: true });
-
-  // Now do the heavy work — this keeps running after res.json() because
-  // this is its own Vercel invocation with its own timeout budget
+  // Do ALL work synchronously within this request — Vercel keeps the invocation
+  // alive until we send the response. The caller (POST /api/resources) fires this
+  // without awaiting it, so the user gets their 201 immediately while this runs.
   try {
     const { data: resource, error: fetchError } = await supabase
       .from('resources')
@@ -41,7 +39,7 @@ router.post('/', async (req, res) => {
 
     if (fetchError || !resource) {
       console.error('[process-resource] resource not found:', resource_id);
-      return;
+      return res.status(404).json({ error: 'Resource not found' });
     }
 
     const sourceType = detectSourceType(resource.url);
@@ -112,12 +110,14 @@ router.post('/', async (req, res) => {
     }
 
     console.log(`[process-resource] done ${resource_id} (${dbSourceType}) topics:${topics.length}`);
+    return res.json({ ok: true, source_type: dbSourceType });
   } catch (err) {
     console.error('[process-resource] failed:', err.message);
     await supabase
       .from('resources')
       .update({ processing_status: 'failed', processing_error: err.message?.slice(0, 500) })
       .eq('id', resource_id);
+    return res.status(500).json({ error: err.message });
   }
 });
 
