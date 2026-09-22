@@ -1562,11 +1562,13 @@ async function loadAnalytics() {
         const heightPct = Math.round((d.seconds / maxSec) * 100);
         const label = fmtSeconds(d.seconds);
         const isToday = d.date === new Date().toISOString().slice(0, 10);
+        const hasTime = d.seconds > 0;
+        const stateClass = hasTime ? ' li-bar--active' : ' li-bar--empty';
         return `
-          <div class="li-bar${isToday ? ' li-bar--today' : ''}" title="${d.day}: ${label}">
+          <div class="li-bar${stateClass}${isToday ? ' li-bar--today' : ''}" title="${d.day}: ${label}" role="img" aria-label="${d.day}: ${label} studied">
             <span class="li-bar-fill" style="height:${Math.max(heightPct, 2)}%"></span>
             <span class="li-bar-day">${isToday ? 'Today' : d.day}</span>
-            <span class="li-bar-time">${d.seconds > 0 ? label : ''}</span>
+            <span class="li-bar-time">${hasTime ? label : ''}</span>
           </div>`;
       }).join('');
       $('#liChart').hidden = false;

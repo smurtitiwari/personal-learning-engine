@@ -1768,11 +1768,19 @@ html[data-ui="mario"] .li-bar-fill {
   border-radius: 0 !important;
   background: rgba(28,14,4,.2) !important;   /* warm transparent — matches reference */
 }
+html[data-ui="mario"] .li-bar--active .li-bar-fill {
+  background: #0077a3 !important;
+  border: 2px solid #1c0e04 !important;
+}
 html[data-ui="mario"] body.dark .li-bar-fill {
   background: rgba(240,236,224,.12) !important;  /* dark variant — matches reference */
 }
+html[data-ui="mario"] body.dark .li-bar--active .li-bar-fill {
+  background: #168db8 !important;
+  border-color: #f0ece0 !important;
+}
 html[data-ui="mario"] .li-bar--today .li-bar-fill {
-  background: #0077A3 !important;              /* Mario blue today — matches reference */
+  background: #ffd400 !important;
   border: 2px solid #1c0e04 !important;
 }
 html[data-ui="mario"] body.dark .li-bar--today .li-bar-fill {
