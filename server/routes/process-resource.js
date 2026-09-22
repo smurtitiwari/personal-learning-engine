@@ -73,7 +73,7 @@ router.post('/', async (req, res) => {
       duration_seconds: extracted.duration_seconds || null,
       reading_time_minutes: extracted.reading_time_minutes || null,
       ai_summary: aiResult?.ai_summary || extracted.description || null,
-      ai_key_takeaways: aiResult?.ai_key_takeaways || null,
+      ai_key_takeaways: aiResult?.ai_key_takeaways ?? [],
       content_text: extracted.content_text?.slice(0, 10000) || null,
     };
 
