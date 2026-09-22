@@ -183,11 +183,12 @@ html[data-ui="mario"] .add-btn {
   border: 3px solid var(--mario-sb-text) !important;
   border-radius: 0 !important;
   box-shadow: 3px 3px 0 var(--mario-sb-text);
-  font-family: 'Press Start 2P', monospace !important;
-  font-size: 13px;
-  letter-spacing: .5px;
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .3px;
   transition: transform .1s, box-shadow .1s;
-  height: 40px;
+  height: 42px;
 }
 html[data-ui="mario"] .add-btn:hover {
   filter: none;
@@ -2569,8 +2570,11 @@ html[data-ui="mario"] .nav a .nav-ico {
 
 /* Add button */
 html[data-ui="mario"] .add-btn {
-  font-size: 13px !important;
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
   padding: 12px 8px !important;
+  color: #1c0e04 !important;
 }
 
 /* Search input */
