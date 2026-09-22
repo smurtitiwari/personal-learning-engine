@@ -1011,6 +1011,7 @@ function showAddPreview(resource) {
   showStep(addDialog, 'preview');
 }
 
+// Poll silently in background — no modal steps, just refresh the grid when done
 async function pollForResource(id) {
   stopPolling();
   let attempts = 0;
@@ -1020,19 +1021,23 @@ async function pollForResource(id) {
       const { data } = await apiFetch(`/api/resources/${id}`);
       if (data.status === 'ready' || data.status === 'failed') {
         stopPolling();
-        showAddPreview(data);
-        loadResources();
+        loadResources(); // refresh grid with full data (thumbnail, summary, etc.)
       }
     } catch (err) {
       console.warn('Poll error:', err.message);
     }
     if (attempts > 30) { // 60 second timeout
       stopPolling();
-      toast('Processing is taking longer than expected — check your library shortly');
-      addDialog.close();
       loadResources();
     }
   }, 2000);
+}
+
+function closeAddDialog() {
+  stopPolling();
+  addDialog.close();
+  $('#addForm').reset();
+  showStep(addDialog, 'form');
 }
 
 $('#addForm').addEventListener('submit', async (e) => {
@@ -1051,15 +1056,12 @@ $('#addForm').addEventListener('submit', async (e) => {
       body: JSON.stringify({ url }),
     });
 
-    if (duplicate || data.status === 'ready' || data.status === 'failed') {
-      data.duplicate = !!duplicate;
-      if (!duplicate && data.id) _highlightResourceId = data.id;
-      showAddPreview(data);
-      loadResources();
-    } else {
-      // Processing — start polling
-      _highlightResourceId = data.id;
-      pollForResource(data.id);
+    _highlightResourceId = data.id;
+    closeAddDialog();
+    loadResources(); // show card immediately (skeleton if still processing)
+
+    if (!duplicate && data.status === 'processing') {
+      pollForResource(data.id); // silently refresh when AI processing finishes
     }
   } catch (err) {
     showStep(addDialog, 'form');
@@ -1070,12 +1072,7 @@ $('#addForm').addEventListener('submit', async (e) => {
   }
 });
 
-$('#saveResource').addEventListener('click', () => {
-  stopPolling();
-  addDialog.close();
-  $('#addForm').reset();
-  showStep(addDialog, 'form');
-});
+$('#saveResource').addEventListener('click', closeAddDialog);
 
 /* ---------- Goals ---------- */
 const goalDialog = $('.goal-dialog');
