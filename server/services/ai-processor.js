@@ -26,35 +26,51 @@ const MAX_CONTENT_CHARS = 7000;
 function getDeepSeekConfig() {
   const apiKey = process.env.DEEPSEEK_API_KEY;
   const baseUrl = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com';
-  const model   = process.env.DEEPSEEK_MODEL    || 'deepseek-chat';
+  const model   = process.env.DEEPSEEK_MODEL    || 'deepseek-flash';  // default to flash
   return { apiKey, baseUrl, model };
 }
 
 async function callDeepSeek(messages, maxTokens = 1024) {
   const { apiKey, baseUrl, model } = getDeepSeekConfig();
+
   if (!apiKey) {
     console.log('[ai-processor] No DEEPSEEK_API_KEY — skipping AI processing');
     return null;
   }
 
-  const resp = await fetch(`${baseUrl}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({ model, max_tokens: maxTokens, messages }),
-    signal: AbortSignal.timeout(30_000),
-  });
+  console.log(`[ai-processor] calling DeepSeek model=${model}`);
+
+  let resp;
+  try {
+    resp = await fetch(`${baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({ model, max_tokens: maxTokens, messages }),
+      signal: AbortSignal.timeout(30_000),
+    });
+  } catch (fetchErr) {
+    if (fetchErr.name === 'TimeoutError') {
+      throw new Error('DeepSeek request timed out after 30s');
+    }
+    throw new Error(`DeepSeek network error: ${fetchErr.message}`);
+  }
 
   if (!resp.ok) {
-    const text = await resp.text();
+    const text = await resp.text().catch(() => '');
+    if (resp.status === 401) throw new Error(`DeepSeek 401 Unauthorized — check DEEPSEEK_API_KEY`);
+    if (resp.status === 404) throw new Error(`DeepSeek 404 — model "${model}" not found. Check DEEPSEEK_MODEL env var`);
+    if (resp.status === 429) throw new Error(`DeepSeek 429 Rate limited`);
     throw new Error(`DeepSeek ${resp.status}: ${text.slice(0, 300)}`);
   }
 
   const data = await resp.json();
   const content = data?.choices?.[0]?.message?.content;
-  if (typeof content !== 'string') throw new Error('Unexpected DeepSeek response shape');
+  if (typeof content !== 'string') {
+    throw new Error(`Unexpected DeepSeek response shape: ${JSON.stringify(data).slice(0, 200)}`);
+  }
   return content.trim();
 }
 

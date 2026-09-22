@@ -33,11 +33,12 @@ html[data-ui="mario"] {
   --ink-3:     #7a6040;
   --line:      #1c0e04;   /* dark espresso border */
   --line-2:    #1c0e04;
-  --accent:    #fbd000;   /* Mario yellow CTA */
-  --accent-ink:#1c0e04;  /* black text on yellow */
-  --accent-weak:#fff7c0;  /* yellow tint for hover/weak states */
-  --ai:        #0492c4;   /* Mario blue — exact reference value */
-  --ai-weak:   #ebe6ff;   /* AI card bg */
+  --accent:    #FFD600;   /* primary yellow CTA */
+  --accent-ink:#1c0e04;  /* dark text on yellow */
+  --accent-weak:#fff7c0;  /* yellow tint hover */
+  --ai:        #0077A3;   /* accessible AI blue */
+  --ai-ink:    #ffffff;   /* white text on AI blue */
+  --ai-weak:   rgba(0,119,163,.08); /* subtle AI tint */
 
   /* pixel shadow */
   --shadow-sm: 3px 3px 0 #1c0e04;
@@ -51,10 +52,10 @@ html[data-ui="mario"] {
   /* Mario-specific extras */
   --mario-sb-bg:    #1c0e04;   /* sidebar always espresso */
   --mario-sb-text:  #faf8f0;
-  --mario-gold:     #fbd000;   /* gold accent */
+  --mario-gold:     #FFD600;   /* primary yellow CTA */
   --mario-shadow:   #1c0e04;
   --mario-border:   #1c0e04;
-  --mario-blue:     #0492c4;   /* filter/tag active — exact Mario blue */
+  --mario-blue:     #0077A3;   /* accessible AI blue */
   --mario-green:    #43b047;
   --mario-focus-bg: #ebe6ff;   /* AI card bg */
   --mario-focus-bd: #6c52d8;   /* AI card border/accent */
@@ -276,12 +277,12 @@ html[data-ui="mario"] .ask-btn.active {
 }
 /* ASK AI stays blue in both light AND dark — images confirm this */
 html[data-ui="mario"] body.dark .ask-btn {
-  border-color: #0492c4 !important;
-  box-shadow: 2px 2px 0 #0492c4;
-  color: #0492c4;
+  border-color: #0077A3 !important;
+  box-shadow: 2px 2px 0 #0077A3;
+  color: #0077A3;
 }
-html[data-ui="mario"] body.dark .ask-btn:hover { box-shadow: 1px 1px 0 #0492c4; }
-html[data-ui="mario"] body.dark .ask-btn.active { background: #0492c4; color: #fff; }
+html[data-ui="mario"] body.dark .ask-btn:hover { box-shadow: 1px 1px 0 #0077A3; }
+html[data-ui="mario"] body.dark .ask-btn.active { background: #0077A3; color: #fff; }
 
 /* Theme switch */
 html[data-ui="mario"] .theme-switch {
@@ -407,14 +408,14 @@ html[data-ui="mario"] .ai-tag {
   font-size: 8px;
   border-radius: 0 !important;
   border: 2px solid var(--mario-blue);
-  background: rgba(4,156,216,.12);
+  background: rgba(0,119,163,.12);
   color: var(--mario-blue);
   padding: 4px 6px 3px;
 }
 html[data-ui="mario"] body.dark .ai-tag {
-  background: rgba(4,156,216,.15);
-  color: #0492c4;
-  border-color: #0492c4;
+  background: rgba(0,119,163,.15);
+  color: #0077A3;
+  border-color: #0077A3;
 }
 
 /* Kicker */
@@ -448,7 +449,7 @@ html[data-ui="mario"] .view-head .lede {
 
 /* ── BUTTONS ── */
 html[data-ui="mario"] .btn-primary {
-  background: #fbd000 !important;
+  background: #FFD600 !important;
   color: #1c0e04 !important;
   border: 3px solid #1c0e04 !important;
   border-radius: 0 !important;
@@ -515,11 +516,11 @@ html[data-ui="mario"] .linkish {
   font-size: 11px;
   align-self: flex-start;
   width: auto;
-  color: #0492c4 !important;
-  border-bottom: 2px solid #0492c4 !important;
+  color: #0077A3 !important;
+  border-bottom: 2px solid #0077A3 !important;
   padding-bottom: 1px;
 }
-html[data-ui="mario"] body.dark .linkish { color: #0492c4 !important; border-bottom-color: #0492c4 !important; }
+html[data-ui="mario"] body.dark .linkish { color: #0077A3 !important; border-bottom-color: #0077A3 !important; }
 
 /* ── SEARCH + FILTER ── */
 html[data-ui="mario"] .search {
@@ -833,7 +834,7 @@ html[data-ui="mario"] .welcome-dialog {
   box-shadow: 8px 8px 0 var(--mario-shadow);
 }
 html[data-ui="mario"] .welcome-art {
-  background: #0492c4; /* sky blue */
+  background: #0077A3; /* sky blue */
   border-right: 4px solid var(--mario-border) !important;
 }
 html[data-ui="mario"] .welcome-art::before {
@@ -1136,7 +1137,7 @@ html[data-ui="mario"] .setting-theme button {
   transition: all .1s;
 }
 html[data-ui="mario"] .setting-theme button.on {
-  background: #fbd000 !important;
+  background: #FFD600 !important;
   color: #1c0e04 !important;
   opacity: 1;
   box-shadow: none;
@@ -1472,7 +1473,7 @@ html[data-ui="mario"] .detail-ask-btn {
   background: transparent;
 }
 html[data-ui="mario"] .detail-ask-btn:hover {
-  background: rgba(4,156,216,.1);
+  background: rgba(0,119,163,.1);
   opacity: 1;
 }
 html[data-ui="mario"] body.dark .detail-ask-btn {
@@ -1736,9 +1737,9 @@ html[data-ui="mario"] .mario-coin-icon {
 
 /* 10. Topic chips (subtle) — BLUE active in light, ORANGE in dark */
 html[data-ui="mario"] .chips.subtle .chip.on {
-  background: #0492c4 !important;  /* Mario blue in light — matches reference */
+  background: #0077A3 !important;  /* Mario blue in light — matches reference */
   color: #fff !important;
-  border-color: #0492c4 !important;
+  border-color: #0077A3 !important;
   box-shadow: 2px 2px 0 var(--mario-shadow) !important;
 }
 html[data-ui="mario"] body.dark .chips.subtle .chip.on {
@@ -1769,7 +1770,7 @@ html[data-ui="mario"] body.dark .li-bar-fill {
   background: rgba(240,236,224,.12) !important;  /* dark variant — matches reference */
 }
 html[data-ui="mario"] .li-bar--today .li-bar-fill {
-  background: #0492c4 !important;              /* Mario blue today — matches reference */
+  background: #0077A3 !important;              /* Mario blue today — matches reference */
   border: 2px solid #1c0e04 !important;
 }
 html[data-ui="mario"] body.dark .li-bar--today .li-bar-fill {
@@ -2510,7 +2511,7 @@ html[data-ui="mario"] .chips.subtle .chip:hover:not(.on) {
 }
 /* Active: blue bg, white text */
 html[data-ui="mario"] .chips.subtle .chip.on {
-  background: #0492c4 !important;
+  background: #0077A3 !important;
   color: #fff !important;
   border-color: #1c0e04 !important;
   box-shadow: 2px 2px 0 #1c0e04 !important;
@@ -2785,7 +2786,7 @@ html[data-ui="mario"] .detail-open-btn {
   height: auto !important;
   padding: 14px 10px !important;
   font-size: 11px !important;
-  background: #fbd000 !important;
+  background: #FFD600 !important;
   color: #1c0e04 !important;
   border: 3px solid var(--mario-border) !important;
   box-shadow: 3px 3px 0 var(--mario-shadow) !important;
@@ -2812,7 +2813,7 @@ html[data-ui="mario"] .detail-ask-btn {
 html[data-ui="mario"] .detail-ask-btn:hover {
   transform: translate(1px,1px) !important;
   box-shadow: 2px 2px 0 var(--mario-blue) !important;
-  background: rgba(4,146,196,.06) !important;
+  background: rgba(0,119,163,.06) !important;
 }
 html[data-ui="mario"] body.dark .detail-ask-btn {
   border-color: #e8751a !important;
@@ -3275,4 +3276,378 @@ html[data-ui="mario"] .goal-breadcrumb-current {
 html[data-ui="mario"] body.dark .goal-breadcrumb-sep,
 html[data-ui="mario"] body.dark .goal-breadcrumb-current {
   color: var(--ink-3);
+}
+
+/* ══════════════════════════════════════════════════════
+   FINAL OVERRIDES — win all specificity conflicts
+   Color system, modal hierarchy, typography, Ask AI panel
+   ══════════════════════════════════════════════════════ */
+
+/* ── 1. Color system: ensure AI blue is never cyan ── */
+html[data-ui="mario"] .ai-tag {
+  background: rgba(0,119,163,.10) !important;
+  color: #0077A3 !important;
+  border-color: #0077A3 !important;
+}
+html[data-ui="mario"] body.dark .ai-tag {
+  background: rgba(0,119,163,.18) !important;
+  color: #5bb8d4 !important;
+  border-color: #5bb8d4 !important;
+}
+
+/* Primary CTA — solid yellow */
+html[data-ui="mario"] .btn-primary,
+html[data-ui="mario"] .detail-open-btn,
+html[data-ui="mario"] #addSubmitBtn {
+  background: #FFD600 !important;
+  color: #1c0e04 !important;
+  border-color: #1c0e04 !important;
+}
+html[data-ui="mario"] body.dark .btn-primary {
+  background: #e8751a !important;
+  color: #0e0c08 !important;
+  border-color: #e8751a !important;
+}
+
+/* AI CTA — dark accessible blue */
+html[data-ui="mario"] .detail-ask-btn,
+html[data-ui="mario"] .ask-input button {
+  background: #0077A3 !important;
+  color: #fff !important;
+  border-color: #005a7a !important;
+  box-shadow: 3px 3px 0 #003f56 !important;
+}
+html[data-ui="mario"] .detail-ask-btn:hover,
+html[data-ui="mario"] .ask-input button:hover {
+  background: #005a7a !important;
+  filter: none !important;
+  transform: translate(1px,1px) !important;
+  box-shadow: 2px 2px 0 #003f56 !important;
+}
+html[data-ui="mario"] body.dark .detail-ask-btn,
+html[data-ui="mario"] body.dark .ask-input button {
+  background: #0077A3 !important;
+  color: #fff !important;
+  border-color: #005a7a !important;
+  box-shadow: 3px 3px 0 #000 !important;
+}
+
+/* Close button — always neutral, never red or yellow */
+html[data-ui="mario"] .sheet-close,
+html[data-ui="mario"] body.dark .sheet-close {
+  background: var(--bg) !important;
+  color: var(--ink-2) !important;
+  border: 2px solid var(--line) !important;
+  box-shadow: none !important;
+}
+html[data-ui="mario"] .sheet-close:hover {
+  background: var(--bg-2) !important;
+  color: var(--ink) !important;
+}
+
+/* ── 2. Resource detail modal — finished hierarchy ── */
+html[data-ui="mario"] .detail-dialog {
+  background: #FBFAF6 !important;
+}
+html[data-ui="mario"] body.dark .detail-dialog {
+  background: #141210 !important;
+}
+
+/* Type tag — Pixelify Sans, warm neutral chip */
+html[data-ui="mario"] .detail-type-tag {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 12px !important;
+  letter-spacing: 1px !important;
+  background: #F2EDE2 !important;
+  color: #7a6040 !important;
+  border: 1px solid #d8cebc !important;
+  padding: 4px 10px !important;
+  display: inline-block !important;
+  margin-bottom: 14px !important;
+}
+html[data-ui="mario"] body.dark .detail-type-tag {
+  background: #2a2416 !important;
+  color: #a09080 !important;
+  border-color: #332a1c !important;
+}
+
+/* Title — larger and readable */
+html[data-ui="mario"] .detail-title {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 18px !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0 !important;
+  padding-right: 60px !important;
+  margin: 0 0 8px !important;
+  color: var(--ink) !important;
+  text-shadow: none !important;
+  font-weight: 700 !important;
+}
+
+/* Meta row — readable, not tiny */
+html[data-ui="mario"] .detail-meta {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 13px !important;
+  letter-spacing: 0 !important;
+  color: var(--ink-3) !important;
+  margin-bottom: 18px !important;
+}
+
+/* Summary block — tinted AI surface */
+html[data-ui="mario"] .detail-summary-block {
+  background: #F1EDFF !important;
+  border-left: 4px solid #6c52d8 !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  border-right: none !important;
+  padding: 16px 18px !important;
+  margin-bottom: 18px !important;
+  border-radius: 0 !important;
+}
+html[data-ui="mario"] body.dark .detail-summary-block {
+  background: rgba(108,82,216,.12) !important;
+  border-left-color: #9b7ef7 !important;
+}
+
+html[data-ui="mario"] .detail-summary-label {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 11px !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  color: #6c52d8 !important;
+  margin-bottom: 10px !important;
+  font-weight: 600 !important;
+}
+html[data-ui="mario"] body.dark .detail-summary-label {
+  color: #9b7ef7 !important;
+}
+
+html[data-ui="mario"] .detail-summary {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 15px !important;
+  line-height: 1.7 !important;
+  color: var(--ink) !important;
+}
+
+/* Topics */
+html[data-ui="mario"] .detail-topics span {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 12px !important;
+  letter-spacing: 0 !important;
+  background: #F2EDE2 !important;
+  color: #7a6040 !important;
+  border: 1px solid #d8cebc !important;
+  padding: 4px 10px !important;
+}
+html[data-ui="mario"] body.dark .detail-topics span {
+  background: #2a2416 !important;
+  color: #a09080 !important;
+  border-color: #332a1c !important;
+}
+
+/* Key takeaways list */
+html[data-ui="mario"] .detail-covers li {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1.65 !important;
+}
+
+/* Action buttons — yellow open, blue AI */
+html[data-ui="mario"] .detail-open-btn {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 14px !important;
+  padding: 14px 10px !important;
+}
+html[data-ui="mario"] .detail-ask-btn {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 14px !important;
+  padding: 12px 8px !important;
+}
+
+/* Delete — only red destructive */
+html[data-ui="mario"] .detail-delete-btn {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 12px !important;
+  color: #d94f4f !important;
+}
+
+/* ── 3. Typography — Pixelify Sans for all readable text ── */
+/* No Press Start 2P for body content — only for headings/brand labels */
+
+html[data-ui="mario"] .detail-summary,
+html[data-ui="mario"] .detail-why-text,
+html[data-ui="mario"] .ai-rec-summary,
+html[data-ui="mario"] .view-head .lede,
+html[data-ui="mario"] .block-lede,
+html[data-ui="mario"] .sheet-lede,
+html[data-ui="mario"] .welcome-copy > p,
+html[data-ui="mario"] .goal-why,
+html[data-ui="mario"] .gc-why,
+html[data-ui="mario"] .sc-why,
+html[data-ui="mario"] .wf-why,
+html[data-ui="mario"] .bubble.q,
+html[data-ui="mario"] .bubble.a,
+html[data-ui="mario"] .ask-home-suggests button,
+html[data-ui="mario"] .ask-suggests button,
+html[data-ui="mario"] .empty-note,
+html[data-ui="mario"] .goals-empty,
+html[data-ui="mario"] .setting-hint,
+html[data-ui="mario"] .li-insight {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 15px !important;
+  line-height: 1.7 !important;
+  letter-spacing: 0 !important;
+}
+
+/* Metadata labels — readable but smaller */
+html[data-ui="mario"] .rc-src,
+html[data-ui="mario"] .rc-chip,
+html[data-ui="mario"] .rc-chip--type,
+html[data-ui="mario"] .gc-areas span,
+html[data-ui="mario"] .gc-line,
+html[data-ui="mario"] .goal-count,
+html[data-ui="mario"] .ask-conv-time,
+html[data-ui="mario"] .li-lbl,
+html[data-ui="mario"] .kicker {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 12px !important;
+  letter-spacing: 0 !important;
+}
+/* Kicker retains PS2P but gets bigger */
+html[data-ui="mario"] .kicker {
+  font-family: 'Press Start 2P', monospace !important;
+  font-size: 10px !important;
+}
+
+/* Input fields — always Pixelify Sans 15px */
+html[data-ui="mario"] input:not([type="submit"]),
+html[data-ui="mario"] select,
+html[data-ui="mario"] textarea {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 15px !important;
+  letter-spacing: 0 !important;
+}
+
+/* Buttons with text content */
+html[data-ui="mario"] .btn-primary,
+html[data-ui="mario"] .btn-outline,
+html[data-ui="mario"] .detail-open-btn,
+html[data-ui="mario"] .detail-ask-btn,
+html[data-ui="mario"] .discover-tab {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 14px !important;
+  letter-spacing: 0 !important;
+}
+
+/* ── 4. Ask AI panel — accessible bubble colors ── */
+html[data-ui="mario"] .bubble.q {
+  background: #0077A3 !important;
+  color: #ffffff !important;
+  border-color: #005a7a !important;
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  box-shadow: 2px 2px 0 #003f56 !important;
+}
+html[data-ui="mario"] body.dark .bubble.q {
+  background: #005a7a !important;
+  color: #e8f5fb !important;
+  border-color: #004a68 !important;
+  box-shadow: 2px 2px 0 #000 !important;
+}
+html[data-ui="mario"] .bubble.a {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 15px !important;
+  line-height: 1.7 !important;
+  background: #faf8f0 !important;
+  border-left: 4px solid #0077A3 !important;
+  color: #1c0e04 !important;
+  padding: 12px 14px 12px 18px !important;
+}
+html[data-ui="mario"] body.dark .bubble.a {
+  background: #1a1812 !important;
+  border-left-color: #5bb8d4 !important;
+  color: #f5efe6 !important;
+}
+html[data-ui="mario"] .ask-dots span {
+  background: #0077A3 !important;
+  border-color: #005a7a !important;
+}
+html[data-ui="mario"] body.dark .ask-dots span {
+  background: #5bb8d4 !important;
+  border-color: #3a9fc0 !important;
+}
+
+/* Ask input area */
+html[data-ui="mario"] .ask-input input {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 15px !important;
+  background: #faf8f0 !important;
+  border: 2px solid #1c0e04 !important;
+  color: #1c0e04 !important;
+}
+html[data-ui="mario"] body.dark .ask-input input {
+  background: #1e1a0e !important;
+  border-color: #332a1c !important;
+  color: #f5efe6 !important;
+}
+html[data-ui="mario"] .ask-input input:focus {
+  border-color: #0077A3 !important;
+  outline: none !important;
+}
+
+/* Send button */
+html[data-ui="mario"] .ask-input button {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 15px !important;
+}
+
+/* New conversation button — neutral */
+html[data-ui="mario"] .ask-new-btn {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 13px !important;
+  background: var(--bg-2) !important;
+  color: var(--ink-2) !important;
+  border: 2px solid var(--line) !important;
+}
+html[data-ui="mario"] body.dark .ask-new-btn {
+  background: #1e1a0e !important;
+  color: #a09080 !important;
+  border-color: #332a1c !important;
+}
+
+/* ── 5. Failed card state ── */
+html[data-ui="mario"] .res-card--failed {
+  opacity: 0.85;
+  border-style: dashed !important;
+}
+html[data-ui="mario"] .rc-title--failed {
+  color: var(--ink-3) !important;
+}
+html[data-ui="mario"] .rc-processing-label--failed {
+  color: #d94f4f;
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 12px !important;
+}
+html[data-ui="mario"] .rc-retry-btn {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 13px !important;
+  background: #FFD600 !important;
+  color: #1c0e04 !important;
+  border: 2px solid #1c0e04 !important;
+  box-shadow: 2px 2px 0 #1c0e04 !important;
+  padding: 6px 14px !important;
+  margin-top: 8px !important;
+  cursor: pointer;
+  transition: transform .1s, box-shadow .1s;
+}
+html[data-ui="mario"] .rc-retry-btn:hover {
+  transform: translate(1px,1px) !important;
+  box-shadow: 1px 1px 0 #1c0e04 !important;
+}
+html[data-ui="mario"] body.dark .rc-retry-btn {
+  background: #e8751a !important;
+  color: #0e0c08 !important;
+  border-color: #f5efe6 !important;
+  box-shadow: 2px 2px 0 #000 !important;
 }

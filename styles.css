@@ -1219,6 +1219,22 @@ body.dark .discover-tab.active { border-bottom-color: var(--accent); }
   pointer-events: none;
   opacity: 0.7;
 }
+.res-card--failed {
+  pointer-events: auto;
+  opacity: 0.85;
+}
+.rc-title--failed { color: var(--ink-3); }
+.rc-processing-label--failed { color: #d94f4f; font-size: 11px; }
+.rc-retry-btn {
+  font: 500 12px/1 var(--sans);
+  background: var(--accent);
+  color: var(--accent-ink, #1c0e04);
+  border: 1px solid var(--line);
+  padding: 5px 12px;
+  margin-top: 8px;
+  cursor: pointer;
+  border-radius: var(--r-sm);
+}
 .rc-media--skel {
   height: var(--rc-media-h, 120px);
   background: var(--bg-2);

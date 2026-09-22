@@ -12,13 +12,18 @@ const MAX_TOKENS = 1024;
 function getDeepSeekConfig() {
   const apiKey  = process.env.DEEPSEEK_API_KEY;
   const baseUrl = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com';
-  const model   = process.env.DEEPSEEK_MODEL    || 'deepseek-chat';
+  const model   = process.env.DEEPSEEK_MODEL    || 'deepseek-flash';   // default to flash
   return { apiKey, baseUrl, model };
 }
 
 async function callDeepSeek(systemPrompt, messages) {
   const { apiKey, baseUrl, model } = getDeepSeekConfig();
-  if (!apiKey) throw new Error('DEEPSEEK_API_KEY not set');
+
+  if (!apiKey) {
+    throw new Error('DEEPSEEK_API_KEY is not configured — add it to Vercel environment variables');
+  }
+
+  console.log(`[ask-service] calling DeepSeek model=${model}`);
 
   const payload = {
     model,
@@ -29,82 +34,111 @@ async function callDeepSeek(systemPrompt, messages) {
     ],
   };
 
-  const resp = await fetch(`${baseUrl}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify(payload),
-    signal: AbortSignal.timeout(30_000),
-  });
+  let resp;
+  try {
+    resp = await fetch(`${baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(30_000),
+    });
+  } catch (fetchErr) {
+    if (fetchErr.name === 'TimeoutError') {
+      throw new Error('DeepSeek request timed out after 30s');
+    }
+    throw new Error(`DeepSeek network error: ${fetchErr.message}`);
+  }
 
   if (!resp.ok) {
-    const text = await resp.text();
-    throw new Error(`DeepSeek ${resp.status}: ${text.slice(0, 300)}`);
+    const text = await resp.text().catch(() => '');
+    if (resp.status === 401) throw new Error(`DeepSeek 401 Unauthorized — check DEEPSEEK_API_KEY`);
+    if (resp.status === 404) throw new Error(`DeepSeek 404 — model "${model}" not found. Check DEEPSEEK_MODEL env var`);
+    if (resp.status === 429) throw new Error(`DeepSeek 429 Rate limited`);
+    throw new Error(`DeepSeek ${resp.status}: ${text.slice(0, 200)}`);
   }
 
   const data = await resp.json();
   const content = data?.choices?.[0]?.message?.content;
-  if (typeof content !== 'string') throw new Error('Unexpected DeepSeek response shape');
+  if (typeof content !== 'string') {
+    throw new Error(`Unexpected DeepSeek response: ${JSON.stringify(data).slice(0, 200)}`);
+  }
   return content.trim();
 }
 
 // ── Context retrieval ─────────────────────────────────────────
 
 async function getTopTopics(userId, limit = 8) {
-  const { data } = await supabase
-    .from('resource_topics')
-    .select('topics(name), resources!inner(user_id, completed_at)')
-    .eq('resources.user_id', userId)
-    .limit(200);
+  try {
+    const { data } = await supabase
+      .from('resource_topics')
+      .select('topics(name), resources!inner(user_id)')
+      .eq('resources.user_id', userId)
+      .limit(200);
 
-  if (!data) return [];
-  const counts = {};
-  for (const row of data) {
-    const name = row.topics?.name;
-    if (!name) continue;
-    counts[name] = (counts[name] || 0) + 1;
+    if (!data) return [];
+    const counts = {};
+    for (const row of data) {
+      const name = row.topics?.name;
+      if (!name) continue;
+      counts[name] = (counts[name] || 0) + 1;
+    }
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, limit)
+      .map(([topic, count]) => ({ topic, count }));
+  } catch (err) {
+    console.warn('[ask-service] getTopTopics failed:', err.message);
+    return [];
   }
-  return Object.entries(counts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, limit)
-    .map(([topic, count]) => ({ topic, count }));
 }
 
 async function getActiveGoals(userId) {
-  const { data } = await supabase
-    .from('goals')
-    .select('title, reason')
-    .eq('user_id', userId)
-    .eq('status', 'active')
-    .limit(5);
-  return data || [];
+  try {
+    const { data } = await supabase
+      .from('goals')
+      .select('title, reason')
+      .eq('user_id', userId)
+      .eq('status', 'active')
+      .limit(5);
+    return data || [];
+  } catch (err) {
+    console.warn('[ask-service] getActiveGoals failed:', err.message);
+    return [];
+  }
 }
 
 async function getRelevantResources(userId, query, limit = 5) {
-  // Simple keyword match — fallback when no embedding service available
-  const { data } = await supabase
-    .from('resources')
-    .select('title, source_type, ai_summary, creator_name')
-    .eq('user_id', userId)
-    .eq('processing_status', 'ready')
-    .not('ai_summary', 'is', null)
-    .order('created_at', { ascending: false })
-    .limit(limit * 3);
+  try {
+    const { data } = await supabase
+      .from('resources')
+      .select('title, source_type, ai_summary, creator_name')
+      .eq('user_id', userId)
+      .eq('processing_status', 'ready')
+      .not('ai_summary', 'is', null)
+      .order('created_at', { ascending: false })
+      .limit(limit * 4);
 
-  if (!data) return [];
+    if (!data) return [];
 
-  // Rank by simple keyword overlap with query
-  const queryWords = query.toLowerCase().split(/\s+/).filter(w => w.length > 3);
-  return data
-    .map(r => {
-      const text = `${r.title} ${r.ai_summary || ''}`.toLowerCase();
-      const score = queryWords.filter(w => text.includes(w)).length;
-      return { ...r, score };
-    })
-    .sort((a, b) => b.score - a.score)
-    .slice(0, limit);
+    // Rank by keyword overlap with the query
+    const queryWords = query.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+    return data
+      .map(r => {
+        const text = `${r.title} ${r.ai_summary || ''}`.toLowerCase();
+        const score = queryWords.length
+          ? queryWords.filter(w => text.includes(w)).length
+          : 0;
+        return { ...r, score };
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit);
+  } catch (err) {
+    console.warn('[ask-service] getRelevantResources failed:', err.message);
+    return [];
+  }
 }
 
 // ── System prompt ─────────────────────────────────────────────
@@ -118,33 +152,33 @@ RULES:
 - Only reference resources and goals that exist in the user's data below
 - Never invent resources, topics, or progress
 - Be specific — reference their actual topics and goals by name
-- If you lack data to answer accurately, say so honestly`,
+- If you lack data to answer accurately, say so honestly
+- Keep answers concise and actionable`,
   ];
 
   if (contextResource) {
     parts.push(`\nCurrent resource context:
 Title: ${contextResource.title}
 Type: ${contextResource.type}
-Author: ${contextResource.by}
-${contextResource.summary ? `Summary: ${contextResource.summary}` : ''}
-${contextResource.url ? `URL: ${contextResource.url}` : ''}`);
+Author: ${contextResource.by}${contextResource.summary ? `\nSummary: ${contextResource.summary}` : ''}${contextResource.url ? `\nURL: ${contextResource.url}` : ''}`);
   }
 
   if (topTopics.length > 0) {
-    parts.push(`\nUser's most-saved topics:
-${topTopics.map(t => `- ${t.topic}: ${t.count} resources saved`).join('\n')}`);
+    parts.push(`\nUser's most-saved topics:\n${topTopics.map(t => `- ${t.topic}: ${t.count} resources`).join('\n')}`);
   }
 
   if (activeGoals.length > 0) {
-    parts.push(`\nActive learning goals:
-${activeGoals.map(g => `- ${g.title}${g.reason ? `: ${g.reason}` : ''}`).join('\n')}`);
+    parts.push(`\nActive learning goals:\n${activeGoals.map(g => `- ${g.title}${g.reason ? `: ${g.reason}` : ''}`).join('\n')}`);
   }
 
   if (relevantResources.length > 0) {
-    parts.push(`\nRelevant resources from their library:
-${relevantResources
-  .map(r => `- ${r.title} [${r.source_type}]${r.ai_summary ? `: ${r.ai_summary.slice(0, 150)}` : ''}`)
-  .join('\n')}`);
+    parts.push(`\nRelevant resources from their library:\n${relevantResources
+      .map(r => `- ${r.title} [${r.source_type}]${r.ai_summary ? `: ${r.ai_summary.slice(0, 150)}` : ''}`)
+      .join('\n')}`);
+  }
+
+  if (topTopics.length === 0 && activeGoals.length === 0 && relevantResources.length === 0) {
+    parts.push(`\nNote: No learning data found yet for this user. Let them know they can start by saving a resource.`);
   }
 
   return parts.join('\n');
@@ -157,13 +191,12 @@ async function getOrCreateConversation(userId, convId, firstUserMessage) {
     await supabase
       .from('chat_conversations')
       .update({ updated_at: new Date().toISOString() })
-      .eq('id', convId);
+      .eq('id', convId)
+      .eq('user_id', userId);
     return convId;
   }
 
-  // Generate a short title from the first message
   const title = firstUserMessage.slice(0, 80).trim() || 'New chat';
-
   const { data: conv, error } = await supabase
     .from('chat_conversations')
     .insert({ user_id: userId, title })
@@ -179,9 +212,9 @@ async function getOrCreateConversation(userId, convId, firstUserMessage) {
 /**
  * @param {string} userId
  * @param {Array<{role:string,content:string}>} messages
- * @param {string|null} conversationId
+ * @param {string|null} conversationId - server-side UUID, null for new conversation
  * @param {object|null} resource  - optional current resource context
- * @returns {{ answer: string, conversation_id: string }}
+ * @returns {{ answer: string, conversation_id: string, source: string }}
  */
 export async function askAI(userId, messages, conversationId = null, resource = null) {
   const lastUserMsg = [...messages].reverse().find(m => m.role === 'user');
@@ -189,7 +222,7 @@ export async function askAI(userId, messages, conversationId = null, resource = 
 
   const query = lastUserMsg.content;
 
-  // Fetch context in parallel
+  // Fetch context in parallel (failures are caught inside each helper)
   const [topTopics, activeGoals, relevantResources] = await Promise.all([
     getTopTopics(userId),
     getActiveGoals(userId),
@@ -197,6 +230,8 @@ export async function askAI(userId, messages, conversationId = null, resource = 
   ]);
 
   const systemPrompt = buildSystemPrompt({ topTopics, activeGoals, relevantResources, contextResource: resource });
+
+  // This throws with specific error if DeepSeek fails — caller gets real message
   const answer = await callDeepSeek(systemPrompt, messages);
 
   // Persist conversation (best-effort — don't fail the user response)
@@ -204,14 +239,12 @@ export async function askAI(userId, messages, conversationId = null, resource = 
   try {
     finalConvId = await getOrCreateConversation(userId, conversationId, query);
 
-    // Save prior messages if new conversation
-    if (!conversationId) {
+    // If new conversation, save all prior messages first
+    if (!conversationId && messages.length > 1) {
       const priorMessages = messages.slice(0, -1);
-      if (priorMessages.length > 0) {
-        await supabase.from('chat_messages').insert(
-          priorMessages.map(m => ({ conversation_id: finalConvId, role: m.role, content: m.content })),
-        );
-      }
+      await supabase.from('chat_messages').insert(
+        priorMessages.map(m => ({ conversation_id: finalConvId, role: m.role, content: m.content })),
+      );
     }
 
     await supabase.from('chat_messages').insert([
@@ -220,6 +253,7 @@ export async function askAI(userId, messages, conversationId = null, resource = 
     ]);
   } catch (persistErr) {
     console.warn('[ask-service] persistence failed:', persistErr.message);
+    // Answer is still returned even if DB persistence fails
   }
 
   return { answer, conversation_id: finalConvId, source: 'ai' };

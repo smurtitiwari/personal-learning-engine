@@ -93,10 +93,28 @@ function processingCard(idx) {
     </article>`;
 }
 
+/* ---------- failed card ---------- */
+function failedCard(r, idx) {
+  return `
+    <article class="res-card res-card--failed" tabindex="0" data-card="${idx}"
+             role="button" aria-label="Processing failed">
+      <div class="rc-media rc-media--skel" aria-hidden="true"></div>
+      <div class="rc-body">
+        <p class="rc-src">${r.url ? new URL(r.url).hostname.replace('www.', '') : 'Unknown source'}</p>
+        <h3 class="rc-title rc-title--failed">${r.title || r.url || 'Untitled'}</h3>
+        <p class="rc-processing-label rc-processing-label--failed">Summary failed</p>
+        <button class="rc-retry-btn" data-retry-id="${r._id || r.id}" aria-label="Retry processing">
+          Retry
+        </button>
+      </div>
+    </article>`;
+}
+
 /* ---------- unified resource card ---------- */
 function card(r, { rec = false } = {}){
   const idx = registerCard(r);
   if (r.status === 'processing') return processingCard(idx);
+  if (r.status === 'failed') return failedCard(r, idx);
   const hue = hueFor(r.topics, r.type);
   const hueL = hueLightFor(r.topics, r.type);
   const cls = ['res-card', `rc-${r.type}`, rec ? 'res-card--rec' : ''].filter(Boolean).join(' ');
@@ -455,7 +473,26 @@ async function openDetail(obj) {
   } catch {}
 }
 
-document.addEventListener('click', (e) => {
+document.addEventListener('click', async (e) => {
+  // Retry failed resource processing
+  const retryBtn = e.target.closest('[data-retry-id]');
+  if (retryBtn) {
+    e.stopPropagation();
+    const id = retryBtn.dataset.retryId;
+    retryBtn.disabled = true;
+    retryBtn.textContent = 'Retrying…';
+    try {
+      await apiFetch(`/api/resources/${id}/retry`, { method: 'POST' });
+      toast('Reprocessing — check back in a moment');
+      pollForResource(id);
+    } catch (err) {
+      toast('Retry failed: ' + err.message);
+      retryBtn.disabled = false;
+      retryBtn.textContent = 'Retry';
+    }
+    return;
+  }
+
   // Card Ask AI button — open Ask AI with resource context, don't open detail
   const askCard = e.target.closest('[data-ask-card]');
   if (askCard) {
@@ -465,7 +502,7 @@ document.addEventListener('click', (e) => {
     return;
   }
   const c = e.target.closest('[data-card]');
-  if (c && !e.target.closest('a')) openDetail(CARD_INDEX[+c.dataset.card]);
+  if (c && !e.target.closest('a') && !e.target.closest('[data-retry-id]')) openDetail(CARD_INDEX[+c.dataset.card]);
 });
 document.addEventListener('keydown', (e) => {
   if ((e.key === 'Enter' || e.key === ' ') && document.activeElement?.matches('[data-card]')) {
@@ -882,17 +919,31 @@ async function askSend(q) {
   thread.scrollTop = thread.scrollHeight;
 
   try {
-    const body = { messages: conv.messages.map(m => ({ role: m.role, content: m.content })) };
+    const body = {
+      messages: conv.messages.map(m => ({ role: m.role, content: m.content })),
+    };
     if (conv.resource) body.resource = conv.resource;
+    // Send server-side conversation_id on subsequent turns so the server
+    // appends to the same DB conversation rather than creating a new one each time
+    if (conv.serverConvId) body.conversation_id = conv.serverConvId;
+
     const { data } = await apiFetch('/api/ask', { method: 'POST', body: JSON.stringify(body) });
     const answer = data.answer || 'No answer.';
     ae.classList.remove('ask-loading');
     ae.innerHTML = answer.replace(/\n/g, '<br>');
     conv.messages.push({ role: 'assistant', content: answer });
-    _updateConv(_activeConvId, { messages: conv.messages });
-  } catch {
+    // Persist the server-side conversation UUID so future turns attach to it
+    if (data.conversation_id && !conv.serverConvId) {
+      _updateConv(_activeConvId, { messages: conv.messages, serverConvId: data.conversation_id });
+    } else {
+      _updateConv(_activeConvId, { messages: conv.messages });
+    }
+  } catch (err) {
+    console.error('[ask] failed:', err.message);
     ae.classList.remove('ask-loading');
-    ae.textContent = 'Could not get an answer — is the server running?';
+    ae.textContent = err.message?.includes('DEEPSEEK_API_KEY')
+      ? 'AI is not configured yet — ask the admin to add DEEPSEEK_API_KEY to the server.'
+      : `Could not get an answer: ${err.message}`;
   }
   thread.scrollTop = thread.scrollHeight;
 }

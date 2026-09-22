@@ -254,6 +254,46 @@ router.post('/:id/complete', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+// POST /api/resources/:id/retry  — re-trigger processing for a failed/stuck resource
+router.post('/:id/retry', async (req, res, next) => {
+  try {
+    const userId = await getUserId(req);
+
+    const { data: resource, error } = await supabase
+      .from('resources')
+      .select('id, processing_status')
+      .eq('id', req.params.id)
+      .eq('user_id', userId)
+      .is('deleted_at', null)
+      .single();
+
+    if (error || !resource) throw createError('Resource not found', 404);
+    if (resource.processing_status === 'processing') {
+      return res.json({ data: { id: resource.id, status: 'processing', message: 'Already processing' } });
+    }
+
+    // Reset to processing
+    const { error: resetErr } = await supabase
+      .from('resources')
+      .update({ processing_status: 'processing', processing_error: null })
+      .eq('id', req.params.id);
+
+    if (resetErr) throw createError(resetErr.message, 500);
+
+    // Fire background processor
+    const proto   = req.headers['x-forwarded-proto'] || 'http';
+    const host    = req.headers['x-forwarded-host'] || req.headers.host || 'localhost:3001';
+    const secret  = process.env.INTERNAL_SECRET || 'learning-engine-internal';
+    fetch(`${proto}://${host}/api/process-resource`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-internal-secret': secret },
+      body: JSON.stringify({ resource_id: req.params.id }),
+    }).catch(err => console.error('[resources] retry trigger failed:', err.message));
+
+    res.json({ data: { id: req.params.id, status: 'processing' } });
+  } catch (err) { next(err); }
+});
+
 // DELETE /api/resources/:id
 router.delete('/:id', async (req, res, next) => {
   try {
