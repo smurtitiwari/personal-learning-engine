@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Press+Start+2P&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./styles.css?v=27" />
-<link rel="stylesheet" href="./styles-mario.css?v=23" />
+<link rel="stylesheet" href="./styles.css?v=28" />
+<link rel="stylesheet" href="./styles-mario.css?v=24" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -243,7 +243,6 @@
         <section class="goals-list-section" id="allGoalsSection">
           <div class="goals-list-header">
             <p class="kicker goals-heading">All goals</p>
-            <p class="goals-monthly-note">AI suggestions refresh monthly.</p>
           </div>
           <div class="goal-suggestions" id="goalSuggestions" hidden></div>
         </section>
@@ -254,7 +253,7 @@
             <button class="btn-outline btn-sm" data-create-goal><span aria-hidden="true">+</span> New goal</button>
           </div>
           <div class="goals-list" id="goalsList">
-            <p class="goals-empty" id="goalsEmpty">No goals yet — accept a pattern above, or create your own direction to focus around.</p>
+            <p class="goals-empty" id="goalsEmpty">Start a goal above or create your own direction.</p>
           </div>
         </div>
       </div>
@@ -488,6 +487,6 @@
 </dialog>
 
 <div class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-<script src="./app.js?v=6"></script>
+<script src="./app.js?v=7"></script>
 </body>
 </html>

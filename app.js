@@ -1221,6 +1221,7 @@ $('#saveResource').addEventListener('click', closeAddDialog);
 const goalDialog = $('.goal-dialog');
 const goalsList = $('#goalsList'), goalsEmpty = $('#goalsEmpty'), suggestWrap = $('#goalSuggestions');
 const dismissedSuggestions = new Set((() => { try { return JSON.parse(localStorage.getItem('le-dismissed-suggestions') || '[]'); } catch { return []; } })());
+const startedGoalIds = new Set((() => { try { return JSON.parse(localStorage.getItem('le-started-goal-ids') || '[]'); } catch { return []; } })());
 
 let _liveGoals = []; // populated from API
 let _currentGoalId = null;
@@ -1228,6 +1229,9 @@ let _currentGoalId = null;
 /* Save dismissed suggestions to localStorage so they persist across sessions */
 function persistDismissed() {
   try { localStorage.setItem('le-dismissed-suggestions', JSON.stringify([...dismissedSuggestions])); } catch {}
+}
+function persistStartedGoals() {
+  try { localStorage.setItem('le-started-goal-ids', JSON.stringify([...startedGoalIds])); } catch {}
 }
 
 /* Helpers to compute local metrics from RESOURCES (for suggestion cards only) */
@@ -1336,33 +1340,33 @@ $('#wfToggle')?.addEventListener('click', () => {
 });
 
 function renderGoals(){
-  goalsEmpty.hidden = _liveGoals.length > 0;
+  const defaultTitles = new Set(SUGGESTED_GOALS.map(goal => goal.title));
+  const userGoals = _liveGoals.filter(goal => !defaultTitles.has(goal.title) || startedGoalIds.has(goal.id));
+  goalsEmpty.hidden = userGoals.length > 0;
   goalsList.querySelectorAll('.goal-card').forEach((c) => c.remove());
-  goalsList.insertAdjacentHTML('beforeend', _liveGoals.map(goalCardHTML).join(''));
+  goalsList.insertAdjacentHTML('beforeend', userGoals.map(goalCardHTML).join(''));
   goalsList.querySelectorAll('[data-goal-id]').forEach((b) => {
     b.addEventListener('click', () => openGoalDetail(b.dataset.goalId));
   });
 }
 
 function renderSuggestions(){
-  const goalTitles = new Set(_liveGoals.map(g => g.title));
-  const monthKey = new Date().toISOString().slice(0, 7);
-  const candidates = SUGGESTED_GOALS.filter(
-    (s) => !dismissedSuggestions.has(s.title) && !goalTitles.has(s.title)
-  );
-  const live = candidates.length ? [candidates[new Date(`${monthKey}-01T00:00:00Z`).getUTCMonth() % candidates.length]] : [];
-  $('#allGoalsSection').hidden = live.length === 0;
-  suggestWrap.hidden = live.length === 0;
+  const live = SUGGESTED_GOALS.filter((suggestion) => {
+    const existing = _liveGoals.find(goal => goal.title === suggestion.title);
+    return !existing || !startedGoalIds.has(existing.id);
+  });
+  $('#allGoalsSection').hidden = false;
+  suggestWrap.hidden = false;
   suggestWrap.querySelectorAll('.suggest-card').forEach((c) => c.remove());
   suggestWrap.insertAdjacentHTML('beforeend', live.map((s) => {
     const m = goalMetrics(s.areas);
     return `
       <div class="suggest-card">
-        <p class="kicker"><span class="ai-tag">AI</span> Monthly goal suggestion</p>
+        <p class="kicker"><span class="ai-tag">AI</span> Suggested goal</p>
         <h3>${s.title}</h3>
         <p class="sc-why">${s.why}</p>
         <div class="btn-row">
-          <button class="btn-primary" data-make-goal="${s.title}">Add to your goals</button>
+          <button class="btn-primary" data-start-goal="${s.title}">Start this goal</button>
         </div>
       </div>`;
   }).join(''));
@@ -1381,6 +1385,10 @@ async function createGoalFromData(g) {
     });
     if (goalDialog.open) goalDialog.close();
     await loadGoals();
+    startedGoalIds.add(data.id);
+    persistStartedGoals();
+    renderGoals();
+    renderSuggestions();
     openGoalDetail(data.id);
     toast('Goal created');
   } catch (err) {
@@ -1410,11 +1418,13 @@ async function openGoalDetail(goalId) {
       : 'Not enough learning activity yet to show evidence.';
 
     // Linked resources section (only show resources with topics matching goal areas)
-    const linked = (g.resources || []).filter(r => areas.length === 0 || (r.topics || []).some(t => areas.includes(t)));
+    const apiLinked = (g.resources || []).filter(r => areas.length === 0 || (r.topics || []).some(t => areas.includes(t))).map(apiToCard);
+    const libraryLinked = RESOURCES.filter(r => areas.length === 0 || r.topics.some(t => areas.includes(t)));
+    const linked = apiLinked.length ? apiLinked : libraryLinked;
     const linkedSection = $('#goalLinkedSection');
     const linkedList = $('#goalLinkedList');
     if (linked.length > 0) {
-      linkedList.innerHTML = linked.map(r => card(apiToCard(r))).join('');
+      linkedList.innerHTML = linked.map(r => card(r)).join('');
       linkedSection.hidden = false;
     } else {
       linkedSection.hidden = true;
@@ -1466,6 +1476,21 @@ $('#goalDeleteBtn')?.addEventListener('click', async () => {
 
 /* ── Suggestion actions (delegated) ── */
 document.addEventListener('click', async (e) => {
+  const start = e.target.closest('[data-start-goal]');
+  if (start) {
+    const existing = _liveGoals.find(goal => goal.title === start.dataset.startGoal);
+    if (existing) {
+      startedGoalIds.add(existing.id);
+      persistStartedGoals();
+      renderGoals();
+      renderSuggestions();
+      openGoalDetail(existing.id);
+    } else {
+      const suggestion = SUGGESTED_GOALS.find(goal => goal.title === start.dataset.startGoal);
+      if (suggestion) await createGoalFromData(suggestion);
+    }
+    return;
+  }
   const mk = e.target.closest('[data-make-goal]');
   if (mk) {
     const s = SUGGESTED_GOALS.find((x) => x.title === mk.dataset.makeGoal);
