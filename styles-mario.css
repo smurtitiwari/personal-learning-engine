@@ -736,30 +736,28 @@ html[data-ui="mario"] body.dark .welcome-dialog {
 html[data-ui="mario"] .sheet-close {
   font-family: 'Press Start 2P', monospace !important;
   font-size: 10px;
-  background: #fbd000;
+  background: #faf8f0;
   color: #1c0e04 !important;
-  border: 3px solid var(--mario-border) !important;
+  border: 3px solid #1c0e04 !important;
   border-radius: 0 !important;
-  box-shadow: 2px 2px 0 var(--mario-shadow);
+  box-shadow: 2px 2px 0 #1c0e04;
   width: 28px; height: 28px;
-  color: #fff;
   transition: transform .1s, box-shadow .1s;
 }
 html[data-ui="mario"] .sheet-close:hover {
   transform: translate(1px,1px);
-  box-shadow: 1px 1px 0 var(--mario-shadow);
-  color: #fff;
+  box-shadow: 1px 1px 0 #1c0e04;
+  background: #f0ead6;
 }
 html[data-ui="mario"] .sheet-close:active {
   transform: translate(2px,2px);
   box-shadow: none;
 }
 html[data-ui="mario"] body.dark .sheet-close {
-  background: #fbd000 !important;   /* yellow in both light and dark */
+  background: #1e1a0e !important;
   border-color: #332a1c !important;
-  color: #1c0e04 !important;
+  color: #a09080 !important;
   box-shadow: 2px 2px 0 #000;
-  color: #fff !important;
 }
 
 html[data-ui="mario"] .sheet-step > h2 {
@@ -2889,7 +2887,7 @@ html[data-ui="mario"] .view-head .lede,
 html[data-ui="mario"] .lede,
 html[data-ui="mario"] .block-lede,
 html[data-ui="mario"] .sheet-lede {
-  font-size: 14px !important;
+  font-size: 15px !important;
   line-height: 1.65 !important;
 }
 
@@ -2920,7 +2918,7 @@ html[data-ui="mario"] .wf-res-title,
 html[data-ui="mario"] .ac-res-title,
 html[data-ui="mario"] .dri-title,
 html[data-ui="mario"] .gl-title {
-  font-size: 13px !important;
+  font-size: 15px !important;
   line-height: 1.7 !important;
 }
 
@@ -2959,7 +2957,7 @@ html[data-ui="mario"] .url-row input,
 html[data-ui="mario"] #goalForm input,
 html[data-ui="mario"] .setting-num,
 html[data-ui="mario"] .setting-select {
-  font-size: 14px !important;
+  font-size: 15px !important;
   line-height: 1.5 !important;
 }
 
@@ -2994,7 +2992,7 @@ html[data-ui="mario"] .empty-note,
 html[data-ui="mario"] .ac-empty,
 html[data-ui="mario"] .wf-empty {
   font-family: 'Pixelify Sans', sans-serif !important;
-  font-size: 13px !important;
+  font-size: 15px !important;
   line-height: 1.75 !important;
   letter-spacing: 0 !important;
 }
@@ -3023,7 +3021,7 @@ html[data-ui="mario"] .ask-empty {
 html[data-ui="mario"] .bubble.q,
 html[data-ui="mario"] .bubble.a {
   font-family: 'Pixelify Sans', sans-serif !important;
-  font-size: 14px !important;
+  font-size: 15px !important;
   line-height: 1.65 !important;
   letter-spacing: 0 !important;
 }
@@ -3251,4 +3249,30 @@ html[data-ui="mario"] .account-name {
 /* Dark mode body */
 html[data-ui="mario"] body.dark {
   font-family: 'Pixelify Sans', sans-serif !important;
+}
+
+/* ── Goal breadcrumb nav ─────────────────────────────────── */
+html[data-ui="mario"] .goal-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+html[data-ui="mario"] .goal-breadcrumb-sep {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 14px;
+  color: var(--ink-3);
+}
+html[data-ui="mario"] .goal-breadcrumb-current {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 14px;
+  color: var(--ink-2);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+html[data-ui="mario"] body.dark .goal-breadcrumb-sep,
+html[data-ui="mario"] body.dark .goal-breadcrumb-current {
+  color: var(--ink-3);
 }

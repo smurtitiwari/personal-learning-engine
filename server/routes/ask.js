@@ -1,7 +1,8 @@
 import { Router } from 'express';
-import { getUserId, invokeFunction } from '../db/supabase.js';
+import { getUserId } from '../db/supabase.js';
 import { supabase } from '../db/supabase.js';
 import { createError } from '../middleware/error.js';
+import { askAI } from '../services/ask-service.js';
 
 const router = Router();
 
@@ -15,22 +16,8 @@ router.post('/', async (req, res, next) => {
       throw createError('messages array is required', 400);
     }
 
-    const authHeader = req.headers.authorization;
-
-    try {
-      const result = await invokeFunction('ask-ai', { messages, resource, conversation_id }, authHeader?.slice(7));
-      res.json(result);
-    } catch (fnErr) {
-      // Graceful fallback: return an honest error rather than hallucinated content
-      console.error('[ask] Edge function failed:', fnErr.message);
-      res.json({
-        data: {
-          answer: "I'm having trouble connecting to the AI right now. Please try again in a moment.",
-          conversation_id: conversation_id ?? null,
-          source: 'fallback',
-        },
-      });
-    }
+    const result = await askAI(userId, messages, conversation_id ?? null, resource ?? null);
+    res.json({ data: result });
   } catch (err) { next(err); }
 });
 

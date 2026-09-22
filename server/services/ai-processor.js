@@ -1,10 +1,8 @@
 /**
- * AI Processor
- * Uses Claude to generate structured metadata, summaries and topics.
+ * AI Processor — DeepSeek (OpenAI-compatible API)
+ * Generates structured metadata, summaries and topics for saved resources.
  * Degrades gracefully — if no API key or call fails, returns null.
  */
-
-import Anthropic from '@anthropic-ai/sdk';
 
 const KNOWN_TOPICS = [
   'AI UX',
@@ -23,27 +21,53 @@ const KNOWN_TOPICS = [
   'Design systems',
 ];
 
-/** Max chars of content to send to Claude (controls cost) */
 const MAX_CONTENT_CHARS = 7000;
 
+function getDeepSeekConfig() {
+  const apiKey = process.env.DEEPSEEK_API_KEY;
+  const baseUrl = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com';
+  const model   = process.env.DEEPSEEK_MODEL    || 'deepseek-chat';
+  return { apiKey, baseUrl, model };
+}
+
+async function callDeepSeek(messages, maxTokens = 1024) {
+  const { apiKey, baseUrl, model } = getDeepSeekConfig();
+  if (!apiKey) {
+    console.log('[ai-processor] No DEEPSEEK_API_KEY — skipping AI processing');
+    return null;
+  }
+
+  const resp = await fetch(`${baseUrl}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({ model, max_tokens: maxTokens, messages }),
+    signal: AbortSignal.timeout(30_000),
+  });
+
+  if (!resp.ok) {
+    const text = await resp.text();
+    throw new Error(`DeepSeek ${resp.status}: ${text.slice(0, 300)}`);
+  }
+
+  const data = await resp.json();
+  const content = data?.choices?.[0]?.message?.content;
+  if (typeof content !== 'string') throw new Error('Unexpected DeepSeek response shape');
+  return content.trim();
+}
+
 /**
- * Process extracted content with Claude.
+ * Process extracted content with DeepSeek.
  * @param {object} extracted - Output from content-extractor
  * @param {object} userProfile - User's learning profile (for personalised summary)
  * @returns {object|null} Structured AI metadata, or null if unavailable
  */
 export async function processWithAI(extracted, userProfile = {}) {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey || apiKey === 'your_api_key_here') {
-    console.log('[ai] No API key configured — skipping AI processing');
-    return null;
-  }
-
-  const client = new Anthropic({ apiKey });
-
   const contentText = buildContentText(extracted);
   if (!contentText || contentText.length < 50) {
-    console.log('[ai] Insufficient content for AI processing');
+    console.log('[ai-processor] Insufficient content for AI processing');
     return null;
   }
 
@@ -54,16 +78,14 @@ export async function processWithAI(extracted, userProfile = {}) {
   const prompt = buildPrompt(extracted, contentText, userInterests);
 
   try {
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1024,
-      messages: [{ role: 'user', content: prompt }],
-    });
-
-    const responseText = message.content[0]?.text || '';
-    return parseAIResponse(responseText, extracted);
+    const raw = await callDeepSeek(
+      [{ role: 'user', content: prompt }],
+      1024,
+    );
+    if (!raw) return null;
+    return parseAIResponse(raw, extracted);
   } catch (err) {
-    console.error('[ai] Claude API error:', err.message);
+    console.error('[ai-processor] DeepSeek error:', err.message);
     return null;
   }
 }
@@ -71,24 +93,24 @@ export async function processWithAI(extracted, userProfile = {}) {
 // ── Prompt construction ──────────────────────────────────────
 
 function buildContentText(extracted) {
-  // Prefer transcript for video, content_text for articles
   const raw = extracted.transcript || extracted.content_text || extracted.description || '';
   return raw.slice(0, MAX_CONTENT_CHARS);
 }
 
 function buildPrompt(extracted, contentText, userInterests) {
   const typeHints = {
-    youtube: 'This is a YouTube video.',
-    medium: 'This is a Medium article.',
+    youtube:  'This is a YouTube video.',
+    video:    'This is a video.',
+    medium:   'This is a Medium article.',
     substack: 'This is a Substack newsletter post.',
-    pdf: 'This is a PDF document.',
-    article: 'This is a web article.',
+    newsletter:'This is a newsletter post.',
+    pdf:      'This is a PDF document.',
+    article:  'This is a web article.',
   };
   const typeHint = typeHints[extracted.source_type] || 'This is web content.';
-  const knownTitle = extracted.title ? `Known title: ${extracted.title}` : '';
+  const knownTitle   = extracted.title         ? `Known title: ${extracted.title}` : '';
   const knownCreator = extracted.creator_name || extracted.author_name
-    ? `Known creator/author: ${extracted.creator_name || extracted.author_name}`
-    : '';
+    ? `Known creator/author: ${extracted.creator_name || extracted.author_name}` : '';
 
   return `You are analyzing content saved to a personal learning library.
 
@@ -117,7 +139,7 @@ Return ONLY a valid JSON object. No explanation, no markdown, just the JSON.
 Rules:
 - topics must only contain values from the provided list
 - ai_summary must be personalised and useful, not just a description
-- ai_key_takeaways should be specific and concrete (avoid vague statements like "covers important concepts")
+- ai_key_takeaways should be specific and concrete
 - duration_seconds: only for video/audio (integer seconds)
 - reading_time_minutes: only for text content (integer minutes)
 - omit any field you cannot confidently fill`;
@@ -126,63 +148,41 @@ Rules:
 // ── Response parsing ─────────────────────────────────────────
 
 function parseAIResponse(text, extracted) {
-  // Strip markdown code fences if present
   const cleaned = text.replace(/^```(?:json)?\n?/m, '').replace(/\n?```$/m, '').trim();
-
-  // Extract JSON object
   const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
-    console.warn('[ai] Could not find JSON in response');
-    return null;
-  }
+  if (!jsonMatch) { console.warn('[ai-processor] No JSON in response'); return null; }
 
   let parsed;
-  try {
-    parsed = JSON.parse(jsonMatch[0]);
-  } catch (err) {
-    console.warn('[ai] JSON parse error:', err.message);
-    return null;
-  }
+  try { parsed = JSON.parse(jsonMatch[0]); }
+  catch (err) { console.warn('[ai-processor] JSON parse error:', err.message); return null; }
 
-  // Validate and sanitise
   const result = {};
 
   if (parsed.title && typeof parsed.title === 'string')
     result.title = parsed.title.trim().slice(0, 300);
-
   if (parsed.creator_name && typeof parsed.creator_name === 'string')
     result.creator_name = parsed.creator_name.trim().slice(0, 200);
-
   if (parsed.author_name && typeof parsed.author_name === 'string')
     result.author_name = parsed.author_name.trim().slice(0, 200);
-
   if (parsed.source && typeof parsed.source === 'string')
     result.source = parsed.source.trim().slice(0, 100);
-
   if (parsed.ai_summary && typeof parsed.ai_summary === 'string')
     result.ai_summary = parsed.ai_summary.trim().slice(0, 1000);
-
   if (Array.isArray(parsed.ai_key_takeaways)) {
     result.ai_key_takeaways = parsed.ai_key_takeaways
       .filter(t => typeof t === 'string' && t.trim().length > 0)
-      .map(t => t.trim())
-      .slice(0, 5);
+      .map(t => t.trim()).slice(0, 5);
   }
-
   if (Array.isArray(parsed.topics)) {
-    // Only keep topics from the known list
     result.topics = parsed.topics
       .filter(t => typeof t === 'string')
       .map(t => t.trim())
       .filter(t => KNOWN_TOPICS.some(k => k.toLowerCase() === t.toLowerCase()))
-      // Normalise to canonical case
       .map(t => KNOWN_TOPICS.find(k => k.toLowerCase() === t.toLowerCase()) || t)
       .slice(0, 5);
   }
-
   if (typeof parsed.duration_seconds === 'number' && parsed.duration_seconds > 0)
     result.duration_seconds = Math.round(parsed.duration_seconds);
-
   if (typeof parsed.reading_time_minutes === 'number' && parsed.reading_time_minutes > 0)
     result.reading_time_minutes = Math.round(parsed.reading_time_minutes);
 

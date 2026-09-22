@@ -1268,47 +1268,20 @@ async function openGoalDetail(goalId) {
     const areas = g.areas || [];
 
     $('#goalTitle').textContent = g.title;
+    const breadcrumb = $('#goalBreadcrumbName');
+    if (breadcrumb) breadcrumb.textContent = g.title;
     $('#goalWhy').textContent = g.reason || g.description || '';
     $('#goalDeleteBtn').hidden = false;
 
     // Count line — describe the evidence, not the linking action
     const resCount = g.resource_count || 0;
-    const compCount = g.completed_count || 0;
     const topArea = Object.entries(g.topic_coverage || {}).sort((a,b)=>b[1]-a[1])[0]?.[0];
     $('#goalCount').textContent = resCount > 0
       ? `${resCount} saved resource${resCount !== 1 ? 's' : ''} in your library relate to this goal${topArea ? ` — most on ${topArea}` : ''}.`
       : 'Not enough learning activity yet to show evidence.';
 
-    // Areas grid (topic areas with resource counts)
-    if (areas.length > 0) {
-      $('#goalAreas').innerHTML = areas.map((a) => {
-        const count = g.topic_coverage?.[a] || 0;
-        const isFocus = a === g.focus_area;
-        // Resources from library touching this area
-        const matchingRes = (g.resources || []).filter(r => (r.topics || []).includes(a));
-        const items = matchingRes.length
-          ? matchingRes.slice(0, 2).map((r) => `
-              <button class="ac-res" data-card="${registerCard(apiToCard(r))}">
-                <span class="ac-res-type">${TYPE_LABEL[r.source_type] || 'Resource'}</span>
-                <span class="ac-res-title">${r.title || 'Untitled'}</span>
-              </button>`).join('')
-          : `<p class="ac-empty">Nothing linked for this area yet.</p>`;
-        return `
-          <div class="area-card${isFocus ? ' area-card--focus' : ''}" style="--h:${hueFor([a])};--hl:${hueLightFor([a])}">
-            <div class="ac-head">
-              <span class="ac-swatch"></span>
-              <h4>${a}</h4>
-              <span class="ac-meta">${count ? `${count} in library` : 'none yet'}</span>
-            </div>
-            <div class="ac-list">${items}</div>
-          </div>`;
-      }).join('');
-    } else {
-      $('#goalAreas').innerHTML = '<p class="ac-empty">No learning areas set for this goal.</p>';
-    }
-
-    // Linked resources section
-    const linked = g.resources || [];
+    // Linked resources section (only show resources with topics matching goal areas)
+    const linked = (g.resources || []).filter(r => areas.length === 0 || (r.topics || []).some(t => areas.includes(t)));
     const linkedSection = $('#goalLinkedSection');
     const linkedList = $('#goalLinkedList');
     if (linked.length > 0) {
@@ -1327,19 +1300,21 @@ async function openGoalDetail(goalId) {
       linkedSection.hidden = true;
     }
 
-    // Filtered Discover recommendations for this goal
+    // Recommendations for this goal — fetch if not yet loaded
     const recsSection = $('#goalRecsSection');
     const recsGrid = $('#goalRecsGrid');
     if (recsSection && recsGrid) {
-      // Load discover recs if not yet available
-      if (!_discoverLoaded && !_allRecs.length) {
-        _discoverLoaded = true;
-        loadDiscover();
+      if (!_allRecs.length) {
+        try {
+          const { data: recs } = await apiFetch('/api/recommendations');
+          _allRecs = recs || [];
+          if (!_discoverLoaded) { _discoverLoaded = true; }
+        } catch (_) { /* recs unavailable */ }
       }
       const goalRecs = _allRecs
         .map(recToCard)
-        .filter(r => r.topics.some(t => areas.includes(t)))
-        .slice(0, 4);
+        .filter(r => areas.length === 0 || r.topics.some(t => areas.includes(t)))
+        .slice(0, 6);
       if (goalRecs.length > 0) {
         recsGrid.innerHTML = goalRecs.map(r => card(r, { rec: true })).join('');
         recsSection.hidden = false;

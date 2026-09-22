@@ -521,6 +521,10 @@ body.dark .goal-card:hover{box-shadow:0 0 0 1px var(--accent), 0 18px 44px -16px
 
 /* Goal detail top bar */
 .goal-detail-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--s5)}
+.goal-breadcrumb{display:flex;align-items:center;gap:6px;flex:1}
+.goal-breadcrumb .back{margin-bottom:0;padding-left:15px}
+.goal-breadcrumb-sep{color:var(--ink-3);font:400 12px/1 var(--sans)}
+.goal-breadcrumb-current{color:var(--ink-2);font:400 12px/1 var(--sans);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .goal-delete-btn{font:400 11.5px/1 var(--mono);color:var(--ink-3);letter-spacing:.04em;padding:6px 0}
 .goal-delete-btn:hover{color:#d94f4f}
 .goal-delete-btn[hidden]{display:none}

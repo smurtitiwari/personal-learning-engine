@@ -249,7 +249,11 @@
     <!-- ============ GOAL DETAIL ============ -->
     <section class="view goal-detail" data-panel="goal" hidden>
       <div class="goal-detail-top">
-        <button class="back" data-view="discover" data-discover-tab-back="goals">Goals</button>
+        <nav class="goal-breadcrumb" aria-label="Goal navigation">
+          <button class="back goal-breadcrumb-goals" data-view="discover" data-discover-tab-back="goals">Goals</button>
+          <span class="goal-breadcrumb-sep" aria-hidden="true">/</span>
+          <span class="goal-breadcrumb-current" id="goalBreadcrumbName"></span>
+        </nav>
         <button class="goal-delete-btn" id="goalDeleteBtn" hidden>Delete goal</button>
       </div>
 
@@ -260,11 +264,6 @@
       </header>
 
       <p class="goal-count" id="goalCount"></p>
-
-      <section class="block">
-        <p class="kicker">Learning areas</p>
-        <div class="area-grid" id="goalAreas"></div>
-      </section>
 
       <section class="block" id="goalLinkedSection" hidden>
         <p class="kicker">Saved resources for this goal</p>
