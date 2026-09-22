@@ -4013,6 +4013,7 @@ html[data-ui="mario"] .auth-mark { border-radius: 0 !important; background: #ffd
 html[data-ui="mario"] .auth-dialog h1 { font-family: 'Press Start 2P', monospace !important; font-size: 16px !important; line-height: 1.65 !important; }
 html[data-ui="mario"] .auth-dialog p:not(.kicker),
 html[data-ui="mario"] .auth-dialog small { font-family: 'Pixelify Sans', sans-serif !important; font-size: 14px !important; }
+html[data-ui="mario"] .auth-dialog .auth-error { border-left: 3px solid #e52521 !important; background: #fff1ec !important; color: #8c261c !important; }
 html[data-ui="mario"] .google-signin { border: 3px solid #1c0e04 !important; border-radius: 0 !important; box-shadow: 3px 3px 0 #1c0e04 !important; }
 
 /* Card Ask AI stays a readable blue tertiary action in every state. */

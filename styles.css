@@ -1361,6 +1361,7 @@ body.dark .discover-tab.active { border-bottom-color: var(--accent); }
 .auth-dialog .kicker{margin-bottom:var(--s3)}
 .auth-dialog h1{font-size:clamp(2rem,7vw,3rem);line-height:1.02;letter-spacing:-.045em}
 .auth-dialog p:not(.kicker){margin:var(--s4) 0 var(--s5);max-width:38ch;color:var(--ink-2);font-size:14px;line-height:1.55}
+.auth-dialog .auth-error{margin:-8px 0 var(--s4);padding:10px 12px;border-left:3px solid #b6403c;background:#fff0ee;color:#7a221f;font-size:12px;line-height:1.45}
 .google-signin{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:48px;border:1px solid var(--line-2);border-radius:var(--r-sm);background:var(--surface);font:600 13px/1 var(--sans)}
 .google-signin span{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#fff;color:#4285f4;font-weight:700}
 .google-signin:hover{border-color:var(--ink-3);background:var(--sunk)}

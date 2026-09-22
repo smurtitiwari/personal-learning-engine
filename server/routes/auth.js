@@ -27,7 +27,7 @@ router.get('/session', async (req, res) => {
   }
 });
 
-router.get('/google', async (req, res, next) => {
+router.get('/google', async (req, res) => {
   try {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -35,7 +35,14 @@ router.get('/google', async (req, res, next) => {
     });
     if (error || !data?.url) throw error || new Error('Google sign-in is unavailable');
     res.redirect(302, data.url);
-  } catch (error) { next(error); }
+  } catch (error) {
+    // Do not expose the Auth service's raw validation payload to learners.
+    // Google provider configuration lives in Supabase, outside this application.
+    const code = String(error?.code || '').toLowerCase();
+    const message = String(error?.message || '').toLowerCase();
+    const providerDisabled = code === 'validation_failed' && message.includes('provider is not enabled');
+    res.redirect(`/?auth_error=${providerDisabled ? 'google_provider_disabled' : 'google_signin_failed'}#learning`);
+  }
 });
 
 router.get('/callback', async (req, res, next) => {

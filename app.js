@@ -1681,11 +1681,23 @@ async function loadAnalytics() {
 let _currentUser = null;
 const authDialog = $('.auth-dialog');
 
+function showAuthError() {
+  const reason = new URLSearchParams(location.search).get('auth_error');
+  const errorEl = $('#authError');
+  if (!reason || !errorEl) return;
+  errorEl.textContent = reason === 'google_provider_disabled'
+    ? 'Google sign-in is being set up for this app. Please try again shortly.'
+    : 'Google sign-in could not be completed. Please try again.';
+  errorEl.hidden = false;
+  history.replaceState(null, '', location.pathname + location.hash);
+}
+
 function setAccountName(name) {
   $$('.account-name').forEach((el) => { el.textContent = name || 'Learner'; });
 }
 
 async function initializeAccount() {
+  showAuthError();
   try {
     const { data } = await apiFetch('/api/auth/session');
     _currentUser = data.user || null;
