@@ -1302,9 +1302,10 @@ body.dark .discover-tab.active { border-bottom-color: var(--accent); }
 
 /* Mobile app shell: bottom navigation, central AI entry, and floating add. */
 @media (max-width:720px){
+  html,body{max-width:100%;overflow-x:hidden}
   .rail{height:56px;padding:0 max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));z-index:40}
-  .brand{gap:8px;min-width:0}
-  .brand-word{display:block;font-size:8px;white-space:nowrap}
+  .brand{gap:8px;min-width:0;max-width:calc(100% - 78px)}
+  .brand-word{display:block;min-width:0;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .rail-bottom{display:block}
   .theme-switch{display:flex;position:static;flex:0 0 auto;width:auto;height:36px;padding:0;border:0;background:transparent;gap:2px}
   .theme-switch button{display:grid;place-items:center;width:36px;height:36px;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--surface);font-size:18px;line-height:1}
@@ -1326,7 +1327,8 @@ body.dark .discover-tab.active { border-bottom-color: var(--accent); }
   .add-btn b{font-size:23px;margin:0;line-height:1}
   .add-text{display:none}
 
-  main{padding:calc(56px + var(--s5)) var(--pad) calc(128px + env(safe-area-inset-bottom));}
+  main{width:100%;max-width:none;padding:calc(56px + var(--s5)) var(--pad) calc(128px + env(safe-area-inset-bottom));}
+  .view,.view-head{width:100%;max-width:none}
   .view-head{margin-bottom:var(--s4)}
   .view-head .lede{max-width:34ch}
   .learn-controls{gap:var(--s3);margin-bottom:var(--s5)}

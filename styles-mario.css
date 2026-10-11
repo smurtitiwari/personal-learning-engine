@@ -4072,7 +4072,12 @@ html[data-ui="mario"] .ask-btn .ask-text {
 /* Compact screens keep navigation stable while Ask AI becomes a full-width sheet. */
 @media (max-width:720px) {
   html[data-ui="mario"] .brand { flex: 1 1 auto !important; min-width: 0; }
-  html[data-ui="mario"] .brand-word { display: block !important; font-size: 7px !important; white-space: nowrap; }
+  html[data-ui="mario"] .brand-word { display: block !important; font-size: 7px !important; white-space: nowrap; overflow: visible !important; }
+  html[data-ui="mario"] main { width: 100% !important; max-width: none !important; padding: 80px 16px calc(132px + env(safe-area-inset-bottom)) !important; }
+  html[data-ui="mario"] .view,
+  html[data-ui="mario"] .view-head { width: 100% !important; max-width: none !important; }
+  html[data-ui="mario"] .view-head h1,
+  html[data-ui="mario"] .goal-head h1 { max-width: 100%; overflow-wrap: anywhere; }
   html[data-ui="mario"] .theme-switch { display: flex !important; width: auto !important; height: 36px !important; border: 0 !important; background: transparent !important; gap: 3px !important; }
   html[data-ui="mario"] .theme-switch button { display: grid !important; place-items: center; flex: 0 0 36px !important; width: 36px !important; height: 36px !important; padding: 0 !important; border: 2px solid #f5efe6 !important; border-radius: 50% !important; background: #1c0e04 !important; color: #f5efe6 !important; font-size: 17px !important; }
   html[data-ui="mario"] .theme-switch button.on { background: #ffd600 !important; color: #1c0e04 !important; }
