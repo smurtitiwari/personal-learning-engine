@@ -3958,6 +3958,9 @@ html[data-ui="mario"] body.dark .detail-dialog .detail-actions {
 }
 /* Mobile navigation keeps the three primary destinations within thumb reach. */
 @media (max-width:720px) {
+  html[data-ui="mario"] .mario-xp-bar,
+  html[data-ui="mario"] .mario-coins,
+  html[data-ui="mario"] .mario-sprite { display: none !important; }
   html[data-ui="mario"] .rail {
     height: 56px !important;
     padding: 0 16px !important;
