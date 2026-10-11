@@ -4083,6 +4083,8 @@ html[data-ui="mario"] .ask-btn .ask-text {
   html[data-ui="mario"] .theme-switch button.on { background: #ffd600 !important; color: #1c0e04 !important; }
   html[data-ui="mario"] .ask-btn { right: max(16px, env(safe-area-inset-right)) !important; width: auto !important; height: 48px !important; min-height: 48px !important; padding: 0 14px !important; gap: 8px !important; border: 3px solid #1c0e04 !important; border-radius: 24px !important; background: #0077a3 !important; color: #fff !important; }
   html[data-ui="mario"] .ask-btn .ask-text { display: inline !important; font-family: 'Pixelify Sans', sans-serif !important; font-size: 14px !important; letter-spacing: .02em; text-transform: none; }
+  html[data-ui="mario"] .ask-new-btn { display: none !important; }
+  html[data-ui="mario"] .ask-close-panel { min-width: 82px !important; height: 40px !important; padding: 0 10px !important; border: 3px solid #1c0e04 !important; border-radius: 0 !important; background: #f5efe6 !important; color: #1c0e04 !important; box-shadow: 2px 2px 0 #1c0e04 !important; font-family: 'Pixelify Sans', sans-serif !important; font-size: 13px !important; }
   html[data-ui="mario"] .learning-profile-form .setting-input { border: 2px solid #1c0e04 !important; border-radius: 0 !important; font-family: 'Pixelify Sans', sans-serif !important; }
   html[data-ui="mario"] .profile-save { border: 3px solid #1c0e04 !important; border-radius: 0 !important; box-shadow: 3px 3px 0 #1c0e04 !important; font-family: 'Pixelify Sans', sans-serif !important; }
 }
