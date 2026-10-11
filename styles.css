@@ -1322,9 +1322,9 @@ body.dark .discover-tab.active { border-bottom-color: var(--accent); }
   .ask-btn .ask-text{display:inline;font-size:12px}
   .ask-btn.active{background:var(--ai-weak)}
 
-  .add-btn{position:fixed;left:50%;bottom:7px;transform:translateX(-50%);z-index:45;width:104px;height:52px !important;padding:0 10px;border-radius:var(--r-md);box-shadow:var(--shadow-sm)}
-  .add-btn b{font-size:18px;margin:0}
-  .add-text{display:block}
+  .add-btn{position:fixed;left:50%;bottom:7px;transform:translateX(-50%);z-index:45;width:56px;height:52px !important;padding:0;border-radius:var(--r-md);box-shadow:var(--shadow-sm)}
+  .add-btn b{font-size:23px;margin:0;line-height:1}
+  .add-text{display:none}
 
   main{padding:calc(56px + var(--s5)) var(--pad) calc(128px + env(safe-area-inset-bottom));}
   .view-head{margin-bottom:var(--s4)}

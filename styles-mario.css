@@ -3990,13 +3990,15 @@ html[data-ui="mario"] body.dark .detail-dialog .detail-actions {
   html[data-ui="mario"] .ask-btn.active { background: #005d80 !important; }
   html[data-ui="mario"] .ask-btn .ask-text { display: none !important; }
   html[data-ui="mario"] .add-btn {
-    width: 104px !important;
+    width: 56px !important;
     height: 52px !important;
     min-height: 52px !important;
     border: 3px solid #1c0e04 !important;
     border-radius: 0 !important;
     box-shadow: 3px 3px 0 #1c0e04 !important;
   }
+  html[data-ui="mario"] .add-btn .add-text { display: none !important; }
+  html[data-ui="mario"] .add-btn b { font-size: 24px !important; margin: 0 !important; }
   html[data-ui="mario"] .app.ask-open .ask-panel {
     width: auto !important;
     height: auto !important;
