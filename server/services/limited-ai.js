@@ -71,7 +71,7 @@ export async function generateWeeklyRecommendations(userId, goalId = null) {
   if (!context.recent_resources.length && !context.goals.length) return [];
 
   const raw = await complete(
-    'Return only a JSON array with at most 5 items: [{"title":"specific resource search","type":"video or article","creator":"publisher or channel","topics":["topic"],"score":0.8,"reason":"one short sentence"}]. Recommend a balanced mix of videos and articles. Each item must be a concrete resource search, never a broad learning topic. Base every recommendation only on the supplied library, goals, and learner context.',
+    'Return only a JSON array with at most 5 items: [{"title":"specific resource search","type":"video or article","creator":"publisher or channel","topics":["topic"],"score":0.8,"reason":"one short sentence"}]. Recommend a balanced mix of videos and articles. Each item must be a concrete resource search, never a broad learning topic. Base every recommendation only on the supplied library, goals, and learner context. In reason, state the specific learner signal it follows (a goal, saved topic, or profile interest); never use generic wording.',
     JSON.stringify(context),
     450,
   );

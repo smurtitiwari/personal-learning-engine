@@ -119,6 +119,9 @@ function card(r, { rec = false } = {}){
   const hueL = hueLightFor(r.topics, r.type);
   const cls = ['res-card', `rc-${r.type}`, rec ? 'res-card--rec' : ''].filter(Boolean).join(' ');
   const topic = (r.topics && r.topics[0]) || '';
+  const recommendationReason = r.why || r.reason_detail ||
+    (topic ? `It connects to your learning around ${topic}.` : 'It fits the learning direction you are building.');
+  const recommendationWhat = `${TYPE_LABEL[r.type] || 'Resource'}${topic ? ` about ${topic}` : ''}`;
   const hasThumbnail = Boolean(r.thumbnail);
   const media = hasThumbnail
     ? `<div class="rc-media ${r.type === 'youtube' ? 'rc-media--video ' : ''}rc-media--thumb"
@@ -141,6 +144,7 @@ function card(r, { rec = false } = {}){
       <div class="rc-body">
         <p class="rc-src">${r.by || ''}</p>
         <h3 class="rc-title">${r.title}</h3>
+        ${rec ? `<p class="rc-why"><span class="rc-why-tag">AI match</span><strong>What:</strong> ${recommendationWhat}. <strong>Why:</strong> ${recommendationReason}</p>` : ''}
         <div class="rc-foot">
           ${topic ? `<span class="rc-chip">${topic}</span>` : ''}
           <span class="rc-chip rc-chip--type">${TYPE_LABEL[r.type]}</span>
