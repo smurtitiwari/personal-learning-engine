@@ -147,7 +147,13 @@ router.post('/', async (req, res, next) => {
     let aiAnalysis = { topics: [], rationale: '' };
     const needsAiAnalysis = !aiSuggested && (!Array.isArray(areas) || areas.length === 0);
     if (needsAiAnalysis && !recentAiGoal) {
-      try { aiAnalysis = await analyzeGoalLimited(title.trim()); }
+      const { data: profile } = await supabase
+        .from('user_profiles').select('interests, preferred_content_types').eq('user_id', userId).maybeSingle();
+      const learner = {
+        interests: Array.isArray(profile?.interests) ? profile.interests.slice(0, 8) : [],
+        ...(profile?.preferred_content_types && typeof profile.preferred_content_types === 'object' ? profile.preferred_content_types : {}),
+      };
+      try { aiAnalysis = await analyzeGoalLimited(title.trim(), learner); }
       catch (err) { console.warn('[goals] limited AI analysis failed:', err.message); }
     }
 

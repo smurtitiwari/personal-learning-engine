@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Press+Start+2P&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./styles.css?v=37" />
-<link rel="stylesheet" href="./styles-mario.css?v=34" />
+<link rel="stylesheet" href="./styles.css?v=38" />
+<link rel="stylesheet" href="./styles-mario.css?v=35" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -90,8 +90,8 @@
       <button class="ask-btn" data-ask type="button" aria-controls="askPanel" aria-expanded="false"><span class="ask-icon" aria-hidden="true">🤖</span><span class="ask-text">Ask AI</span></button>
 
       <div class="theme-switch" role="group" aria-label="Theme">
-        <button data-theme-set="light" type="button" aria-pressed="false">Light</button>
-        <button data-theme-set="dark" type="button" aria-pressed="false">Dark</button>
+        <button data-theme-set="light" type="button" aria-label="Use light theme" title="Light theme" aria-pressed="false"><span aria-hidden="true">☀</span></button>
+        <button data-theme-set="dark" type="button" aria-label="Use dark theme" title="Dark theme" aria-pressed="false"><span aria-hidden="true">☾</span></button>
       </div>
 
       <div class="account-wrap">
@@ -477,6 +477,32 @@
       </div>
     </div>
 
+    <form class="settings-section learning-profile-form" id="learningProfileForm">
+      <div>
+        <p class="settings-section-title">Learning profile</p>
+        <p class="setting-hint">This helps tailor Discover, suggested goals, and the context AI uses when helping you.</p>
+      </div>
+      <div class="setting-group">
+        <label class="setting-label" for="profileIndustry">Industry or role</label>
+        <input class="setting-input" id="profileIndustry" name="industry" autocomplete="organization-title" placeholder="e.g. Product design in fintech" maxlength="140" />
+      </div>
+      <div class="setting-group">
+        <label class="setting-label" for="profileLearningIntent">What do you want to learn?</label>
+        <textarea class="setting-input setting-textarea" id="profileLearningIntent" name="learning_intent" placeholder="e.g. Build practical AI product skills for my next role" maxlength="360"></textarea>
+      </div>
+      <div class="setting-group">
+        <label class="setting-label" for="profileInterests">Topics and areas of interest</label>
+        <input class="setting-input" id="profileInterests" name="interests" placeholder="e.g. AI UX, evaluation, design systems" maxlength="280" />
+        <p class="setting-hint">Separate topics with commas.</p>
+      </div>
+      <div class="setting-group">
+        <label class="setting-label" for="profileApps">Apps and tools you want to explore</label>
+        <input class="setting-input" id="profileApps" name="apps" placeholder="e.g. Figma, Cursor, Notion" maxlength="280" />
+      </div>
+      <button class="profile-save" type="submit">Save learning profile</button>
+      <p class="profile-save-status" id="profileSaveStatus" role="status" aria-live="polite"></p>
+    </form>
+
     <div class="settings-section">
       <p class="settings-section-title">Appearance</p>
       <div class="setting-group">
@@ -505,6 +531,6 @@
 </dialog>
 
 <div class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-<script src="./app.js?v=14"></script>
+<script src="./app.js?v=15"></script>
 </body>
 </html>

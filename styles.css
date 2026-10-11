@@ -993,6 +993,15 @@ body.dark .setting-theme button.on{background:var(--accent);color:var(--accent-i
 .setting-select{height:36px;border:1px solid var(--line);border-radius:var(--r-sm);
   background:var(--bg);color:var(--ink);padding:0 10px;font:400 13px/1 var(--sans);width:100%}
 .setting-select:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-color:var(--accent)}
+.setting-input{width:100%;min-height:42px;padding:10px 11px;border:1px solid var(--line-2);border-radius:var(--r-sm);background:var(--bg);color:var(--ink);font:400 13px/1.35 var(--sans);resize:vertical}
+.setting-input::placeholder{color:var(--ink-3);opacity:.78}
+.setting-input:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-color:var(--accent)}
+.setting-textarea{min-height:72px}
+.learning-profile-form{gap:var(--s4)}
+.learning-profile-form .setting-hint{margin:var(--s1) 0 0}
+.profile-save{align-self:flex-start;min-height:40px;padding:0 14px;border:1px solid var(--accent);border-radius:var(--r-sm);background:var(--accent);color:var(--accent-ink);font:600 12px/1 var(--sans)}
+.profile-save:disabled{opacity:.65;cursor:wait}
+.profile-save-status{min-height:18px;margin:calc(var(--s2) * -1) 0 0;color:var(--ink-3);font:400 12px/1.4 var(--sans)}
 .settings-signout{margin-top:var(--s3);color:var(--ink-3);font:400 12px/1 var(--sans);
   padding:8px 0;border-top:1px solid var(--line);text-align:left;
   transition:color var(--m-fast)}
@@ -1293,11 +1302,14 @@ body.dark .discover-tab.active { border-bottom-color: var(--accent); }
 
 /* Mobile app shell: bottom navigation, central AI entry, and floating add. */
 @media (max-width:720px){
-  .rail{height:56px;padding:0 16px;z-index:40}
-  .brand{gap:8px}
-  .brand-word{display:block;font-size:8px}
+  .rail{height:56px;padding:0 max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));z-index:40}
+  .brand{gap:8px;min-width:0}
+  .brand-word{display:block;font-size:8px;white-space:nowrap}
   .rail-bottom{display:block}
-  .theme-switch,.account-wrap{display:none}
+  .theme-switch{display:flex;position:static;flex:0 0 auto;width:auto;height:36px;padding:0;border:0;background:transparent;gap:2px}
+  .theme-switch button{display:grid;place-items:center;width:36px;height:36px;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--surface);font-size:18px;line-height:1}
+  .theme-switch button.on{background:var(--ink);color:var(--bg)}
+  .account-wrap{display:none}
 
   .nav{display:grid;grid-template-columns:1fr 1fr 1fr;align-items:stretch;height:64px;padding:0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);z-index:40}
   .nav a{grid-row:1;font-size:10px}
@@ -1305,9 +1317,9 @@ body.dark .discover-tab.active { border-bottom-color: var(--accent); }
   .nav a:last-child{grid-column:3}
   .nav a.active::before{height:3px}
 
-  .ask-btn{position:fixed;right:16px;bottom:82px;z-index:45;display:flex;justify-content:center;width:54px;height:54px !important;padding:0 !important;border:1px solid var(--line);border-radius:50%;background:var(--surface);box-shadow:0 8px 20px -8px rgba(17,17,17,.42)}
-  .ask-btn .ask-icon{display:grid}
-  .ask-btn .ask-text{display:none}
+  .ask-btn{position:fixed;right:max(16px, env(safe-area-inset-right));bottom:82px;z-index:45;display:flex;align-items:center;justify-content:center;gap:8px;width:auto;height:48px !important;padding:0 14px !important;border:1px solid #005f86;border-radius:24px;background:#005f86;color:#fff;box-shadow:0 8px 20px -8px rgba(17,17,17,.42)}
+  .ask-btn .ask-icon{display:grid;font-size:18px}
+  .ask-btn .ask-text{display:inline;font-size:12px}
   .ask-btn.active{background:var(--ai-weak)}
 
   .add-btn{position:fixed;left:50%;bottom:7px;transform:translateX(-50%);z-index:45;width:104px;height:52px !important;padding:0 10px;border-radius:var(--r-md);box-shadow:var(--shadow-sm)}
@@ -1327,7 +1339,8 @@ body.dark .discover-tab.active { border-bottom-color: var(--accent); }
   .sheet{width:calc(100vw - 24px);max-height:calc(100dvh - 24px);overflow:auto}
   .sheet-step{padding:24px 18px}
   .sheet-step h2{font-size:clamp(1.55rem,7vw,2rem)}
-  .app.ask-open .ask-panel{display:flex;inset:auto 8px calc(72px + env(safe-area-inset-bottom)) 8px;width:auto;height:min(72dvh,620px);z-index:60;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-lg)}
+  .app.ask-open main{padding-right:var(--pad)}
+  .app.ask-open .ask-panel{display:flex;inset:56px 0 calc(64px + env(safe-area-inset-bottom)) 0;width:auto;height:auto;z-index:60;border:0;border-top:1px solid var(--line);border-radius:0;box-shadow:none}
 }
 
 /* The rail action is a compact, labelled entry point; its icon remains visible

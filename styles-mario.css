@@ -3998,10 +3998,15 @@ html[data-ui="mario"] body.dark .detail-dialog .detail-actions {
     box-shadow: 3px 3px 0 #1c0e04 !important;
   }
   html[data-ui="mario"] .app.ask-open .ask-panel {
-    border: 3px solid #1c0e04 !important;
+    width: auto !important;
+    height: auto !important;
+    inset: 56px 0 calc(64px + env(safe-area-inset-bottom)) 0 !important;
+    border: 0 !important;
+    border-top: 3px solid #1c0e04 !important;
     border-radius: 0 !important;
-    box-shadow: 4px 4px 0 #1c0e04 !important;
+    box-shadow: none !important;
   }
+  html[data-ui="mario"] .app.ask-open main { padding-right: 20px !important; }
 }
 
 html[data-ui="mario"] .auth-dialog {
@@ -4057,6 +4062,19 @@ html[data-ui="mario"] .ask-btn .ask-text {
   line-height: 1 !important;
   letter-spacing: .06em;
   text-transform: uppercase;
+}
+
+/* Compact screens keep navigation stable while Ask AI becomes a full-width sheet. */
+@media (max-width:720px) {
+  html[data-ui="mario"] .brand { flex: 1 1 auto !important; min-width: 0; }
+  html[data-ui="mario"] .brand-word { display: block !important; font-size: 7px !important; white-space: nowrap; }
+  html[data-ui="mario"] .theme-switch { display: flex !important; width: auto !important; height: 36px !important; border: 0 !important; background: transparent !important; gap: 3px !important; }
+  html[data-ui="mario"] .theme-switch button { display: grid !important; place-items: center; flex: 0 0 36px !important; width: 36px !important; height: 36px !important; padding: 0 !important; border: 2px solid #f5efe6 !important; border-radius: 50% !important; background: #1c0e04 !important; color: #f5efe6 !important; font-size: 17px !important; }
+  html[data-ui="mario"] .theme-switch button.on { background: #ffd600 !important; color: #1c0e04 !important; }
+  html[data-ui="mario"] .ask-btn { right: max(16px, env(safe-area-inset-right)) !important; width: auto !important; height: 48px !important; min-height: 48px !important; padding: 0 14px !important; gap: 8px !important; border: 3px solid #1c0e04 !important; border-radius: 24px !important; background: #0077a3 !important; color: #fff !important; }
+  html[data-ui="mario"] .ask-btn .ask-text { display: inline !important; font-family: 'Pixelify Sans', sans-serif !important; font-size: 14px !important; letter-spacing: .02em; text-transform: none; }
+  html[data-ui="mario"] .learning-profile-form .setting-input { border: 2px solid #1c0e04 !important; border-radius: 0 !important; font-family: 'Pixelify Sans', sans-serif !important; }
+  html[data-ui="mario"] .profile-save { border: 3px solid #1c0e04 !important; border-radius: 0 !important; box-shadow: 3px 3px 0 #1c0e04 !important; font-family: 'Pixelify Sans', sans-serif !important; }
 }
 
 /* Keep the character as a small, static standing sprite in the rail. */

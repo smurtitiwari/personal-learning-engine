@@ -27,10 +27,10 @@ function parseJSON(text) {
   return JSON.parse(cleaned.match(/[\[{][\s\S]*[\]}]/)?.[0] || cleaned);
 }
 
-export async function analyzeGoalLimited(title) {
+export async function analyzeGoalLimited(title, learner = {}) {
   const raw = await complete(
-    'Return only compact JSON: {"topics":["..."],"rationale":"one short sentence"}. Use 3-5 specific learning topics.',
-    `Learning goal: ${title.slice(0, 200)}`,
+    'Return only compact JSON: {"topics":["..."],"rationale":"one short sentence"}. Use 3-5 specific learning topics. Use the learner context only when it makes the goal more specific.',
+    JSON.stringify({ learning_goal: title.slice(0, 200), learner }),
     220,
   );
   const parsed = parseJSON(raw);
@@ -41,7 +41,7 @@ export async function analyzeGoalLimited(title) {
 }
 
 export async function generateWeeklyRecommendations(userId, goalId = null) {
-  const [{ data: resources }, { data: goals }] = await Promise.all([
+  const [{ data: resources }, { data: goals }, { data: profile }] = await Promise.all([
     supabase.from('resources')
       .select('title, source_type, ai_summary, resource_topics(topics(name))')
       .eq('user_id', userId).eq('processing_status', 'ready').is('deleted_at', null)
@@ -49,6 +49,7 @@ export async function generateWeeklyRecommendations(userId, goalId = null) {
     supabase.from('goals')
       .select('id, title, goal_topics(topics(name))')
       .eq('user_id', userId).eq('status', 'active').limit(5),
+    supabase.from('user_profiles').select('interests, preferred_content_types').eq('user_id', userId).maybeSingle(),
   ]);
 
   const context = {
@@ -62,11 +63,15 @@ export async function generateWeeklyRecommendations(userId, goalId = null) {
       title: g.title,
       topics: (g.goal_topics || []).map(x => x.topics?.name).filter(Boolean),
     })),
+    learner: {
+      interests: Array.isArray(profile?.interests) ? profile.interests.slice(0, 8) : [],
+      ...(profile?.preferred_content_types && typeof profile.preferred_content_types === 'object' ? profile.preferred_content_types : {}),
+    },
   };
   if (!context.recent_resources.length && !context.goals.length) return [];
 
   const raw = await complete(
-    'Return only a JSON array with at most 5 items: [{"title":"specific resource search","type":"video or article","creator":"publisher or channel","topics":["topic"],"score":0.8,"reason":"one short sentence"}]. Recommend a balanced mix of videos and articles. Each item must be a concrete resource search, never a broad learning topic. Base every recommendation only on the supplied library and goals.',
+    'Return only a JSON array with at most 5 items: [{"title":"specific resource search","type":"video or article","creator":"publisher or channel","topics":["topic"],"score":0.8,"reason":"one short sentence"}]. Recommend a balanced mix of videos and articles. Each item must be a concrete resource search, never a broad learning topic. Base every recommendation only on the supplied library, goals, and learner context.',
     JSON.stringify(context),
     450,
   );

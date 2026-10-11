@@ -75,10 +75,10 @@ router.post('/', async (req, res) => {
     const sourceType = detectSourceType(resource.url);
     const extracted = await extractContent(resource.url, sourceType);
 
-    // Fetch user preferences for personalised AI summary
+    // Fetch the saved learning profile for personalised AI summaries.
     const { data: prefs } = await supabase
-      .from('user_preferences')
-      .select('interests')
+      .from('user_profiles')
+      .select('interests, preferred_content_types')
       .eq('user_id', resource.user_id)
       .single();
 

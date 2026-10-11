@@ -774,8 +774,12 @@ const settingsDialog = $('.settings-dialog');
 
 async function openSettings() {
   if (!settingsDialog) return;
-  try {
-    const { data } = await apiFetch('/api/preferences');
+  const [preferencesResult, profileResult] = await Promise.allSettled([
+    apiFetch('/api/preferences'),
+    apiFetch('/api/profile'),
+  ]);
+  if (preferencesResult.status === 'fulfilled') {
+    const { data } = preferencesResult.value;
     _prefs = data;
     // Populate fields
     const targetHours = Math.round((data.weekly_target_minutes ?? 300) / 60);
@@ -797,7 +801,15 @@ async function openSettings() {
       b.classList.toggle('on', selected);
       b.setAttribute('aria-pressed', String(selected));
     });
-  } catch {}
+  }
+  if (profileResult.status === 'fulfilled') {
+    const { data: profile } = profileResult.value;
+    $('#profileIndustry').value = profile.industry || '';
+    $('#profileLearningIntent').value = profile.learning_intent || '';
+    $('#profileInterests').value = Array.isArray(profile.interests) ? profile.interests.join(', ') : '';
+    $('#profileApps').value = Array.isArray(profile.preferred_apps) ? profile.preferred_apps.join(', ') : '';
+  }
+  $('#profileSaveStatus').textContent = '';
   settingsDialog.showModal();
 }
 
@@ -826,6 +838,34 @@ $('#aiRecsSelect')?.addEventListener('change', async () => {
       body: JSON.stringify({ ai_recommendations_enabled: val }),
     });
   } catch { toast('Could not save setting'); }
+});
+
+function commaList(value, limit = 12) {
+  return [...new Set(String(value || '').split(',').map(item => item.trim()).filter(Boolean))].slice(0, limit);
+}
+
+$('#learningProfileForm')?.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const submit = form.querySelector('button[type="submit"]');
+  const status = $('#profileSaveStatus');
+  const payload = {
+    industry: $('#profileIndustry').value.trim(),
+    learning_intent: $('#profileLearningIntent').value.trim(),
+    interests: commaList($('#profileInterests').value),
+    preferred_apps: commaList($('#profileApps').value),
+  };
+  submit.disabled = true;
+  status.textContent = 'Saving…';
+  try {
+    await apiFetch('/api/profile', { method: 'PATCH', body: JSON.stringify(payload) });
+    status.textContent = 'Saved. Future discovery and goals will use this profile.';
+    toast('Learning profile saved');
+  } catch {
+    status.textContent = 'Could not save your learning profile. Try again.';
+  } finally {
+    submit.disabled = false;
+  }
 });
 
 $('#settingsSignout')?.addEventListener('click', () => {
